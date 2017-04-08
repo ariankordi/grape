@@ -60,7 +60,7 @@ if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQU
 if(isset($grp_config_privkey) && isset($grp_config_pubkey)) {
 require_once 'crypto.php';
 $identity_auth = initToken(decrypt_identity($grp_config_privkey, base64_decode($_COOKIE['grp_identity'])));
-if($identity_auth = false) { }
+if($identity_auth == false) { }
 else {
 	$_SESSION['signed_in'] = true;
 		                $_SESSION['pid']    = $identity_auth['pid'];
