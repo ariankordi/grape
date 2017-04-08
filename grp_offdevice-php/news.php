@@ -35,6 +35,7 @@ print '<div class="list news-list">
 
 while($news_row = $search_news->fetch_assoc()) {
 printNews($news_row);
+$mysql->query('UPDATE grape.news SET news.has_read = "1" WHERE news.news_id = "'.$news_row['news_id'].'"');
 }
 print '
 

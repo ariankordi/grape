@@ -100,7 +100,7 @@ $body = 'Followed by <a href="/users/'.htmlspecialchars($user['user_id']).'" cla
     }
 }
 
-print '<div class="news-list-content'.($news['has_read'] == 0 ?  'notify' : '').' trigger" tabindex="0" data-href="'.$newsurl.'">
+print '<div class="news-list-content'.($news['has_read'] == 0 ?  ' notify' : '').' trigger" tabindex="0" data-href="'.$newsurl.'">
   
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="icon-container'.($usermii['official'] == true ? ' official-user' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
   <div class="body">'.(empty($body) ? 'Sorry, not implemented.' : $body).'
