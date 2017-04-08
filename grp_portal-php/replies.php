@@ -496,17 +496,14 @@ $mii_face_miitoo = htmlspecialchars('Yeah!'); }
 	</header><div class="body-content" id="reply-permalink">';
 	
 	$truncate_post_bodyp1 = mb_substr((htmlspecialchars($row_reply_ogpost['body'])), 0, 20, 'utf-8');
-if(mb_strlen($truncate_post_bodyp1, 'utf-8') >= 20) {
-$truncate_post_body = "$truncate_post_bodyp1..."; }
-else {
-$truncate_post_body = $truncate_post_bodyp1; }
+$truncate_post_body = (mb_strlen($truncate_post_bodyp1, 'utf-8') >= 20 ? "$truncate_post_bodyp1..." : $truncate_post_bodyp1);
 
 print '
   <a class="post-permalink-button info-ticker" href="/posts/' . $row_reply_ogpost['id'] . '" data-pjax="#body">
     <span>View <span class="post-user-description"><img src="' . $mii_ogpost_face_output . '" class="user-icon">';
 	print htmlspecialchars($row_reply_ogpost_user['screen_name']);
 	print "'s post (";
-	print $truncate_post_body;
+	print $row_reply_ogpost['_post_type'] == 'artwork' ? 'handwritten' : $truncate_post_body;
 	print ')</span> for this comment.</span>';
 	print '
   </a>

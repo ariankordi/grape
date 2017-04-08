@@ -63,7 +63,7 @@ print '  <body id="';
 	print '" ';
     if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true) {
        print 'data-hashed-pid="' . sha1($_SESSION['pid']) . '"';
-       print 'data-user-id="' . $_SESSION['user_id'] . '"';
+       print 'data-user-id="' . htmlspecialchars($_SESSION['user_id']) . '"';
        print 'data-game-skill="0" data-follow-done="1" data-post-done="1" data-lang="en" data-country="us" data-post-done="1"';
        print 'data-profile-url="/users/' . $_SESSION['user_id'] . '"';
 	   } else { 

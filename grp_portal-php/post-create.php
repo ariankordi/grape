@@ -145,8 +145,7 @@ $gen_olive_url = $b64url_data;
 
 if(!isset($_POST['is_spoiler'])) {
 $_POST['is_spoiler'] = false; }
-if(empty($_POST['feeling_id'])) {
-$_POST['feeling_id'] = '0'; }
+if(empty($_POST['feeling_id']) || !is_numeric($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; } 
         $sql = "INSERT INTO
                     posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler, is_special)
                 VALUES('" . $gen_olive_url  . "',
@@ -205,6 +204,7 @@ $template_creator_user_face = $row_post_poster['user_face'];
 $template_creator_official_user = $row_post_poster['official_user'];
 $template_post_id = $row_post_created['id'];
 $template_post_pid = $row_post_created['pid'];
+$template_post_type = $row_post_created['_post_type'];
 $template_post_is_hidden = $row_post_created['is_hidden'];
 $template_post_body = htmlspecialchars($row_post_created['body']);
 $template_post_url = htmlspecialchars($row_post_created['url']);

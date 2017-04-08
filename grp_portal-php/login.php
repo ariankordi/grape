@@ -55,7 +55,7 @@ exit();
                 else
                 {
 			
-			$sql2 = "SELECT * FROM people WHERE user_id = '" . mysqli_real_escape_string($link, $_GET['user_id']) . "' AND user_pass = '" . password_hash($_POST['password'],PASSWORD_BCRYPT,['salt'=>'zvHy85=EZLaw8?5ct!Ov9YEiP(Gi)itI']) . "'";
+			$sql2 = "SELECT * FROM people WHERE user_id = '" . mysqli_real_escape_string($link, $_GET['user_id']) . "' AND user_pass = '" . password_hash($_POST['password'],PASSWORD_BCRYPT,['salt'=>(isset($grp_config_server_salt) ? $grp_config_server_salt : 'zvHy85=EZLaw8?5ct!Ov9YEiP(Gi)itI')]) . "'";
             $result2 = mysqli_query($link, $sql2);		
 		if(mysqli_fetch_assoc($result2)['ban_status'] >= 4) {
 header('Location: '.$_SERVER['HTTP_REFERER'].'', true, 302);

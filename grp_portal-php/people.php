@@ -47,7 +47,7 @@ if(preg_match('/[^a-z_\-0-9]/i', $_POST['user_id']))
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, 'https://3ds-us.olv.nintendo.net/users/'.$_POST['mii_hash'].'/blacklist.confirm');
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-curl_setopt($ch, CURLOPT_SSLCERT, '/usr/share/nginx/grp_portal/lib/cert.pem');
+curl_setopt($ch, CURLOPT_SSLCERT, '/usr/share/nginx/grape/grp_portal/lib/cert.pem');
 curl_setopt($ch, CURLOPT_SSLCERTPASSWD, 'alpine');
 curl_setopt($ch, CURLOPT_HEADER, TRUE);
 $extraHeaders[] = 'X-Nintendo-ParamPack: XFxc';
@@ -138,7 +138,7 @@ $pid_gen = ($rPid2 != 1799999999 ? 1799999998 - $rPid2 : 1799999999);
                     people(pid, user_id, user_pass, user_email, screen_name, mii, mii_hash, mii_image, created_from, device_id, privilege, platform_id, comment)
                 VALUES('" . $pid_gen . "',
 				       '" . mysqli_real_escape_string($link, $_POST['user_id']) . "',
-                       '" . password_hash($_POST['user_pass'],PASSWORD_BCRYPT,['salt'=>'zvHy85=EZLaw8?5ct!Ov9YEiP(Gi)itI']) . "',
+                       '" . password_hash($_POST['user_pass'],PASSWORD_BCRYPT,['salt'=>(isset($grp_config_server_salt) ? $grp_config_server_salt : 'zvHy85=EZLaw8?5ct!Ov9YEiP(Gi)itI')]) . "',
                        '" . mysqli_real_escape_string($link, $_POST['user_email']) . "',
                        '" . mysqli_real_escape_string($link, $_POST['screen_name']) . "',
                        '" . (!empty($_POST['mii']) ? mysqli_real_escape_string($link, $_POST['mii']) : NULL) . "',

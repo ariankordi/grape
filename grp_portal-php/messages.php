@@ -10,7 +10,8 @@ if(mysqli_num_rows($result_people_messagesearch) == 0) {
 			$error_code[] = '1512012';
 } else {
 $row_people_messagesearch = mysqli_fetch_assoc($result_people_messagesearch);
-if(mysqli_num_rows(mysqli_query($link, 'SELECT * FROM grape.friend_relationships WHERE friend_relationships.target = "'.$row_people_messagesearch['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$row_people_messagesearch['pid'].'" LIMIT 1')) == 0) {
+$result_relationshipsearch = mysqli_query($link, 'SELECT * FROM grape.friend_relationships WHERE friend_relationships.target = "'.$row_people_messagesearch['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$row_people_messagesearch['pid'].'" LIMIT 1');
+if(mysqli_num_rows($result_relationshipsearch) == 0) {
 			$error_message[] = 'You are not friends with this user.';
 			$error_code[] = '1512013';	
 }
@@ -106,6 +107,7 @@ $new_message_conversation_id = mysqli_real_escape_string($link, $_GET['conversat
                        "0")';
                          
         $result = mysqli_query($link, $sql);
+		$resultUpdateFM = mysqli_query($link, 'UPDATE friend_relationships SET updated = CURRENT_TIMESTAMP WHERE relationship_id = "'.mysqli_fetch_assoc($result_relationshipsearch)['relationship_id'].'"');
         if(!$result)
         {
             //MySQL error; JSON response.
@@ -313,7 +315,7 @@ print '<header id="header">
 
 $result_find_user_newstutorial = mysqli_query($link, 'SELECT * FROM grape.settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.friend_messages = "1"');
 
-$result_get_friendexistence = mysqli_query($link, 'SELECT * FROM grape.friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" ORDER BY friend_relationships.relationship_id DESC');
+$result_get_friendexistence = mysqli_query($link, 'SELECT * FROM grape.friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" ORDER BY friend_relationships.updated DESC');
 
 print '<div class="body-content" id="messages-list">
 ';

@@ -232,6 +232,16 @@ else {
             $error_message[] = 'The data recieved was invalid.';
 			$error_code[] = '1056010';
         }
+		if(isset($_POST['game_skill']) && strval($_POST['game_skill']) > 2)
+        {
+            $error_message[] = 'The data recieved was invalid.';
+			$error_code[] = '1056010';
+        }
+		if(isset($_POST['gender']) && strval($_POST['gender']) > 3)
+        {
+            $error_message[] = 'The data recieved was invalid.';
+			$error_code[] = '1056010';
+        }
     if(!empty($error_code) || !empty($error_message) ) /*Got errors?*/
     {
 		// JSON response for errors.

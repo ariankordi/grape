@@ -55,7 +55,6 @@ if(!$result_empathyremove){
 http_response_code(400);
 header('Content-Type: application/json; charset=utf-8');
 print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"400"}';
-print 'remove';
 print "\n";
 } else {
 header('Content-Type: application/json; charset=utf-8');
@@ -102,7 +101,6 @@ else {
 	} }
 		
 		
-	}
 	
         if(!$result_empathycreate)
         {
@@ -120,6 +118,7 @@ print "\n";
 		
    }
   }
+	}
 }
 } 
 if($_GET['mode'] == 'replies') {
@@ -226,8 +225,7 @@ $gen_olive_url = $b64url_data;
 
 if(!isset($_POST['is_spoiler'])) {
 $_POST['is_spoiler'] = false; }
-if(empty($_POST['feeling_id'])) {
-$_POST['feeling_id'] = '0'; }
+if(empty($_POST['feeling_id']) || !is_numeric($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; } 
         $sql = "INSERT INTO
                     replies(id, reply_to_id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, is_special)
                 VALUES('" . $gen_olive_url  . "',
@@ -860,17 +858,20 @@ if($row_post_user['official_user'] == 1) {
 	 if($row_post['is_spoiler'] == '1') { 
 	 print '<span class="spoiler-status spoiler">Spoilers</span>'; }
 	 print '</p>';
-	 print '<div class="post-content">';
+	 print '<div class="post-content'.($row_post['_post_type'] == 'artwork' ? ' memo' : '').'">';
 	 if(isset($row_post['screenshot'])) {
      if(strlen($row_post['screenshot']) > 3) {
 	print '<div class="capture-container">
            <img src="' . htmlspecialchars($row_post['screenshot']) . '" class="capture">
 	 </div>'; } }
-	 
+	 if($row_post['_post_type'] == 'artwork') {
+print '<p class="post-content-memo"><img src="'.htmlspecialchars($row_post['body']).'" class="post-memo"></p>
+
+	 </div>'; } else {
 	 print '
 
               <p class="post-content-text">' . htmlspecialchars($row_post['body']) . '</p>
-      </div>';
+	 </div>'; }
 	  if(isset($row_post['url'])) {
 if (strpos( $row_post['url'], 'www.youtube.com/watch?v=') !== false) {
 if(substr($row_post['url'], 0, 4) == "http") {

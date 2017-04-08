@@ -17,7 +17,7 @@ exit("403 Forbidden\n");
 }
 
 $pagetitle = 'Notifications';
-if(empty($_SERVER['HTTP_X_PJAX_CONTAINER'])) { $_SERVER['HTTP_X_PJAX_CONTAINER'] == ''; }
+if(empty($_SERVER['HTTP_X_PJAX_CONTAINER'])) { $_SERVER['HTTP_X_PJAX_CONTAINER'] = ''; }
 if($_SERVER['HTTP_X_PJAX_CONTAINER'] != '.tab-body') {
 include 'lib/header.php';
 include 'lib/user-menu.php';
@@ -87,11 +87,13 @@ print '<div class="friend-request-buttons">
         <span class="ok-message none"></span>
       </div>
 <div class="body">
-        <p class="title">
+        <p class="title">';
+		$get_user_profile_for_fr = mysqli_query($link, 'SELECT * FROM profiles WHERE profiles.pid = "'.$row_news_user_select['pid'].'" LIMIT 1');
+		print '
           <span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>
         </p>
-        <p class="text">
-        </p>
+        <p class="text">'.(mysqli_num_rows($get_user_profile_for_fr) != 0 ? htmlspecialchars(mysqli_fetch_assoc($get_user_profile_for_fr)['comment']) : '
+		').'</p>
       </div>';
 
 

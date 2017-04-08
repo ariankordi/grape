@@ -13,6 +13,7 @@
 #$template_post_pid = $row_post['pid'];
 #$template_post_body = $row_post['body'];
 #$template_post_url = $row_post['url'];
+#$template_post_type = $row_post['_post_type'];
 #$template_post_is_hidden = $row_post['is_hidden'];
 #$template_post_screenshot = $row_post['screenshot'];
 #$template_post_created_at = $row_post['created_at'];
@@ -158,10 +159,13 @@ if(mb_strlen($truncate_post_bodyp1, 'utf-8') >= 200) {
 $truncate_post_body = "$truncate_post_bodyp1..."; }
 else {
 $truncate_post_body = $truncate_post_bodyp1; }
+if($template_post_type == 'artwork') {
+print '<p class="post-content-memo"><img src="'.htmlspecialchars($template_post_body).'" class="post-memo"></p>
+	  </div>'; } else {
 print '
             <p class="post-content-text">' . preg_replace("/[\r\n]+/", "\n", $truncate_post_body) . '</p>
       </div>
-';
+	  '; }
 	if ($template_post_spoiler == '1' && isset($_SESSION['pid'])) {
 	if($template_creator_pid != $_SESSION['pid']) {
 	print '	<div class="hidden-content">

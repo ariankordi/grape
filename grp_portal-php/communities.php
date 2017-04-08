@@ -146,7 +146,7 @@ print '
         }
 	print '</ul>';
 
-		$sql_specialtitles = 'SELECT * FROM grape.titles WHERE titles.platform_id IS NULL ORDER BY titles.created_at DESC LIMIT 2';
+		$sql_specialtitles = 'SELECT * FROM grape.titles WHERE titles.platform_id IS NULL ORDER BY titles.created_at DESC LIMIT 6';
 		$result_specialtitles = mysqli_query($link, $sql_specialtitles);
 		
 if(mysqli_num_rows($result_specialtitles) == 0) {

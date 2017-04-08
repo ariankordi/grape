@@ -154,28 +154,34 @@ $truncate_post_body = $truncate_post_bodyp1; }
 
 if(isset($rows_find_news_merged_with[0]['from_pid'])) {
 if(count($rows_find_news_merged_with) == 1) {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span> commented on <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span>.   ';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span> commented on <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span>.   ';
 }
 if(count($rows_find_news_merged_with) == 2) {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> commented on <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span>.   ';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> commented on <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span>.   ';
 }
 if(count($rows_find_news_merged_with) == 3) {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and one other person commented on <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span>.      ';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and one other person commented on <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span>.      ';
 }
 if(count($rows_find_news_merged_with) >= 4) {
 $subtr_news_curr = count($rows_find_news_merged_with) - 2;
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and '.$subtr_news_curr.' others commented on <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).').';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and '.$subtr_news_curr.' others commented on <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).').';
 }
 }
  else {
- $news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> commented on <span class="link">your Post ('.htmlspecialchars($truncate_post_body).')</span>.   '; }
+ $news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> commented on <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars($truncate_post_body)).')</span>.   '; }
 }
 
 if(strval($row_act_find_user_news['news_context']) == 5) {
 # Get post body here
 $sql_news_getpost = 'SELECT * FROM grape.posts WHERE posts.id = "'.$row_act_find_user_news['id'].'"';
 $result_news_getpost = mysqli_query($link, $sql_news_getpost);
-$row_news_getpost = mysqli_fetch_assoc($result_news_getpost);
+if(mysqli_num_rows($result_news_getpost) == 0) {
+$row_news_getpost = array(
+'_post_type' => 'body',
+'body' => 'not found'
+);
+} else {
+$row_news_getpost = mysqli_fetch_assoc($result_news_getpost); }
 # Truncate it
 $truncate_post_bodyp1 = mb_substr(($row_news_getpost['body']), 0, 17, 'utf-8');
 if(mb_strlen($row_news_getpost['body'], 'utf-8') >= 18) {
@@ -183,14 +189,20 @@ $truncate_post_body = "$truncate_post_bodyp1..."; }
 else {
 $truncate_post_body = $truncate_post_bodyp1; }
 
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> commented on <span class="link">'.htmlspecialchars($row_news_user_select['screen_name']).''."'s".' Post ('.htmlspecialchars($truncate_post_body).')</span>.   '; 
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> commented on <span class="link">'.htmlspecialchars($row_news_user_select['screen_name']).''."'s".' Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars($truncate_post_body)).')</span>.   '; 
 }
 
 if(strval($row_act_find_user_news['news_context']) == 3) {
 # Get comment body here
 $sql_news_getcomment = 'SELECT * FROM grape.replies WHERE replies.id = "'.$row_act_find_user_news['id'].'"';
 $result_news_getcomment = mysqli_query($link, $sql_news_getcomment);
-$row_news_getcomment = mysqli_fetch_assoc($result_news_getcomment);
+if(mysqli_num_rows($result_news_getcomment) == 0) {
+$row_news_getcomment = array(
+'_post_type' => 'body',
+'body' => 'not found'
+);
+} else {
+$row_news_getcomment = mysqli_fetch_assoc($result_news_getcomment); }
 # Truncate it
 $truncate_post_bodyp1 = mb_substr(($row_news_getcomment['body']), 0, 17, 'utf-8');
 if(mb_strlen($row_news_getcomment['body'], 'utf-8') >= 17) {
@@ -222,7 +234,13 @@ if(strval($row_act_find_user_news['news_context']) == 2) {
 # Get post body here
 $sql_news_getpost = 'SELECT * FROM grape.posts WHERE posts.id = "'.$row_act_find_user_news['id'].'"';
 $result_news_getpost = mysqli_query($link, $sql_news_getpost);
-$row_news_getpost = mysqli_fetch_assoc($result_news_getpost);
+if(mysqli_num_rows($result_news_getpost) == 0) {
+$row_news_getpost = array(
+'_post_type' => 'body',
+'body' => 'not found'
+);
+} else {
+$row_news_getpost = mysqli_fetch_assoc($result_news_getpost); }
 # Truncate it
 $truncate_post_bodyp1 = mb_substr(($row_news_getpost['body']), 0, 17, 'utf-8');
 if(mb_strlen($row_news_getpost['body'], 'utf-8') >= 18) {
@@ -232,22 +250,22 @@ $truncate_post_body = $truncate_post_bodyp1; }
 
 if(isset($rows_find_news_merged_with[0]['from_pid'])) {
 if(count($rows_find_news_merged_with) == 1) {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span> gave <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span> a Yeah.   ';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span> gave <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span> a Yeah.   ';
 }
 if(count($rows_find_news_merged_with) == 2) {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> gave <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span> a Yeah.   ';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, and <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> gave <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span> a Yeah.   ';
 }
 if(count($rows_find_news_merged_with) == 3) {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and one other person gave <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span> a Yeah.   ';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and one other person gave <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span> a Yeah.   ';
 }
 if(count($rows_find_news_merged_with) >= 4) {
 $subtr_news_curr = count($rows_find_news_merged_with) - 2;
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and '.$subtr_news_curr.' others gave <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).') a Yeah.';
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[0]['from_pid']).'</span>, <span class="nick-name">'.getScreenNamefromPID($rows_find_news_merged_with[1]['from_pid']).'</span> and '.$subtr_news_curr.' others gave <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).') a Yeah.';
 }
 
 }
 else {
-$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> gave <span class="link">your Post ('.htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body)).')</span> a Yeah.   '; }
+$news_content_text = '<span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span> gave <span class="link">your Post ('.($row_news_getpost['_post_type'] == 'artwork' ? 'handwritten' : htmlspecialchars(preg_replace("/[\r\n]{2,}/", " ", $truncate_post_body))).')</span> a Yeah.   '; }
 }
 if(strval($row_act_find_user_news['news_context']) == 6) {
 

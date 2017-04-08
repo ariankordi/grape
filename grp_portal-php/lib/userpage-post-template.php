@@ -227,20 +227,24 @@ $truncate_post_body = $truncate_post_bodyp1; }
 
 if(isset($_SESSION['signed_in'])) {
 if(isset($row_current_peopleban)) {
-$can_post_user_miitoo = ' disabled'; } else {
-	$can_post_user_miitoo = ''; }	} else {
-    if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true && $row_temp_current_post['pid'] != $_SESSION['pid']) {
-	$can_post_user_miitoo = ''; }
+$can_post_user_miitoo = ' disabled'; }
+    elseif(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true && $row_temp_current_post['pid'] != $_SESSION['pid']) {
+$can_post_user_miitoo = ''; }
+else {
+$can_post_user_miitoo = ' disabled';	
+} }
 	else {
-	$can_post_user_miitoo = ' disabled'; }	
-}
+	$can_post_user_miitoo = ' disabled'; }
+if($row_temp_current_post['_post_type'] == 'artwork') {
+print '<p class="post-content-memo"><img src="'.htmlspecialchars($row_temp_current_post['body']).'" class="post-memo"></p>
+	  </div>'; } else {
 print '
 
             <p class="post-content-text">'.preg_replace("/[\r\n]+/", "\n", $truncate_post_body).'</p>
       </div>
 	  
 	  
-	  ';
+'; }
 	 if(isset($row_temp_current_post['is_spoiler']) && $row_temp_current_post['is_spoiler'] == '1') {
 
 if(isset($_SESSION['pid'])) {

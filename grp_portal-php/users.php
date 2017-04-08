@@ -65,7 +65,10 @@ $result_userpage_user_profile = mysqli_query($link, $sql_userpage_user_profile);
 $row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile); 
   
 if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-	header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302);
+mysqli_query($link, "INSERT INTO
+                    profiles(pid, platform_id)
+                VALUES('" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
+                       '" . $row_userpage_user['platform_id'] . "')");
      }
 	if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strlen($_GET['offset']) >= 1) {
 		
@@ -556,7 +559,10 @@ $result_userpage_user_profile = mysqli_query($link, $sql_userpage_user_profile);
 $row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile); 
   
 if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-	header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302);
+mysqli_query($link, "INSERT INTO
+                    profiles(pid, platform_id)
+                VALUES('" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
+                       '" . $row_userpage_user['platform_id'] . "')");
      }
 else {
 
@@ -790,7 +796,10 @@ $row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile);
 // Uncomment when /welcome/profile is implemented, please!
   
 if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-	header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302);
+mysqli_query($link, "INSERT INTO
+                    profiles(pid, platform_id)
+                VALUES('" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
+                       '" . $row_userpage_user['platform_id'] . "')");
      }
 else {
 
@@ -1007,7 +1016,10 @@ $row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile);
 // Uncomment when /welcome/profile is implemented, please!
   
 if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-	header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302);
+mysqli_query($link, "INSERT INTO
+                    profiles(pid, platform_id)
+                VALUES('" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
+                       '" . $row_userpage_user['platform_id'] . "')");
      }
 else {
 
@@ -1222,7 +1234,10 @@ $row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile);
 // Uncomment when /welcome/profile is implemented, please!
   
 if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-	header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302);
+mysqli_query($link, "INSERT INTO
+                    profiles(pid, platform_id)
+                VALUES('" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
+                       '" . $row_userpage_user['platform_id'] . "')");
      }
 else {
 
@@ -1715,7 +1730,10 @@ $result_userpage_user_profile = mysqli_query($link, $sql_userpage_user_profile);
 $row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile); 
   
 if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-	header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302);
+mysqli_query($link, "INSERT INTO
+                    profiles(pid, platform_id)
+                VALUES('" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
+                       '" . $row_userpage_user['platform_id'] . "')");
      }
 else {
 
