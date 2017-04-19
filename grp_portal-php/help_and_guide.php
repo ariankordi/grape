@@ -3,11 +3,12 @@
 $pagetitle = 'Manual';
 $body_id = 'main';
     
-	include 'lib/sql-connect.php';
-	include 'lib/header.php';
-	include 'lib/user-menu.php';
+	require_once '../grplib-php/init.php';
+	require_once 'lib/htm.php';
+printHeader(false);
+	printMenu();
 	
-	print $div_body_head;
+	print $GLOBALS['div_body_head'];
 	print '
 <header id="header">
   

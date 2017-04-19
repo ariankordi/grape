@@ -1,13 +1,13 @@
 <?php
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 
-if(empty($_GET['id'])) { include 'lib/404.php'; exit(); }
+if(empty($_GET['id'])) { include_once '404.php'; exit(); }
 # If /replies/*/empathies, /replies/*/violations, etc. is specified.
 if(isset($_GET['mode'])) {
 if($_GET['mode'] == 'empathies') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include 'lib/404.php'; }
+include_once '404.php'; }
 else {
 # Method is POST.
 
@@ -17,8 +17,8 @@ else {
         }
 
 if($_SESSION['pid']) {		
-$sql_reply_getuser = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_reply_getuser = mysqli_query($link, $sql_reply_getuser);
+$sql_reply_getuser = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$result_reply_getuser = mysqli_query($mysql, $sql_reply_getuser);
 $row_reply_getuser = mysqli_fetch_assoc($result_reply_getuser); 
 		
         if(strval($row_reply_getuser['status'] >= 3) || strval($row_reply_getuser['empathy_restriction'] >= 1)) {
@@ -27,7 +27,7 @@ $row_reply_getuser = mysqli_fetch_assoc($result_reply_getuser);
 		}
 }
 $sql_empathywho = 'SELECT * FROM replies WHERE replies.id = "' . $_GET['id'] . '"';
-$result_empathywho = mysqli_query($link, $sql_empathywho);
+$result_empathywho = mysqli_query($mysql, $sql_empathywho);
 
 if(mysqli_num_rows($result_empathywho)==0) {
 			$error_message[] = 'The reply could not be found.';
@@ -46,15 +46,15 @@ if(mysqli_fetch_assoc($result_empathywho)['pid']==$_SESSION['pid']) {
 			print "\n";
     }
     else {
-$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($link, $_GET['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
-$result_hasempathy = mysqli_query($link, $sql_hasempathy);
+$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $_GET['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$result_hasempathy = mysqli_query($mysql, $sql_hasempathy);
 if(mysqli_num_rows($result_hasempathy)!=0) {
-$sql_empathyremove = 'DELETE FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($link, $_GET['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
-$result_empathyremove = mysqli_query($link, $sql_empathyremove);
+$sql_empathyremove = 'DELETE FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $_GET['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$result_empathyremove = mysqli_query($mysql, $sql_empathyremove);
 if(!$result_empathyremove){
 http_response_code(400);
 header('Content-Type: application/json; charset=utf-8');
-print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"400"}';
+print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"400"}';
 print 'remove';
 print "\n";
 } else {
@@ -67,38 +67,38 @@ print "\n";
                 VALUES ("' . $_GET['id'] . '",
                         "' . $_SESSION['pid'] . '",
 						"' . $_SERVER['REMOTE_ADDR'] . '")';
-        $result_empathycreate = mysqli_query($link, $sql_empathycreate);
+        $result_empathycreate = mysqli_query($mysql, $sql_empathycreate);
 		
-        $sql_get_empathy_post = 'SELECT * FROM grape.replies WHERE replies.id = "'.mysqli_real_escape_string($link, $_GET['id']).'"';
-        $result_get_empathy_post = mysqli_query($link, $sql_get_empathy_post);
+        $sql_get_empathy_post = 'SELECT * FROM replies WHERE replies.id = "'.mysqli_real_escape_string($mysql, $_GET['id']).'"';
+        $result_get_empathy_post = mysqli_query($mysql, $sql_get_empathy_post);
         $row_get_empathy_post = mysqli_fetch_assoc($result_get_empathy_post);	
 		
-        $sql_get_empathy_poster = 'SELECT * FROM grape.people WHERE people.pid = "'.$row_get_empathy_post['pid'].'"';
-		$result_get_empathy_poster = mysqli_query($link, $sql_get_empathy_poster);
+        $sql_get_empathy_poster = 'SELECT * FROM people WHERE people.pid = "'.$row_get_empathy_post['pid'].'"';
+		$result_get_empathy_poster = mysqli_query($mysql, $sql_get_empathy_poster);
 		$row_get_empathy_poster = mysqli_fetch_assoc($result_get_empathy_poster);
 
 	// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$result_check_fastnews = mysqli_query($link, 'SELECT news.to_pid, news.created_at FROM grape.news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.news_context = "3" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
+	$result_check_fastnews = mysqli_query($mysql, 'SELECT news.to_pid, news.created_at FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.news_context = "3" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
     if(mysqli_num_rows($result_check_fastnews) == 0) {
-    $result_check_ownusernews = mysqli_query($link, 'SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.news_context = "3" AND news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.id = "'.$row_get_empathy_post['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
+    $result_check_ownusernews = mysqli_query($mysql, 'SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.news_context = "3" AND news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.id = "'.$row_get_empathy_post['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
 $row_check_ownusernews = mysqli_fetch_assoc($result_check_ownusernews);
-	$result_check_mergedusernews = mysqli_query($link, 'SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.news_context = "3" AND news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.id = "'.$row_get_empathy_post['id'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
+	$result_check_mergedusernews = mysqli_query($mysql, 'SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.news_context = "3" AND news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.id = "'.$row_get_empathy_post['id'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
  if(mysqli_num_rows($result_check_mergedusernews) != 0) {
-	$result_update_mergedusernewsagain = mysqli_query($link, 'UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.mysqli_fetch_assoc($result_check_mergedusernews)['merged'].'"');	
+	$result_update_mergedusernewsagain = mysqli_query($mysql, 'UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.mysqli_fetch_assoc($result_check_mergedusernews)['merged'].'"');	
 	}
 	elseif(mysqli_num_rows($result_check_ownusernews) != 0) {
-	$result_update_ownusernewsagain = mysqli_query($link, 'UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$row_check_ownusernews['news_id'].'"');
+	$result_update_ownusernewsagain = mysqli_query($mysql, 'UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$row_check_ownusernews['news_id'].'"');
 	}
 else {
-	$result_update_newsmergesearch = mysqli_query($link, 'SELECT * FROM news WHERE news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.id = "'.$row_get_empathy_post['id'].'" AND news.created_at > NOW() - 7200 AND news.news_context = "3" ORDER BY news.created_at DESC');	
+	$result_update_newsmergesearch = mysqli_query($mysql, 'SELECT * FROM news WHERE news.to_pid = "'.$row_get_empathy_poster['pid'].'" AND news.id = "'.$row_get_empathy_post['id'].'" AND news.created_at > NOW() - 7200 AND news.news_context = "3" ORDER BY news.created_at DESC');	
 	if(mysqli_num_rows($result_update_newsmergesearch) != 0) {
 $row_update_newsmergesearch = mysqli_fetch_assoc($result_update_newsmergesearch);
 	
-	$result_newscreatemerge = mysqli_query($link, 'INSERT INTO grape.news(from_pid, to_pid, id, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$row_get_empathy_poster['pid'].'", "'.$row_get_empathy_post['id'].'", "'.$row_update_newsmergesearch['news_id'].'", "3", "0")');
-$result_update_newsformerge = mysqli_query($link, 'UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
+	$result_newscreatemerge = mysqli_query($mysql, 'INSERT INTO news(from_pid, to_pid, id, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$row_get_empathy_poster['pid'].'", "'.$row_get_empathy_post['id'].'", "'.$row_update_newsmergesearch['news_id'].'", "3", "0")');
+$result_update_newsformerge = mysqli_query($mysql, 'UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
 		}
 else {
-        $result_newscreate = mysqli_query($link, 'INSERT INTO grape.news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$row_get_empathy_poster['pid'].'", "'.$row_get_empathy_post['id'].'", "3", "0")'); 	
+        $result_newscreate = mysqli_query($mysql, 'INSERT INTO news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$row_get_empathy_poster['pid'].'", "'.$row_get_empathy_post['id'].'", "3", "0")'); 	
 	} }
 		
 		
@@ -107,7 +107,7 @@ else {
         {
 http_response_code(400);
 header('Content-Type: application/json; charset=utf-8');
-print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"400"}';
+print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"400"}';
 print "\n";
 	}
         else
@@ -125,7 +125,7 @@ print "\n";
 if($_GET['mode'] == 'violations') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include 'lib/404.php'; }
+include_once '404.php'; }
 else {
 # Method is POST.
 
@@ -135,11 +135,11 @@ else {
         }
 
 if($_SESSION['pid']) {
-$sql_post_getuser = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_post_getuser = mysqli_query($link, $sql_post_getuser);
+$sql_post_getuser = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$result_post_getuser = mysqli_query($mysql, $sql_post_getuser);
 $row_post_getuser = mysqli_fetch_assoc($result_post_getuser);
 
-$result_whatpost = mysqli_query($link, 'SELECT * FROM replies WHERE replies.id = "' . mysqli_real_escape_string($link, $_GET['id']) . '"');
+$result_whatpost = mysqli_query($mysql, 'SELECT * FROM replies WHERE replies.id = "' . mysqli_real_escape_string($mysql, $_GET['id']) . '"');
 
 if(mysqli_num_rows($result_whatpost)==0) {
 			$error_message[] = 'The post could not be found.';
@@ -161,18 +161,18 @@ if(mysqli_fetch_assoc($result_whatpost)['pid']==$_SESSION['pid']) {
     else {
 $row_reportpost = mysqli_fetch_assoc($result_whatpost);
 
-$result_get_spamreports = mysqli_query($link, 'SELECT * FROM reports WHERE reports.source = "'.$_SESSION['pid'].'" AND reports.created_at > NOW() - 5');
+$result_get_spamreports = mysqli_query($mysql, 'SELECT * FROM reports WHERE reports.source = "'.$_SESSION['pid'].'" AND reports.created_at > NOW() - 5');
 if(mysqli_num_rows($result_get_spamreports) != 0) {
 header('Content-Type: application/json; charset=utf-8'); print '{"success":1}'; print "\n";
 exit();
 }
 
-$result_reportcreate = mysqli_query($link, 'INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION['pid'].'", "'.mysqli_real_escape_string($link, $_GET['id']).'", "1", "'.mysqli_real_escape_string($link, $_POST['type']).'", "'.mysqli_real_escape_string($link, $_POST['body']).'")');
+$result_reportcreate = mysqli_query($mysql, 'INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION['pid'].'", "'.mysqli_real_escape_string($mysql, $_GET['id']).'", "1", "'.mysqli_real_escape_string($mysql, $_POST['type']).'", "'.mysqli_real_escape_string($mysql, $_POST['body']).'")');
         if(!$result_reportcreate)
         {
 http_response_code(400);
 header('Content-Type: application/json; charset=utf-8');
-print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"400"}';
+print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"400"}';
 print "\n";
 	}
         else
@@ -188,15 +188,15 @@ print "\n";
 if($_GET['mode'] == 'set_spoiler') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include 'lib/404.php'; }
+include_once '404.php'; }
 else {
 # Put checks + update post spoiler here.	
 		if(empty($_SESSION['pid'])) {
             $error_message[] = 'You are not logged in.\nLog in to update posts.';
 			$error_code[] = '1512005';
         }
-	$sql_getposter_update = 'SELECT * FROM grape.replies WHERE replies.id = "'.mysqli_real_escape_string($link, $_GET['id']).'"';
-	$result_getposter_update = mysqli_query($link, $sql_getposter_update);
+	$sql_getposter_update = 'SELECT * FROM replies WHERE replies.id = "'.mysqli_real_escape_string($mysql, $_GET['id']).'"';
+	$result_getposter_update = mysqli_query($mysql, $sql_getposter_update);
 	$row_getposter_update = mysqli_fetch_assoc($result_getposter_update);
 	
 	if(isset($_SESSION['pid']) && $row_getposter_update['pid'] != $_SESSION['pid']) {
@@ -222,11 +222,11 @@ else {
 			print "\n";
     }
 else {
-        $sql_update = 'UPDATE grape.replies SET replies.is_spoiler = "1" WHERE replies.id = "'.mysqli_real_escape_string($link, $_GET['id']).'"';	
-	    $result_update = mysqli_query($link, $sql_update);
+        $sql_update = 'UPDATE replies SET replies.is_spoiler = "1" WHERE replies.id = "'.mysqli_real_escape_string($mysql, $_GET['id']).'"';	
+	    $result_update = mysqli_query($mysql, $sql_update);
         if(!$result_update)
         {
-            //MySQL error; JSON response.
+            //MySQL error; print jsON response.
 			http_response_code(400);  
 			header('Content-Type: application/json; charset=utf-8');
 			
@@ -234,7 +234,7 @@ else {
 			#print $sql_update;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
 			print "\n";
 		}
 		else { 
@@ -254,15 +254,15 @@ print '{"is_spoiler":1,"success":1}';
 if($_GET['mode'] == 'delete') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include 'lib/404.php'; }
+include_once '404.php'; }
 else {
 # Put checks + update post deletion here.	
 		if(empty($_SESSION['pid'])) {
             $error_message[] = 'You are not logged in.\nLog in to delete posts.';
 			$error_code[] = '1512005';
         }
-	$sql_getposter_update = 'SELECT * FROM grape.replies WHERE replies.id = "'.mysqli_real_escape_string($link, $_GET['id']).'"';
-	$result_getposter_update = mysqli_query($link, $sql_getposter_update);
+	$sql_getposter_update = 'SELECT * FROM replies WHERE replies.id = "'.mysqli_real_escape_string($mysql, $_GET['id']).'"';
+	$result_getposter_update = mysqli_query($mysql, $sql_getposter_update);
 	$row_getposter_update = mysqli_fetch_assoc($result_getposter_update);
 	
 	if(isset($_SESSION['pid']) && $row_getposter_update['pid'] != $_SESSION['pid']) {
@@ -284,11 +284,11 @@ else {
 			print "\n";
     }
 else {
-        $sql_update = 'UPDATE grape.replies SET replies.is_hidden = "1", replies.hidden_resp = "1" WHERE replies.id = "'.mysqli_real_escape_string($link, $_GET['id']).'"';	
-	    $result_update = mysqli_query($link, $sql_update);
+        $sql_update = 'UPDATE replies SET replies.is_hidden = "1", replies.hidden_resp = "1" WHERE replies.id = "'.mysqli_real_escape_string($mysql, $_GET['id']).'"';	
+	    $result_update = mysqli_query($mysql, $sql_update);
         if(!$result_update)
         {
-            //MySQL error; JSON response.
+            //MySQL error; print jsON response.
 			http_response_code(400);  
 			header('Content-Type: application/json; charset=utf-8');
 			
@@ -296,7 +296,7 @@ else {
 			#print $sql_update;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
 			print "\n";
 		}
 		else { 
@@ -331,7 +331,7 @@ print '
 # Define other modes here.
 
 #else {
-#include 'lib/404.php'; }
+#include_once '404.php'; }
 
 }
 
@@ -341,12 +341,12 @@ print '
 # Else, normal use, aka /replies/*
 else {
 # Display comment.
-$sql_reply = 'SELECT * FROM replies WHERE replies.id = "' . mysqli_real_escape_string($link, $_GET['id']) . '"';
-$result_reply = mysqli_query($link, $sql_reply);
+$sql_reply = 'SELECT * FROM replies WHERE replies.id = "' . mysqli_real_escape_string($mysql, $_GET['id']) . '"';
+$result_reply = mysqli_query($mysql, $sql_reply);
 $row_reply = mysqli_fetch_assoc($result_reply);
 
-$sql_reply_user = 'SELECT * FROM grape.people WHERE people.pid = "' . $row_reply['pid'] . '"';
-$result_reply_user = mysqli_query($link, $sql_reply_user);
+$sql_reply_user = 'SELECT * FROM people WHERE people.pid = "' . $row_reply['pid'] . '"';
+$result_reply_user = mysqli_query($mysql, $sql_reply_user);
 $row_reply_user = mysqli_fetch_assoc($result_reply_user); 
 
 // Who posesses the reply?
@@ -363,14 +363,15 @@ $pagetitle = htmlspecialchars($row_reply_user['screen_name']) . "'s Comment"; }
 }
 else {
 $pagetitle = 'Error'; }
-include 'lib/header.php';
-include 'lib/user-menu.php';
+require_once 'lib/htm.php';
+printHeader(false);
+printMenu();
 // DB error.
 if(!$result_reply)
 {
 http_response_code(500);
 $pagetitle = ('Error');
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '<header id="header">
 <h1 id="page-title" class="left">' . $pagetitle . '</h1>
 </header>';
@@ -385,7 +386,7 @@ else
     {
 (isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
 $pagetitle = ('Error');
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '<header id="header">
 <h1 id="page-title" class="left">' . $pagetitle . '</h1>
 </header>';
@@ -396,7 +397,7 @@ include 'lib/no-content-window.php';
     else {
 if($row_reply['is_hidden'] == 1) {
 (isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '<header id="header">
 <h1 id="page-title">' . $pagetitle . '</h1>
 </header>';
@@ -411,21 +412,21 @@ $no_content_message = 'Deleted by administrator.</p>
 <p>Comment ID: '.getPostID($row_reply['id']);
 }
 include 'lib/no-content-window.php';
-print $div_body_head_end;
+print $GLOBALS['div_body_head_end'];
 print '</div>';
 }
 else {	
 // Display post using $row_reply!
-	$sql_reply_user = 'SELECT * FROM grape.people WHERE people.pid = "' . $row_reply['pid'] . '"';
-	$result_reply_user = mysqli_query($link, $sql_reply_user);
+	$sql_reply_user = 'SELECT * FROM people WHERE people.pid = "' . $row_reply['pid'] . '"';
+	$result_reply_user = mysqli_query($mysql, $sql_reply_user);
 	$row_reply_user = mysqli_fetch_assoc($result_reply_user);
 
-	$sql_reply_ogpost = 'SELECT * FROM grape.posts WHERE posts.id = "' . $row_reply['reply_to_id'] . '"';
-	$result_reply_ogpost = mysqli_query($link, $sql_reply_ogpost);
+	$sql_reply_ogpost = 'SELECT * FROM posts WHERE posts.id = "' . $row_reply['reply_to_id'] . '"';
+	$result_reply_ogpost = mysqli_query($mysql, $sql_reply_ogpost);
 	$row_reply_ogpost = mysqli_fetch_assoc($result_reply_ogpost);
 
-	$sql_reply_ogpost_user = 'SELECT * FROM grape.people WHERE people.pid = "' . $row_reply_ogpost['pid'] . '"';
-	$result_reply_ogpost_user = mysqli_query($link, $sql_reply_ogpost_user);
+	$sql_reply_ogpost_user = 'SELECT * FROM people WHERE people.pid = "' . $row_reply_ogpost['pid'] . '"';
+	$result_reply_ogpost_user = mysqli_query($mysql, $sql_reply_ogpost_user);
 	$row_reply_ogpost_user = mysqli_fetch_assoc($result_reply_ogpost_user);
 
 # Original post Mii	
@@ -488,7 +489,7 @@ $mii_face_feeling = 'normal';
 $mii_face_miitoo = htmlspecialchars('Yeah!'); }
 }
 	
-    print $div_body_head;
+    print $GLOBALS['div_body_head'];
 	print '<header id="header">
 	
 	  <h1 id="page-title">' . $pagetitle . '</h1>
@@ -561,12 +562,12 @@ $can_reply_user_miitoo = ' disabled'; }
 	$can_reply_user_miitoo = ' disabled'; }
 
 if(!empty($_SESSION['pid'])) {  		
-$sql_hasempathy = 'SELECT * FROM grape.empathies WHERE empathies.id = "' . mysqli_real_escape_string($link, $row_reply['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
-$result_hasempathy = mysqli_query($link, $sql_hasempathy);
+$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $row_reply['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$result_hasempathy = mysqli_query($mysql, $sql_hasempathy);
 }
 
-$sql_empathyamt = 'SELECT * FROM grape.empathies WHERE empathies.id = "' . mysqli_real_escape_string($link, $row_reply['id']) . '"';
-$result_empathyamt = mysqli_query($link, $sql_empathyamt);
+$sql_empathyamt = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $row_reply['id']) . '"';
+$result_empathyamt = mysqli_query($mysql, $sql_empathyamt);
 if(!empty($_SESSION['pid']) && mysqli_num_rows($result_hasempathy)!=0) {
     $mii_face_miitoo = 'Unyeah';
 	$has_reply_miitoo_given_v2 = ''; 
@@ -606,8 +607,8 @@ print '        <div class="post-permalink-feeling">
 
 if(isset($_SESSION['pid'])) {	  
 if($_SESSION['pid']) {
-$sql_reply_me = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_reply_me = mysqli_query($link, $sql_reply_me);
+$sql_reply_me = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$result_reply_me = mysqli_query($mysql, $sql_reply_me);
 $row_reply_me = mysqli_fetch_assoc($result_reply_me); 	}  }
 	  
 	  if(isset($_SESSION['signed_in'])) {
@@ -635,12 +636,12 @@ $is_yeaher_official_user = ''; }
 	  }
 	 # Put other users' empathies here.
 
-	$sql_reply_empathies2 = 'SELECT * FROM grape.empathies WHERE empathies.id = "' . $row_reply['id'] . '" ORDER BY empathies.created_at DESC LIMIT 36';
-	$result_reply_empathies2 = mysqli_query($link, $sql_reply_empathies2);	 
+	$sql_reply_empathies2 = 'SELECT * FROM empathies WHERE empathies.id = "' . $row_reply['id'] . '" ORDER BY empathies.created_at DESC LIMIT 36';
+	$result_reply_empathies2 = mysqli_query($mysql, $sql_reply_empathies2);	 
 	while($row_reply_empathies2 = mysqli_fetch_assoc($result_reply_empathies2)) {	
 
-$sql_reply_empathies_user = 'SELECT * FROM grape.people WHERE people.pid = "' . $row_reply_empathies2['pid'] . '"';
-$result_reply_empathies_user = mysqli_query($link, $sql_reply_empathies_user);
+$sql_reply_empathies_user = 'SELECT * FROM people WHERE people.pid = "' . $row_reply_empathies2['pid'] . '"';
+$result_reply_empathies_user = mysqli_query($mysql, $sql_reply_empathies_user);
 $row_reply_empathies_user = mysqli_fetch_assoc($result_reply_empathies_user);	
 		# Don't display your own Mii!
 		if(isset($_SESSION['pid']) && $row_reply_empathies_user['pid']==$_SESSION['pid']) {
@@ -684,12 +685,11 @@ $is_yeaher_official_user = ''; }
 	else {
 	$template_has_post_spoiler = ''; }
 	include 'lib/posts-footer.php';
-    print $div_body_head_end;
-(empty($_SERVER['HTTP_X_PJAX']) ? include 'lib/footer.php' : '');
+    print $GLOBALS['div_body_head_end'];
+(empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
 	  }
     }
 }
 
 }
 
-?>

@@ -2,8 +2,10 @@
 
 function printHeader($mode) {
 global $pagetitle;
+global $bodyClass;
 global $bodyID;
-print '<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+print '<!DOCTYPE html>
+    <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>'.(!empty($pagetitle) ? $pagetitle : 'grp.offdevice.page_title').'</title>
     <meta http-equiv="content-style-type" content="text/css">
@@ -19,7 +21,7 @@ if(!isset($nnecnojs)) { print '
 <script src="/js/offdevice/complete-old.js"></script>'; } print '<style type="text/css"></style>
   <style type="text/css">* {}</style><style type="text/css">* {}</style></head>
 ';
-print '  <body '.(!empty($bodyID) ? 'id='.$bodyID.' ' : '').''.(!empty($_SESSION['pid']) ? 'class="" data-token="" data-hashed-pid="'.sha1($_SESSION['pid']).'" data-user-id="'.htmlspecialchars($_SESSION['user_id']).'" data-game-skill="0" data-follow-done="1" data-post-done="1" data-enable-user-recommendation="1"' : 'class="guest-top guest" data-token=""').'>';
+print '  <body '.(!empty($bodyID) ? 'id='.$bodyID.' ' : '').''.(!empty($_SESSION['pid']) ? 'class="'.(isset($bodyClass) ? $bodyClass : '').''.(empty($_SESSION['pid']) ? ' guest' : '').'" data-token="" data-hashed-pid="'.sha1($_SESSION['pid']).'" data-user-id="'.htmlspecialchars($_SESSION['user_id']).'" data-game-skill="0" data-follow-done="1" data-post-done="1" data-enable-user-recommendation="1"' : 'class="guest-top guest" data-token=""').'>';
 print '    
     <div id="wrapper">
       
@@ -35,57 +37,6 @@ $truncate_post_bodyp1 = mb_substr(($text), 0, $chars, 'utf-8');
 return (mb_strlen($text, 'utf-8') >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
 }
 
-function getMii($user, $feeling_id) {
-if(!empty($feeling_id)) {
-	if(!empty($user['mii_hash'])) {
-if($feeling_id == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_normal_face.png'; 
-$mii_face_feeling = 'normal';
-$mii_face_miitoo = 'Yeah!'; }
-if($feeling_id == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_happy_face.png'; 
-$mii_face_feeling = 'happy'; }
-$mii_face_miitoo = 'Yeah!';
-if($feeling_id == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_like_face.png'; 
-$mii_face_feeling = 'like';
-$mii_face_miitoo = htmlspecialchars('Yeah♥'); }
-if($feeling_id == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_surprised_face.png'; 
-$mii_face_feeling = 'surprised';
-$mii_face_miitoo = 'Yeah!?'; }
-if($feeling_id == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_frustrated_face.png'; 
-$mii_face_feeling = 'frustrated';
-$mii_face_miitoo = 'Yeah...'; }
-if($feeling_id == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_puzzled_face.png'; 
-$mii_face_feeling = 'puzzled';
-$mii_face_miitoo = 'Yeah...'; }
-	}
-elseif($user['user_face']) {
-$mii_face_output = htmlspecialchars($user['user_face']);
-$mii_face_feeling = 'normal';
-$mii_face_miitoo = 'Yeah!';
-} else {
-$mii_face_output = '/img/mii/img_unknown_MiiIcon.png';
-$mii_face_feeling = 'normal';
-$mii_face_miitoo = 'Yeah!'; }
-}
-else {
-	if(!empty($user['mii_hash'])) {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_normal_face.png'; } elseif(!empty($user['user_face'])) { $mii_face_output = htmlspecialchars($user['user_face']); } else {
-$mii_face_output = '/img/mii/img_unknown_MiiIcon.png';	
-}
-
-}	
-return array(
-'output' => $mii_face_output,
-'feeling' => (!empty($feeling_id) ? $mii_face_feeling : null),
-'miitoo' => (!empty($feeling_id) ? $mii_face_miitoo : null),
-'official' => (!empty($user['official_user']) && $user['official_user'] == 1 ? true : false)
-);
-     }
 	
 function printMenu($mode) {
 global $mnselect;
@@ -99,7 +50,7 @@ $miia = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid
 $mii = getMii($miia, false);
 print (!isset($mode) || $mode != 'old' ? '<li id="global-menu-list">
             <ul>' : '' ).'
-          <li id="global-menu-mymenu"'.(isset($mnselect) && $mnselect == 'users' ? ' class="selected"' : '').'><a href="/users/'.htmlspecialchars($_SESSION['user_id']).'"><span class="icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" alt="User Page"></span><span>User Page</span></a></li>
+          <li id="global-menu-mymenu"'.(isset($mnselect) && $mnselect == 'users' ? ' class="selected"' : '').'><a href="/users/'.htmlspecialchars($miia['user_id']).'"><span class="icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" alt="User Page"></span><span>User Page</span></a></li>
           <li id="global-menu-feed"'.(isset($mnselect) && $mnselect == 'feed' ? ' class="selected"' : '').'><a href="/activity" class="symbol"><span>Activity Feed</span></a></li>
           <li id="global-menu-community"'.(isset($mnselect) && $mnselect == 'community' ? ' class="selected"' : '').'><a href="/" class="symbol"><span>Communities</span></a></li>
           <li id="global-menu-news"'.(isset($mnselect) && $mnselect == 'news' ? ' class="selected"' : '').'><a href="/news/my_news" class="symbol">'.(isset($mode) && $mode == 'old' ? '<span>Notifications</span>' : '').'<span class="badge" style="display: none;">0</span></a></li>
@@ -109,7 +60,7 @@ print (!isset($mode) || $mode != 'old' ? '<li id="global-menu-list">
 
                   <li>
                     <form action="/act/logout" method="get" id="my-menu-logout" class="symbol">
-                      <input type="hidden" name="location" value="'.urlencode($_SERVER['REQUEST_URI']).'">
+                      <input type="hidden" name="location" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
                       <input type="submit" value="Sign out">
                     </form>
                   </li>
@@ -120,7 +71,7 @@ print (!isset($mode) || $mode != 'old' ? '<li id="global-menu-list">
 } else {
 print '<li id="global-menu-login">
             <form id="login_form" action="/act/login" method="get">
-              <input type="hidden" name="location" value="'.urlencode($_SERVER['REQUEST_URI']).'">
+              <input type="hidden" name="location" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
               <input type="submit" class="black-button" value="Sign in">
             </form>
 </li>';	  }
@@ -164,7 +115,8 @@ print '        <div id="footer-inner">
           <div class="link-container">
 ';            
 }
-print '            <p id="copyright">grape/'.VERSION.' (offdevice)</p>
+global $dev_server;
+print '            <p id="copyright">grape'.($dev_server == true ? '/'.VERSION.' (offdevice)' : '').'</p>
           </div>
 </div> ';
 if(!isset($mode) || $mode != 'old') { print '

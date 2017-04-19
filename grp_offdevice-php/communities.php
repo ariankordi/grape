@@ -2,10 +2,7 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
-#$_SESSION['pid'] = 1799999999;
-$_SESSION['user_id'] = 'ariankordi';
-$pagetitle = 'Communities';
-$mnselect = 'community';
+$pagetitle = 'Communities'; $mnselect = 'community';
 print printHeader('old');
 print printMenu('old');
 
@@ -13,14 +10,6 @@ require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmCommunity.php';
 print '<div id="main-body">
 ';
-if(empty($_SESSION['pid'])) {
-print '<h2 class="welcome-message">Welcome to Miiverse!</h2>
-<div id="about">
-
-  <img src="https://d13ph7xrk1ee39.cloudfront.net/img/welcome-image.png?slMbxaTdVkgsx-nP9yyuQg">
-  <p>Miiverse is a service that lets you communicate with other players from around the world. It is accessible via Wii U and systems in the Nintendo 3DS family.</p>
-</div>
-'; }
 print '
 <div class="body-content" id="community-top">
 
@@ -32,6 +21,7 @@ print '
     </form>
   </div>
 
+
   <div id="identified-user-banner">
     <a href="/identified_user_posts" data-pjax="#body" class="list-button us">
       <span class="title">Get the latest news here!</span>
@@ -39,7 +29,6 @@ print '
     </a>
   </div>
 
-  
 
   <div id="tab-wiiu-body" class="tab-body">
     

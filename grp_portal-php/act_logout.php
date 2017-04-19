@@ -1,37 +1,13 @@
 <?php
-//Sign out form.
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
 
-if($_SESSION['signed_in'] == true)
-{
+if(!empty($_SESSION['pid'])) {
 	//Unset everything, except for DeviceID and device cert..
-		                $_SESSION['pid']    = null;
-                        $_SESSION['user_id']    = null;
-                        $_SESSION['screen_name']  = null;
-						$_SESSION['user_status'] = null;
-						$_SESSION['is_special'] = null;
-						$_SESSION['user_privilege'] = null;
-				        $_SESSION['empathy_restriction'] = null;
-				        $_SESSION['organization'] = null;
-						$_SESSION['mii_hash'] = null;
-                        $_SESSION['mii_normal_face'] = null;
-						$_SESSION['user_face'] = null;
-						$_SESSION['signed_in'] = false;
-unset($_COOKIE['grp_identity']);
-echo '{}';
+		                $_SESSION['pid'] = null;
 setcookie("grp_identity", false, time() - 4, '/');
 						
-    header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/guest_menu', true, 302);
+    header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .''.(!empty($_GET['location']) ? urldecode($_GET['location']) : '/guest_menu').'', true, 302);
+} else {
+actError(array('code'=>'1022597','message'=>'You are not logged in.'), 'Log Out', '/act/logout');
 }
-else
-{
-		$act_template_subheader = 'Sign Out';
-		$act_back_location = '/act/login';
-		$act_content = '<div class="num3">
-  <h2>Errors</h2>
-  <p>Error Code: 102-2597</p><p>You are not logged in.</p>
-</div>';
-      include 'lib/act_template.php';
-}
-
-?>

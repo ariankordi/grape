@@ -1,14 +1,10 @@
 <?php
 //Create title
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 
 	if((strval($_SESSION['user_privilege']) <= 3) | (strval($_SESSION['user_status']) > 2)) {
 	#The user can't create a title, redirect them.
     header('Location: http://' . $_SERVER['HTTP_HOST'] .'/communities', true, 302);
-    header('X-Nintendo-Level: ' . $_SESSION['user_privilege'] . '');
-    header('X-Nintendo-PID: ' . $_SESSION['pid'] . '');	 
-    header('X-Nintendo-User-Status: ' . $_SESSION['user_status'] . '');	
-    header('X-Nintendo-Login: ' . $_SESSION['signed_in'] . '');
 	}
 else
 {
@@ -31,25 +27,25 @@ Description (2200 characters): <textarea type="text" name="community.description
 
  	 
 </form>    </div>';
-        include 'lib/act_template.php';
+        actTemplate($act_template_subheader, $act_back_location, $act_content);
 	}
 	else
 	{
-		$pidgen = mysqli_num_rows(mysqli_query($link, 'SELECT * FROM grape.communities JOIN grape.titles on titles.created_at')).'' + 586437432;
-		$pidgen2 = mysqli_num_rows(mysqli_query($link, 'SELECT * FROM grape.communities JOIN grape.titles on titles.created_at')).'' + 586437432 + 1;
+		$pidgen = mysqli_num_rows(mysqli_query($mysql, 'SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432;
+		$pidgen2 = mysqli_num_rows(mysqli_query($mysql, 'SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432 + 1;
 		//the form has been posted, so save it
 		$sql_title = 'INSERT INTO titles(olive_title_id, olive_community_id, icon, name, platform_id, platform_type)
 		   VALUES('."83955116433$pidgen".',
 		          '."83955116433$pidgen2".',
-				  "' . mysqli_real_escape_string($link, $_POST['title_icon']) . '",
-				  "' . mysqli_real_escape_string($link, $_POST['title_name']) . '",
-				  "' . (empty($_POST['title_platform_id']) ? '' : mysqli_real_escape_string($link, $_POST['title_platform_id'])) . '",
-				  "' . (empty($_POST['title_platform_type']) ? NULL : mysqli_real_escape_string($link, $_POST['title_platform_type'])) . '")';
-		$result_title = mysqli_query($link, $sql_title);
+				  "' . mysqli_real_escape_string($mysql, $_POST['title_icon']) . '",
+				  "' . mysqli_real_escape_string($mysql, $_POST['title_name']) . '",
+				  "' . (empty($_POST['title_platform_id']) ? '' : mysqli_real_escape_string($mysql, $_POST['title_platform_id'])) . '",
+				  "' . (empty($_POST['title_platform_type']) ? NULL : mysqli_real_escape_string($mysql, $_POST['title_platform_type'])) . '")';
+		$result_title = mysqli_query($mysql, $sql_title);
 		if(!$result_title)
 		{
 			//something went wrong, display the error
-			print "The SQL was: \n\n".$sql_title." And the error was: \n".mysqli_errno($link).", ".mysqli_error($link)."";
+			print "The SQL was: \n\n".$sql_title." And the error was: \n".mysqli_errno($mysql).", ".mysqli_error($mysql)."";
 		}
 		else
 		{
@@ -58,4 +54,4 @@ Description (2200 characters): <textarea type="text" name="community.description
 	}
 }
 
-?>
+

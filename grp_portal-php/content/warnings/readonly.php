@@ -1,13 +1,13 @@
 <?php
 $warning_page_grp = true;
-include '../../lib/sql-connect.php';
+include_once '../../../grplib-php/init.php';
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display form/warning.
-
+http_response_code(403);
 $pagetitle = 'Warning';
-include '../../lib/header.php';
+printHeader();
 
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '<div class="window-page">
   <div class="window message-window with-button">
     <h1 class="window-title">'.$pagetitle.'</h1>
@@ -26,7 +26,8 @@ print '<div class="window-page">
     </div>
   </div>
 </div>';
-print $div_body_head_end; } else {
+print $GLOBALS['div_body_head_end'];
+printFooter(); } else {
 # Posted, now redirect.
 header('Set-Cookie: readonly_displayed=1; path=/');
 header('Content-Type: application/json; charset=utf-8');

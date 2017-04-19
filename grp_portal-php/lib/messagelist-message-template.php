@@ -1,7 +1,7 @@
 <?php
 #$message_template_row = $row_message_show;
 
-$row_message_user = mysqli_fetch_assoc(mysqli_query($link, 'SELECT * FROM grape.people WHERE people.pid = "'.$message_template_row['pid'].'"'));
+$row_message_user = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM people WHERE people.pid = "'.$message_template_row['pid'].'"'));
 
 	if($row_message_user['mii_hash']) {
 if(($message_template_row['feeling_id']) == '0') {

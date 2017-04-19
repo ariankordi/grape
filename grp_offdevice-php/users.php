@@ -19,7 +19,7 @@ $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
-if(!isset($_SERVER['X_AUTOPAGERIZE'])) {
+if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = htmlspecialchars($user['screen_name']).'\'s Profile';
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
@@ -54,7 +54,7 @@ printPost($posts);
 
 print '
 </div>';
-if(!isset($_SERVER['X_AUTOPAGERIZE'])) {
+if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '
 </div>';
 printFooter('old');
@@ -76,7 +76,7 @@ $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
-if(!isset($_SERVER['X_AUTOPAGERIZE'])) {
+if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = htmlspecialchars($user['screen_name']).'\'s Profile';
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
@@ -113,7 +113,7 @@ printPost($get_empathy_post->fetch_assoc()); }
 
 print '
 </div>';
-if(!isset($_SERVER['X_AUTOPAGERIZE'])) {
+if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '
 </div>';
 printFooter('old');
@@ -159,7 +159,7 @@ print '<div id="user-page-no-content" class="no-content"><div>
 print '<div id="user-page-no-content" class="none"></div>
   <ul class="list-content-with-icon-and-text arrow-list" id="friend-list-content" data-next-page-url="">';
 while($friends = $search_user_friends->fetch_assoc()) {
-$get_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($friends['source'] == $_SESSION['pid'] ? $friends['target'] : $friends['source']).'" LIMIT 1')->fetch_assoc();
+$get_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($friends['source'] == $user['pid'] ? $friends['target'] : $friends['source']).'" LIMIT 1')->fetch_assoc();
 userObject($get_user, true, false);
 }
 print '
@@ -424,7 +424,7 @@ else { $pge_experience = 'beginner'; $pge_extext = 'Beginner'; }
 
 if(isset($profile['gender'])) {
 if($profile['gender'] == 1) { $pge_sex = 'Male'; }
-elseif($profile['game_experience'] == '2') { $pge_sex = 'Female'; }
+elseif($profile['gender'] == '2') { $pge_sex = 'Female'; }
 else { $pge_sex = 'Not Set'; }
 } else { $pge_sex = 'Not Set'; }
 

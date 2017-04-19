@@ -1,12 +1,13 @@
 <?php
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 
 $pagetitle = 'Search Users';
 
-include 'lib/header.php';
-include 'lib/user-menu.php';
+require_once 'lib/htm.php';
+printHeader(false);
+printMenu();
 
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '<header id="header">'."\n".'
   <h1 id="page-title">'.$pagetitle.'</h1>'."\n".'
 </header>'."\n".'';
@@ -16,8 +17,8 @@ print '<div class="body-content" id="user-search-list-page">'."\n".'';
 if(empty($_GET['query']) || !isset($_GET['query'])) {
 $_GET['query'] = 'empty-grp-0000069420'; }
 
-$sql_usersearch = "SELECT * FROM grape.people WHERE CONCAT_WS('', user_id, screen_name) LIKE '%".mysqli_real_escape_string($link, $_GET['query'])."%' ORDER BY people.pid DESC";
-$result_usersearch = mysqli_query($link, $sql_usersearch);
+$sql_usersearch = "SELECT * FROM people WHERE CONCAT_WS('', user_id, screen_name) LIKE '".mysqli_real_escape_string($mysql, $_GET['query'])."%' ORDER BY people.pid DESC";
+$result_usersearch = mysqli_query($mysql, $sql_usersearch);
 
 if(mysqli_num_rows($result_usersearch) == 0 || $_GET['query'] == '' || $_GET['query'] == '0') {
 if($_GET['query'] == 'empty-grp-0000069420') {
@@ -52,7 +53,6 @@ print '<span type="button" class="fixed-bottom-button search-button">Retry Searc
 the user you want to find." data-pjax="#body"></span>';
 # End of document; first end body-content
 print '</div>'."\n".'';
-print $div_body_head_end;
-include 'lib/footer.php';
+print $GLOBALS['div_body_head_end'];
+printFooter();
 
-?>

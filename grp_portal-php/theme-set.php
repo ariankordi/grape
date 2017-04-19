@@ -12,7 +12,6 @@ setcookie( "grp_theme", 'olive', strtotime('+10 days') );
     header("Location: ".(!empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/communities'));
 }
 else {
-include 'lib/404.php';
+include_once '404.php';
 exit(); }
 
-?>

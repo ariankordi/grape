@@ -135,7 +135,7 @@ print '    <div class="nick-name">'.htmlspecialchars($user['screen_name']).'<spa
     ';
 	if($type == 'profile' && !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) {
 	print '<div id="user-menu">
-      <div id="my-menu"><a href="/my_menu" class="button symbol">User Menu</a></div>
+      <div id="my-menu"><a href="/act/logout" class="button symbol">Log Out</a></div>
       <div id="edit-profile-settings"><a class="button symbol" href="/settings/profile">Profile Settings</a></div>
     </div>'; } elseif($type == 'profile') {
 print '<div class="user-action-content">

@@ -1,6 +1,5 @@
 <?php
-include '../lib/sql-connect.php';
+require_once '../../grplib-php/init.php';
 
 // Implement this later
 
-?>

@@ -1,13 +1,14 @@
 <?php
 $warning_page_grp = true;
-include '../../lib/sql-connect.php';
-header("HTTP/1.1 403 Forbidden");
+include_once '../../../grplib-php/init.php';
+http_response_code(403);
 
 $pagetitle = 'Warning';
 $has_header_js = 'no';
-include '../../lib/header.php';
+include_once '../../lib/htm.php';
+printHeader();
 
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '<div class="window-page">
   <div class="window message-window with-button">
     <h1 class="window-title">'.$pagetitle.'</h1>
@@ -19,5 +20,5 @@ print '<div class="window-page">
     </div>
   </div>
 </div>';
-print $div_body_head_end;
-?>
+print $GLOBALS['div_body_head_end'];
+printFooter();

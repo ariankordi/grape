@@ -1,11 +1,10 @@
 <?php
-include '../../lib/sql-connect.php';
-include '../../lib/header.php';
-include '../../lib/user-menu.php';
-
+include_once '../../../grplib-php/init.php';
+include_once '../../lib/htm.php';
+printHeader(false); printMenu();
 $pagetitle = 'Miiverse has been redesigned!';
 
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print '
 <header id="header">
   
@@ -73,5 +72,5 @@ print '
 </div>
 
 	';
-	print $div_body_head_end;
-	?>
+	print $GLOBALS['div_body_head_end'];
+    printFooter();

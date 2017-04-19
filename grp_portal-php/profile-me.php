@@ -1,5 +1,5 @@
 <?php
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 if(empty($_SESSION['pid'])) {
     header('Content-Type: text/plain');	
     print '403 Forbidden'."\n".'';
@@ -9,4 +9,3 @@ if(empty($_SESSION['pid'])) {
 	exit();
 }
 
-?>

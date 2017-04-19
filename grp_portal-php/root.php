@@ -1,10 +1,10 @@
 <?php
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 
 # If user isn't logged in, then 403 them.
 if(empty($_SESSION['pid'])) {
 if(isset($grp_config_server_type) && $grp_config_server_type == 'prod') {
-include 'communities.php';
+include_once 'communities.php';
 exit();
 }
 else {
@@ -23,8 +23,9 @@ exit("403 Forbidden\n");
 }
 if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = 'Activity Feed';
-include 'lib/header.php';
-include 'lib/user-menu.php';
+require_once 'lib/htm.php';
+printHeader(false);
+printMenu();
 
 $act_feed_loading = '
 <header id="header">
@@ -51,14 +52,14 @@ $act_feed_loading = '
 
 # Requesting "loading activity feed" page.
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && isset($_SERVER['HTTP_X_PJAX'])) {
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print $act_feed_loading;
-print $div_body_head_end;
+print $GLOBALS['div_body_head_end'];
 }
 if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !isset($_SERVER['HTTP_X_PJAX'])) {
-print $div_body_head;
+print $GLOBALS['div_body_head'];
 print $act_feed_loading;
-print $div_body_head_end; }
+print $GLOBALS['div_body_head_end']; }
 }
 # User is trying to load the activity feed.
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !isset($_SERVER['HTTP_X_PJAX'])) {
@@ -66,34 +67,32 @@ print '<header id="header">
 <h1 id="page-title">'.$pagetitle.'</h1>';
 
 
-$sql_feed_me = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_feed_me = mysqli_query($link, $sql_feed_me);
+$sql_feed_me = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$result_feed_me = mysqli_query($mysql, $sql_feed_me);
 $row_feed_me = mysqli_fetch_assoc($result_feed_me); 
 
 if(isset($_GET['offset']) && is_numeric($_GET['offset'])) {
-$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET '.mysqli_real_escape_string($link, $_GET['offset']).'';
-$result_feed_my_following = mysqli_query($link, $sql_feed_my_following); } else {
+$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET '.mysqli_real_escape_string($mysql, $_GET['offset']).'';
+$result_feed_my_following = mysqli_query($mysql, $sql_feed_my_following); } else {
 $sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50';
-$result_feed_my_following = mysqli_query($link, $sql_feed_my_following);
+$result_feed_my_following = mysqli_query($mysql, $sql_feed_my_following);
 }
 
-$sql_feed_my_following2 = 'SELECT * FROM grape.relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"';
-$result_feed_my_following2 = mysqli_query($link, $sql_feed_my_following2);
+$sql_feed_my_following2 = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"';
+$result_feed_my_following2 = mysqli_query($mysql, $sql_feed_my_following2);
 
 if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 # Activity Feed post button + form
 print '  <a id="header-post-button" class="header-button" href="#" data-modal-open="#add-post-page">Post</a>';
 print '<div id="add-post-page" class="add-post-page ';
 
-$row_my_poster2 = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_my_poster2 = mysqli_query($link, $row_my_poster2);
+$row_my_poster2 = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$result_my_poster2 = mysqli_query($mysql, $row_my_poster2);
 $row_my_poster2 = mysqli_fetch_assoc($result_my_poster2); 
 
-if(isset($_SESSION['user_privilege'])) {
-if(strval($row_my_poster2['privilege']) >= 1) {
+if(strval($row_my_poster2['image_perm']) >= 1) {
 	print 'official-user-post ';
   }
-}
 
 print 'none " data-modal-types="add-entry add-post require-body preview-body" data-is-template="1">
 <header class="add-post-page-header">
@@ -177,8 +176,8 @@ print '
 </p>
     <h3>Latest Updates from Verified Users</h3>';
 
-$sql_act_getspecialuser = 'SELECT * FROM grape.people WHERE people.official_user = "1" ORDER BY people.pid DESC LIMIT 1';
-$result_act_getspecialuser = mysqli_query($link, $sql_act_getspecialuser);
+$sql_act_getspecialuser = 'SELECT * FROM people WHERE people.official_user = "1" ORDER BY people.pid DESC LIMIT 1';
+$result_act_getspecialuser = mysqli_query($mysql, $sql_act_getspecialuser);
 
 print '
 	
@@ -197,21 +196,21 @@ print '<div class="body-content js-post-list post-list" id="activity-feed" data-
 
 
 while($row_feed_my_following = mysqli_fetch_assoc($result_feed_my_following)) {
-$sql_act_followed_people = 'SELECT * FROM grape.people WHERE people.pid = "' . $row_feed_my_following['target'] . '"';
-$result_act_followed_people = mysqli_query($link, $sql_act_followed_people);
+$sql_act_followed_people = 'SELECT * FROM people WHERE people.pid = "' . $row_feed_my_following['target'] . '"';
+$result_act_followed_people = mysqli_query($mysql, $sql_act_followed_people);
 $row_act_followed_people = mysqli_fetch_assoc($result_act_followed_people);
 
-$sql_act_people_posts1 = 'SELECT * FROM grape.posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
-$result_act_people_posts1 = mysqli_query($link, $sql_act_people_posts1);
+$sql_act_people_posts1 = 'SELECT * FROM posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
+$result_act_people_posts1 = mysqli_query($mysql, $sql_act_people_posts1);
 
-$sql_act_people_posts = 'SELECT * FROM grape.posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
-$result_act_people_posts = mysqli_query($link, $sql_act_people_posts);
+$sql_act_people_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
+$result_act_people_posts = mysqli_query($mysql, $sql_act_people_posts);
 $row_act_people_posts = mysqli_fetch_assoc($result_act_people_posts);
 
-$sql_act_people_posts_replies = 'SELECT * FROM grape.replies WHERE replies.reply_to_id = "'.$row_act_people_posts['id'].'" AND replies.is_hidden != "1"';
-$result_act_people_posts_replies = mysqli_query($link, $sql_act_people_posts_replies);
-$sql_act_people_posts_empathies = 'SELECT * FROM grape.empathies WHERE empathies.id = "'.$row_act_people_posts['id'].'"';
-$result_act_people_posts_empathies = mysqli_query($link, $sql_act_people_posts_empathies);
+$sql_act_people_posts_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "'.$row_act_people_posts['id'].'" AND replies.is_hidden != "1"';
+$result_act_people_posts_replies = mysqli_query($mysql, $sql_act_people_posts_replies);
+$sql_act_people_posts_empathies = 'SELECT * FROM empathies WHERE empathies.id = "'.$row_act_people_posts['id'].'"';
+$result_act_people_posts_empathies = mysqli_query($mysql, $sql_act_people_posts_empathies);
 
 if(mysqli_num_rows($result_act_people_posts) == 0) {
 print null;
@@ -230,8 +229,8 @@ include 'lib/userpage-post-template.php'; }
 if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 # If no posts are shown
 
-$sql_feed_search_my_posts = 'SELECT * FROM grape.posts WHERE posts.pid = "'.$_SESSION['pid'].'" AND posts.is_hidden = "0" LIMIT 1';
-$result_feed_search_my_posts = mysqli_query($link, $sql_feed_search_my_posts);
+$sql_feed_search_my_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$_SESSION['pid'].'" AND posts.is_hidden = "0" LIMIT 1';
+$result_feed_search_my_posts = mysqli_query($mysql, $sql_feed_search_my_posts);
 
 if(mysqli_num_rows($result_feed_my_following2) == 0 && mysqli_num_rows($result_feed_search_my_posts) == 0) {
 print '
@@ -243,4 +242,4 @@ print '
 # End body-content js-post-list
 print '</div>'; 
 }
-(!isset($_SERVER['HTTP_X_AUTOPAGERIZE']) && !isset($_SERVER['HTTP_X_PJAX']) && !isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? include 'lib/footer.php' : '');
+(!isset($_SERVER['HTTP_X_AUTOPAGERIZE']) && !isset($_SERVER['HTTP_X_PJAX']) && !isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? printFooter() : '');

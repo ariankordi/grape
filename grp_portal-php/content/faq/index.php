@@ -3,9 +3,9 @@
 $pagetitle = 'Not Implemented';
 $body_id = 'main';
 
-include '../../lib/sql-connect.php';
-include '../../lib/header.php';
-include '../../lib/user-menu.php';
+include_once '../../lib/sql-connect.php';
+include_once '../../lib/header.php';
+include_once '../../lib/user-menu.php';
 
 print '<div id="body">
 <header id="header">
@@ -13,6 +13,6 @@ print '<div id="body">
 </header>';
 print '<div class="body-content track-error" data-track-error="501">';
 $no_content_message = ( 'This function is not implemented.' );
-include '../../lib/no-content-window.php';
+include_once '../../lib/no-content-window.php';
 
-include '../../lib/footer.php';
+include_once '../../lib/footer.php';

@@ -1,15 +1,15 @@
 <?php
 //Post creation endpoint
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-	include 'lib/404.php';
+	include_once '404.php';
 	exit();
 }
 else {
 	// Load communities so restrictions can be placed?
-	$sql_communityrest = 'SELECT * FROM grape.communities WHERE communities.community_id = "' . mysqli_real_escape_string($link, $_POST['community_id']) . '"';
-    $result_communityrest = mysqli_query($link, $sql_communityrest);
+	$sql_communityrest = 'SELECT * FROM communities WHERE communities.community_id = "' . mysqli_real_escape_string($mysql, $_POST['community_id']) . '"';
+    $result_communityrest = mysqli_query($mysql, $sql_communityrest);
 if(mysqli_num_rows($result_communityrest) == 0) {
             $error_message[] = 'Community could not be found.';
 			$error_code[] = '1512004';	
@@ -22,13 +22,13 @@ if(mysqli_num_rows($result_communityrest) == 0) {
 			$error_code[] = '1512005';
         }
 else {
-$sql_post_getposter = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_post_getposter = mysqli_query($link, $sql_post_getposter);
+$sql_post_getposter = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$result_post_getposter = mysqli_query($mysql, $sql_post_getposter);
 $row_post_getposter = mysqli_fetch_assoc($result_post_getposter); 
 if(!isset($grp_config_max_postbuffertime)) {
 $grp_config_max_postbuffertime = 10; }
 
-        if(mysqli_num_rows(mysqli_query($link, 'SELECT posts.pid, posts.created_at FROM grape.posts WHERE posts.pid = "'.$row_post_getposter['pid'].'" AND posts.created_at > NOW() - '.$grp_config_max_postbuffertime.' ORDER BY posts.created_at DESC LIMIT 5')) != 0) {
+        if(mysqli_num_rows(mysqli_query($mysql, 'SELECT posts.pid, posts.created_at FROM posts WHERE posts.pid = "'.$row_post_getposter['pid'].'" AND posts.created_at > NOW() - '.$grp_config_max_postbuffertime.' ORDER BY posts.created_at DESC LIMIT 5')) != 0) {
 			$error_message[] = 'Multiple posts cannot be made in such a short period of time. Please try posting again later.';
 			$error_code[] = '1515918';	
 		}
@@ -147,23 +147,22 @@ if(!isset($_POST['is_spoiler'])) {
 $_POST['is_spoiler'] = false; }
 if(empty($_POST['feeling_id']) || !is_numeric($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; } 
         $sql = "INSERT INTO
-                    posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler, is_special)
+                    posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler)
                 VALUES('" . $gen_olive_url  . "',
-				       '" . mysqli_real_escape_string($link, $_SESSION['pid']) . "',
-                       '" . htmlspecialchars(mysqli_real_escape_string($link, $_POST['_post_type'])) . "',
-                       '" . htmlspecialchars(mysqli_real_escape_string($link, $_POST['feeling_id'])) . "',
-                       '" . mysqli_real_escape_string($link, $_SESSION['platform_id']) . "',
-                       '" . mysqli_real_escape_string($link, $_POST['body']) . "',
-                       '" . (empty($_POST['url']) ? '' : mysqli_real_escape_string($link, $_POST['url'])) . "',
-					   '" . (empty($_POST['screenshot']) ? '' : mysqli_real_escape_string($link, $_POST['screenshot'])) . "',
-                       '" . mysqli_real_escape_string($link, $_POST['community_id']) . "',
-                       '" . mysqli_real_escape_string($link, $_POST['is_spoiler']) . "',
-				       '" . mysqli_real_escape_string($link, $_SESSION['is_special']) . "')";
+				       '" . mysqli_real_escape_string($mysql, $_SESSION['pid']) . "',
+                       '" . htmlspecialchars(mysqli_real_escape_string($mysql, $_POST['_post_type'])) . "',
+                       '" . htmlspecialchars(mysqli_real_escape_string($mysql, $_POST['feeling_id'])) . "',
+                       '1',
+                       '" . mysqli_real_escape_string($mysql, $_POST['body']) . "',
+                       '" . (empty($_POST['url']) ? '' : mysqli_real_escape_string($mysql, $_POST['url'])) . "',
+					   '" . (empty($_POST['screenshot']) ? '' : mysqli_real_escape_string($mysql, $_POST['screenshot'])) . "',
+                       '" . mysqli_real_escape_string($mysql, $_POST['community_id']) . "',
+                       '" . mysqli_real_escape_string($mysql, $_POST['is_spoiler']) . "')";
                          
-        $result = mysqli_query($link, $sql);
+        $result = mysqli_query($mysql, $sql);
         if(!$result)
         {
-            //MySQL error; JSON response.
+            //MySQL error; print jsON response.
 			http_response_code(400);  
 			header('Content-Type: application/json; charset=utf-8');
 			
@@ -171,27 +170,27 @@ if(empty($_POST['feeling_id']) || !is_numeric($_POST['feeling_id']) || strval($_
 			#print $sql;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
 			print "\n";
 		}
 		else {
 			// HTML fragment success response.
 			
 			// Begins now.
-	$sql_post_replies = 'SELECT * FROM grape.replies WHERE replies.reply_to_id = "' . $gen_olive_url . '"';
-	$result_post_replies = mysqli_query($link, $sql_post_replies);
+	$sql_post_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $gen_olive_url . '"';
+	$result_post_replies = mysqli_query($mysql, $sql_post_replies);
 	$row_post_replies = mysqli_fetch_assoc($result_post_replies);
 	
-	$sql_post_empathies = 'SELECT * FROM grape.empathies WHERE empathies.id = "' . $gen_olive_url . '"';
-	$result_post_empathies = mysqli_query($link, $sql_post_empathies);
+	$sql_post_empathies = 'SELECT * FROM empathies WHERE empathies.id = "' . $gen_olive_url . '"';
+	$result_post_empathies = mysqli_query($mysql, $sql_post_empathies);
 	$row_post_empathies = mysqli_fetch_assoc($result_post_empathies);
 	
-	$sql_post_created = 'SELECT * FROM grape.posts WHERE posts.id = "' . $gen_olive_url . '"';
-	$result_post_created = mysqli_query($link, $sql_post_created);
+	$sql_post_created = 'SELECT * FROM posts WHERE posts.id = "' . $gen_olive_url . '"';
+	$result_post_created = mysqli_query($mysql, $sql_post_created);
 	$row_post_created = mysqli_fetch_assoc($result_post_created);
 	
-    $sql_post_poster = 'SELECT * FROM grape.people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-    $result_post_poster = mysqli_query($link, $sql_post_poster);
+    $sql_post_poster = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+    $result_post_poster = mysqli_query($mysql, $sql_post_poster);
     $row_post_poster = mysqli_fetch_assoc($result_post_poster); 
 			
 			# Define feeling IDs to be used later.
@@ -224,4 +223,3 @@ include 'lib/postlist-post-template.php';
 		}
 
         }
-?>

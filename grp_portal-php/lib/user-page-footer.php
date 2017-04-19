@@ -20,6 +20,25 @@
     </div>
   </div>
 </div>
+<div id="received-request-confirm-page" class="friend-request-confirm-page window-page none" data-modal-types="confirm-relationship confirm-received-request" data-is-template="1">
+  <div class="window user-window">
+    <h1 class="window-title">Friend Request</h1>
+    <div class="window-body"><div class="window-body-inner">
+      <div class="user-container">
+        <span class="icon-container"><img src="data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2FwAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D" class="icon"></span>
+        <p class="nickname">
+          <span class="screen-name"></span>
+          <span class="id-name"></span>
+        </p>
+      </div>
+      <div class="message"><p class="message-inner"></p></div>
+    </div></div>
+    <div class="window-bottom-buttons">
+      <input type="button" class="cancel-button button" value="Reject" data-action="/users/friend_request.delete.json" data-sound="SE_WAVE_CANCEL">
+      <input type="button" class="post-button button" value="Accept" data-action="/users/friend_request.accept.json" data-done-msgid="olv.portal.friend_request.successed_with" data-track-category="friendRequest" data-track-action="acceptFriendRequest">
+    </div>
+  </div>
+</div>
 <?php } ?>
 <div id="unfollow-confirm-page" class="unfollow-confirm-page window-page none" data-modal-types="confirm-relationship confirm-unfollow" data-is-template="1">
   <div class="window user-window">

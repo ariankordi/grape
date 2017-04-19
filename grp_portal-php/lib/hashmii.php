@@ -25,4 +25,3 @@ print null;
 curl_close($ch);
 }
 
-?>

@@ -42,7 +42,7 @@ json_encode(array('success' => 1));
         $getposter = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
 
 	// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM grape.news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "3" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
+	$check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "3" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
     if($check_fastnews->num_rows == 0) {
     $check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "3" AND news.id = "'.$post['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
 	$check_mergedusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "3" AND news.id = "'.$post['id'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
@@ -76,7 +76,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404alli.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
 
 if($search_post->num_rows == 0) {
 http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
@@ -84,14 +84,14 @@ json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($my
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
 }
 
 if($post['is_spoiler'] == 1) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
 }
 
 $update_post = $mysql->query('UPDATE replies SET replies.is_spoiler = "1" WHERE replies.id = "'.$post['id'].'"');
@@ -102,8 +102,7 @@ json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-header('Content-Type: application/json; charset=utf-8'); 
-json_encode(array('is_spoiler' => 1,'success' => 1));
+header('Content-Type: application/json; charset=utf-8'); print json_encode(array('is_spoiler' => 1,'success' => 1));
 }
 
 grpfinish($mysql); exit();	
@@ -113,7 +112,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404alli.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
 
 if($search_post->num_rows == 0) {
 http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
@@ -121,10 +120,10 @@ json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($my
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
 }
 
 $update_post = $mysql->query('UPDATE replies SET replies.is_hidden = "1", replies.hidden_resp = "1" WHERE replies.id = "'.$post['id'].'"');
@@ -173,7 +172,7 @@ if($post['pid'] == $_SESSION['pid']) { $error_code[] = 400; }
     else {
 $result_get_spamreports = $mysql->query('SELECT * FROM reports WHERE reports.source = "'.$_SESSION['pid'].'" AND reports.created_at > NOW() - 5');
 if($result_get_spamreports->num_rows != 0) {
-header('Content-Type: application/json; charset=utf-8'); json_encode(array('success' => 1));
+header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 1));
 exit();
 }
 $reportcreate = $mysql->query('INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION['pid'].'", "'.$post['id'].'", "1", "'.$mysql->real_escape_string($_POST['type']).'", "'.$mysql->real_escape_string($_POST['body']).'")');
@@ -268,10 +267,10 @@ print '
 ';
 $empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 8');
 	  if(!empty($_SESSION['pid'])) {
-print displayempathy($reply, true);
+print displayempathy($reply, $reply, true);
 	  }
 while($row_empathies = $empathies_display->fetch_assoc()) {
-print displayempathy($row_empathies, false);
+print displayempathy($row_empathies, $reply, false);
 }
 print '
     </div>
@@ -299,3 +298,4 @@ print '</div>';
 print '
 </div>
 </div>';
+printFooter('old');

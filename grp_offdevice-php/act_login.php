@@ -16,6 +16,8 @@ print '<h1 id="page-title">Grape::Account</h1>
   <p>You can sign in here after you have created an account.</p>
 </div>
 <form action="/login" method="post" id="act_form">Login ID: <input class="textbox" name="user_id" minlength="3" maxlength="20" type="text"><br>Password: <input type="password" name="password" maxlength="255" class="textbox"><br><br>
+';
+if(!empty($_GET['location'])) { print '<input type="hidden" name="location" value="'.htmlspecialchars($_GET['location']).'">'; } print '
 <input type="submit" class="black-button" value="Login">
 
  	 

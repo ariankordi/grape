@@ -1,6 +1,6 @@
 <?php
-//Signup form
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
 $has_header_js = 'no';
 $act_template_subheader = 'Create Account';
 $act_back_location = '/guest_menu';
@@ -19,5 +19,5 @@ NSS key ID: <input type="text" name="device_id" maxlength="12" class="textbox"><
  	 
 </form>
 ';
-include 'lib/act_template.php';
-	?>
+actTemplate($act_template_subheader, $act_back_location, $act_content);
+	

@@ -1,5 +1,5 @@
 <?php
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
 
 # User checks.
 if(empty($_SESSION['pid'])) {
@@ -8,7 +8,7 @@ header('Location: http://' . $_SERVER['HTTP_HOST'] .'/guest_menu', true, 302);
 else {
 
 $sql_profile_edit_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "' . $_SESSION['pid'] . '"';
-$result_profile_edit_user_profile = mysqli_query($link, $sql_profile_edit_user_profile);
+$result_profile_edit_user_profile = mysqli_query($mysql, $sql_profile_edit_user_profile);
 $row_profile_edit_user_profile = mysqli_fetch_assoc($result_profile_edit_user_profile); 
  
 if(mysqli_num_rows($result_profile_edit_user_profile) == 0) {
@@ -18,9 +18,10 @@ else {
 if($_SERVER['REQUEST_METHOD'] != 'POST')
 {
 $pagetitle = 'Profile Settings';
-include 'lib/header.php';
-include 'lib/user-menu.php';
-print $div_body_head;
+require_once 'lib/htm.php';
+printHeader(false);
+printMenu();
+print $GLOBALS['div_body_head'];
 print '<header id="header">
   
   <h1 id="page-title">'.$pagetitle.'</h1>
@@ -46,7 +47,7 @@ print '        <p class="settings-label">Favorite Post<span class="note">You can
       </li>'; }
 else {
 print '<p class="settings-label">Favorite Post<span class="note">You can set one of your own screenshot posts as your favorite via the settings button of that post.</span></p>';
-$result_posts_getfavoritepost = mysqli_query($link, 'SELECT * FROM grape.posts WHERE posts.id = "'.mysqli_real_escape_string($link, $row_profile_edit_user_profile['favorite_screenshot']).'"');
+$result_posts_getfavoritepost = mysqli_query($mysql, 'SELECT * FROM posts WHERE posts.id = "'.mysqli_real_escape_string($mysql, $row_profile_edit_user_profile['favorite_screenshot']).'"');
 print '<a id="profile-post" href="#" class="scroll-focus"><img src="'.htmlspecialchars(mysqli_fetch_assoc($result_posts_getfavoritepost)['screenshot']).'"><span class="remove-button-label">Remove</span></a>
 '; }
 	  
@@ -206,8 +207,8 @@ print '
     </div>
   </div>
 </div>';
-print $div_body_head_end;	
-include 'lib/footer.php';
+print $GLOBALS['div_body_head_end'];	
+printFooter();
 	
 }
 # Method is POST. Update the profile.
@@ -255,26 +256,26 @@ else {
 	// Update user's profile.	
 	
 	if(isset($_POST['game_skill'])) {
-    $sql_update = 'UPDATE grape.profiles SET game_experience="'.mysqli_real_escape_string($link, $_POST['game_skill']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET game_experience="'.mysqli_real_escape_string($mysql, $_POST['game_skill']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($_POST['profile_comment'])) {
-    $sql_update = 'UPDATE grape.profiles SET comment="'.mysqli_real_escape_string($link, $_POST['profile_comment']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET comment="'.mysqli_real_escape_string($mysql, $_POST['profile_comment']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($_POST['country'])) {
-    $sql_update = 'UPDATE grape.profiles SET country="'.mysqli_real_escape_string($link, $_POST['country']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET country="'.mysqli_real_escape_string($mysql, $_POST['country']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($_POST['gender'])) {
-    $sql_update = 'UPDATE grape.profiles SET gender="'.mysqli_real_escape_string($link, $_POST['gender']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET gender="'.mysqli_real_escape_string($mysql, $_POST['gender']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($sql_update)) {
-	    $result = mysqli_query($link, $sql_update);
+	    $result = mysqli_query($mysql, $sql_update);
         if(!$result)
         {
-            //MySQL error; JSON response.
+            //MySQL error; print jsON response.
 			http_response_code(400);  
 			header('Content-Type: application/json; charset=utf-8');
 			
@@ -282,7 +283,7 @@ else {
 			#print $sql_update;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($link) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
 			print "\n";
 		}
 		else { 
@@ -306,4 +307,3 @@ else {
 }
 
 }
-?>

@@ -1,6 +1,7 @@
 <?php
-//Login form
-include 'lib/sql-connect.php';
+require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
+
 $has_header_js = 'no';
 $act_template_subheader = 'Authenticate';
 $act_back_location = '/guest_menu';
@@ -16,5 +17,5 @@ $act_content = '
  	 
 </form>    </div>
 ';
-include 'lib/act_template.php';
-	?>
+actTemplate($act_template_subheader, $act_back_location, $act_content);
+	

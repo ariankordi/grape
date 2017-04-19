@@ -23,7 +23,7 @@ $fastpost = ($mysql->query('SELECT posts.pid, posts.created_at FROM posts WHERE 
 if($is_post_valid != 'ok' || $fastpost == true) {
 if($fastpost == true) {
 $error_message[] = 'Multiple posts cannot be made in such a short period of time. Please try posting again later.';
-$error_code[] = '1515918'; }
+$error_code[] = 1515918; }
 if($is_post_valid == 'blank') {
 $error_message[] = 'The content you have entered is blank.
 Please enter content into your post.';

@@ -23,8 +23,8 @@
 #$template_result_post_empathies = $result_post_empathies;
 #$template_result_post_replies = $result_post_replies;
 
-#$sql_post_recent_replies = 'SELECT * FROM grape.replies WHERE replies.reply_to_id = "' . $row_post['id'] . '" ORDER BY replies.created_at DESC LIMIT 1';
-#$result_post_recent_replies = mysqli_query($link, $sql_post_recent_replies);
+#$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_post['id'] . '" ORDER BY replies.created_at DESC LIMIT 1';
+#$result_post_recent_replies = mysqli_query($mysql, $sql_post_recent_replies);
 
 #include 'lib/postlist-post-template.php';
 
@@ -181,8 +181,8 @@ else {
     // Has the user given this post an empathy?
 
     if(isset($_SESSION['pid'])) {	
-$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($link, $template_post_id) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
-$result_hasempathy = mysqli_query($link, $sql_hasempathy);
+$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $template_post_id) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$result_hasempathy = mysqli_query($mysql, $sql_hasempathy);
 
 if(mysqli_num_rows($result_hasempathy)!=0) {
     $mii_face_miitoo = 'Unyeah';
@@ -226,8 +226,8 @@ ${"has_post_miitoo_given_$template_post_id"} = ''; }
 	
 	else {
 	
-	$sql_post_recent_replies_user = 'SELECT * FROM grape.people WHERE people.pid = "' . $row_post_recent_replies['pid'] . '"';
-	$result_post_recent_replies_user = mysqli_query($link, $sql_post_recent_replies_user);
+	$sql_post_recent_replies_user = 'SELECT * FROM people WHERE people.pid = "' . $row_post_recent_replies['pid'] . '"';
+	$result_post_recent_replies_user = mysqli_query($mysql, $sql_post_recent_replies_user);
 	$row_post_recent_replies_user = mysqli_fetch_assoc($result_post_recent_replies_user);
 	
 	

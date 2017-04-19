@@ -1,5 +1,5 @@
 <?php
-include 'sql-connect.php';
+require_once '../../grplib-php/init.php';
 require_once 'crypto.php';
 
 header('Content-Type: text/plain; charset=UTF-8');
@@ -20,4 +20,3 @@ print "The PID from that was ".GetTokenPart($decryptedToken, 'u', '\d+').", the 
 print "The only thing to really do at this point would be to decrypt it, so..\n\n";
 print decrypt_identity($grp_config_privkey, encrypt_identity($grp_config_pubkey, gen_identity($grp_config_server_env, $_SESSION['pid'], $_SESSION['user_id'], $_SESSION['password'])));
 print "\n\n\nNice.\nOkay, that's enough for now, see you next time!\n";
-?>

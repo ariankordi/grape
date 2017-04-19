@@ -1,8 +1,8 @@
 <?php
 
 function favoriteWithTitle($row_community) {
-global $link;
-$row_get_titles_from_cid = mysqli_fetch_assoc(mysqli_query($link, 'SELECT * FROM titles WHERE titles.olive_title_id = "'.$row_community['olive_title_id'].'"'));
+global $mysql;
+$row_get_titles_from_cid = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM titles WHERE titles.olive_title_id = "'.$row_community['olive_title_id'].'"'));
 if(!empty($row_get_titles_from_cid['platform_id'])) {
 if($row_get_titles_from_cid['platform_id'] == '0') { $platform_id_text = "3ds"; }
 if($row_get_titles_from_cid['platform_id'] == '1') { $platform_id_text = "wiiu"; }
@@ -34,8 +34,8 @@ return '<li class="favorite-community empty">
       <span class="icon-container"></span>
     </li>';
 } else {
-global $link;
-$row_get_titles_from_cid = mysqli_fetch_assoc(mysqli_query($link, 'SELECT * FROM titles WHERE titles.olive_title_id = "'.$row_community['olive_title_id'].'"'));
+global $mysql;
+$row_get_titles_from_cid = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM titles WHERE titles.olive_title_id = "'.$row_community['olive_title_id'].'"'));
 if(!empty($row_get_titles_from_cid['platform_id'])) {
 if($row_get_titles_from_cid['platform_id'] == '0') { $platform_id_text = "3ds"; }
 if($row_get_titles_from_cid['platform_id'] == '1') { $platform_id_text = "wiiu"; }
