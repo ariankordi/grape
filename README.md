@@ -7,19 +7,21 @@ There is a lot of naive programming in here, I'm new to PHP and it'll get better
 
 # grp_portal #
 This is portal, or the Wii U mode.
-
 # grp_offdevice #
 The offdevice version. This was written when I knew more PHP then when I had written portal. It's way better written, and I'm trying to rewrite portal now.
-
 # grplib #
 This will be a shared library to be used between 3DS and off-device.
 
 # How to install??? #
-This section would be written, but manual database creation is required at the moment :(
+First, use nginx, since that's the best web server software. I'm kidding, but it's really good.
+Set up however many servers you want. **You must have separate servers for each realm and cannot have them in directories of your site.**
+If you want to set up portal, make its root grp\_portal-php, and the same for offdevice.
+Make a database in MySQL, then make a new config.php from the template and connect to your DB.
+Run db\_create.sql in whatever you use as an interface to MySQL, and it'll work.
 
 
 # Rewrites (nginx) #
-These are required for good functionality.
+These are required, you cannot use the .php files directly or you might get a 404 and JS won't work.
 
 Portal: 
 
