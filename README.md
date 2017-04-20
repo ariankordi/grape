@@ -114,3 +114,5 @@ Offdevice:
 	
 # Anything else? #
 Not much yet, thanks for asking.
+
+Copyright (C) Arian Kordi 2017, styling and ideas copyright Nintendo, please don't cease and desist me.
