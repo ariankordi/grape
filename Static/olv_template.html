@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Activity Feed</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/portal.css">
+
+    <script src="/js/portal/complete-en.js"></script>
+  </head>
+
+  <body data-is-first-friend="1"
+       data-hashed-pid="970b0b03cd9f5c96b438590a68f7fdad"
+       data-user-id="wow_hb_venice"
+       data-age="32"
+       data-gender="MALE"
+       data-game-skill="3"
+       data-follow-done="1"
+       data-post-done="1"
+       data-lang="en"
+       data-country="gb"
+       data-user-region="USA" data-profile-url="/users/wow_hb_venice">
+    <menu id="global-menu">
+      <li id="global-menu-mymenu"><a href="/users/wow_hb_venice" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="http://mii-images.account.nintendo.net/1u08np62sv9bc_normal_face.png" alt="User Page"></span><span>User Page</span></a></li>
+      <li id="global-menu-feed"><a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">Activity Feed</a></li>
+      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">Communities</a></li>
+      <li id="global-menu-message"><a href="/friend_messages" data-pjax="#body" data-sound="SE_WAVE_MENU">Messages</a></li>
+      <li id="global-menu-news"><a href="/news/my_news" data-pjax="#body" data-sound="SE_WAVE_MENU">Notifications</a></li>
+      <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">Close</a></li>
+      <li id="global-menu-back" class="none"><a href="#" role="button" class="accesskey-B" data-sound="SE_WAVE_BACK">Back</a></li>
+    </menu>
+
+    
+    <div id="body">
+<header id="header">
+  
+  <h1 id="page-title" class="">Activity Feed</h1>
+
+</header>
+
+<div class="body-content post-list js-post-list" id="activity-feed">
+  <div class="no-content-window content-loading-window">
+    <div class="window">
+      <p>Loading activity feed...</p>
+    </div>
+  </div>
+  <div class="no-content-window content-load-error-window none">
+    <div class="window">
+      <p>The activity feed could not be loaded. Check your Internet connection, wait a moment, and then try reloading.</p>
+      <div class="window-bottom-buttons single-button">
+        <a href="/" class="button" data-pjax="#body" data-pjax-replace="1">Reload</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div>
+
+    <a id="scroll-to-top" href="#" style="display:none"></a>
+<div id="message-dialog-template"   class="window-page none">
+  <div class="window">
+    <h1 class="window-title">Activity Feed</h1>
+    <div class="window-body"><div class="window-body-inner message">
+      <p class="pre-line"></p>
+    </div></div>
+    <div class="window-bottom-buttons single-button">
+      <a href="#" class="button ok-button">OK</a>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-dialog-template"   class="window-page none">
+  <div class="window">
+    <h1 class="window-title">Activity Feed</h1>
+    <div class="window-body"><div class="window-body-inner message">
+      <p></p>
+    </div></div>
+    <div class="window-bottom-buttons">
+      <a href="#" class="button cancel-button" data-sound="SE_WAVE_CANCEL">Cancel</a>
+      <a href="#" class="button ok-button">OK</a>
+    </div>
+  </div>
+</div>
+
+<div id="parental-confirm-dialog-template"   class="window-page none">
+  <div class="window">
+    <h1 class="window-title">Activity Feed</h1>
+    <div class="window-body">
+      <div class="window-body-inner message">
+        <p></p>
+        <input type="password" controller="drc" minlength="4" maxlength="4" inputform="monospace" guidestring=" " class="parental_code textarea-line" name="parental_code" placeholder="Tap to enter the PIN." keyboard="pin">
+      </div>
+    </div>
+    <div class="window-bottom-buttons">
+      <a href="#" class="button cancel-button" data-sound="SE_WAVE_CANCEL">Back</a>
+      <a href="#" class="button ok-button">OK</a>
+    </div>
+  </div>
+</div>
+<div id="capture-page"
+     class="capture-page window-page none"
+     data-modal-types="capture"
+     data-is-template="1">
+    <div class="capture-container">
+        <div><img src="data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2FwAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D" class="capture"></div>
+        <a href="#" class="olv-modal-close-button cancel-button accesskey-B" data-sound="SE_WAVE_CANCEL"><span>Back</span></a>
+    </div>
+</div>
+
+  </body>
+</html>
