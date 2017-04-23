@@ -51,7 +51,7 @@ if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "
 	    if(!empty($error_code) || !empty($error_message) ) {
 http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [array( 'message' => $error_message[0], 'error_code' => $error_code[0])], 'code' => 400)); grpfinish($mysql); exit(); }
 else {
-$result_create_friendrequest = $mysql->query('INSERT INTO friend_requests (sender, recipient, `message`, `has_read`, `finished`) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "'.mysqli_real_escape_string($mysql, $_POST['body']).'", "0", "0")');
+$result_create_friendrequest = $mysql->query('INSERT INTO friend_requests (sender, recipient, `message`, `has_read`, `finished`) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "'.$mysql->real_escape_string($_POST['body']).'", "0", "0")');
 if(!$result_create_friendrequest) {
 http_response_code(500);
 header('Content-Type: application/json; charset=utf-8'); print 
@@ -65,8 +65,8 @@ grpfinish($mysql); exit();
 }
 
 else {
-$sql_fr_ees1 = 'SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.mysqli_real_escape_string($mysql, $_POST['pid']).'" AND friend_requests.finished = "1"';
-$sql_fr_ees2 = 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.mysqli_real_escape_string($mysql, $_POST['pid']).'"';
+$sql_fr_ees1 = 'SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$mysql->real_escape_string($_POST['pid']).'" AND friend_requests.finished = "1"';
+$sql_fr_ees2 = 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$mysql->real_escape_string($_POST['pid']).'"';
 
 if($mysql->query($sql_fr_ees2)->num_rows != 0) {
 			$error_message[] = 'You have either already sent a friend request to this user\n or are already friends with them.';

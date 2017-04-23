@@ -46,7 +46,6 @@
     </form>
   </div>
 </div>
-</div>
 <div id="edit-post-page" class="window-page none" data-modal-types="edit-post">
   <div class="window">
     <h1 class="window-title">Edit Post</h1>

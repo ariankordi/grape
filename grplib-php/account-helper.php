@@ -3,7 +3,7 @@
 function actLoginCheck($user_id, $password) {
 global $mysql;
 $search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$user_id.'" LIMIT 1');
-      if($search_user->num_rows == 0) {
+      if(!$search_user ||$search_user->num_rows == 0) {
 return 'none'; }
 $user = $search_user->fetch_assoc();
 		if($user['ban_status'] >= 4) {

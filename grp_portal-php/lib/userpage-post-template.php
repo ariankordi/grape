@@ -110,7 +110,7 @@ print '    <div class="post-body">
 		';
 		if(isset($is_identified_user_post)) {
 $sql_userpage_identified_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "'.$row_temp_current_post_user['pid'].'"';
-$result_userpage_identified_user_profile = mysqli_query($mysql, $sql_userpage_identified_user_profile);
+$result_userpage_identified_user_profile = $mysql->query($sql_userpage_identified_user_profile);
 if(mysqli_num_rows($result_userpage_identified_user_profile) == 0) {
 print '<p class="text"></p>';
 } else {
@@ -122,7 +122,7 @@ print '        <span class="timestamp">'.humanTiming(strtotime($row_temp_current
 		}
 
 $sql_userpage_user_posts_view_user_community = 'SELECT * FROM communities WHERE communities.community_id = "' . $row_temp_current_post['community_id'] . '"';
-$result_userpage_user_posts_view_user_community = mysqli_query($mysql, $sql_userpage_user_posts_view_user_community);
+$result_userpage_user_posts_view_user_community = $mysql->query($sql_userpage_user_posts_view_user_community);
 $row_userpage_user_posts_view_user_community = mysqli_fetch_assoc($result_userpage_user_posts_view_user_community); 
 
 if(strlen($row_temp_current_post['_post_type']) > 10 ) {
@@ -142,11 +142,11 @@ print '        <a href="/posts/'.$row_temp_current_post['_post_type'].'" class="
 
 
 $sql_userpage_user_posts_view_user_userreply = 'SELECT * FROM posts WHERE posts.id = "' . $row_temp_current_post['_post_type'] . '"';
-$result_userpage_user_posts_view_user_userreply = mysqli_query($mysql, $sql_userpage_user_posts_view_user_userreply);
+$result_userpage_user_posts_view_user_userreply = $mysql->query($sql_userpage_user_posts_view_user_userreply);
 $row_userpage_user_posts_view_user_userreply = mysqli_fetch_assoc($result_userpage_user_posts_view_user_userreply); 
 
 $sql_userpage_user_posts_view_user_userreplypp = 'SELECT * FROM people WHERE people.pid = "' . $row_userpage_user_posts_view_user_userreply['pid'] . '"';
-$result_userpage_user_posts_view_user_userreplypp = mysqli_query($mysql, $sql_userpage_user_posts_view_user_userreplypp);
+$result_userpage_user_posts_view_user_userreplypp = $mysql->query($sql_userpage_user_posts_view_user_userreplypp);
 $row_userpage_user_posts_view_user_userreplypp = mysqli_fetch_assoc($result_userpage_user_posts_view_user_userreplypp); 	
 
 	if($row_userpage_user_posts_view_user_userreplypp['mii_hash']) {
@@ -264,8 +264,8 @@ else {
 	
 	
     if(isset($_SESSION['pid'])) {
-$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $row_temp_current_post['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
-$result_hasempathy = mysqli_query($mysql, $sql_hasempathy);
+$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . $mysql->real_escape_string($row_temp_current_post['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$result_hasempathy = $mysql->query($sql_hasempathy);
 
 if(mysqli_num_rows($result_hasempathy)!=0) {
     $mii_face_miitoo = 'Unyeah';
@@ -317,7 +317,7 @@ if(!isset($is_identified_user_post)) {
 if(isset($is_identified_user_post)) {
 if(isset($_SESSION['pid'])) {
 $sql_relationship_identified_user_post = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$row_temp_current_post_user['pid'].'"';
-$result_relationship_identified_user_post = mysqli_query($mysql, $sql_relationship_identified_user_post);
+$result_relationship_identified_user_post = $mysql->query($sql_relationship_identified_user_post);
 if(mysqli_num_rows($result_relationship_identified_user_post) != 0 || $_SESSION['pid'] == $row_temp_current_post_user['pid']) {
 print '<div class="toggle-button">
 
@@ -336,7 +336,7 @@ print '<div class="toggle-button">
   
 if(!isset($is_activity_feed_post) && !isset($is_identified_user_post) && time() - strtotime($row_temp_current_post['created_at']) <= 432000) {
 	$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_temp_current_post['id'] . '" AND replies.is_spoiler != "1" AND replies.is_hidden != "1" AND replies.pid !="'.$row_temp_current_post['pid'].'" ORDER BY replies.created_at DESC LIMIT 1';
-	$result_post_recent_replies = mysqli_query($mysql, $sql_post_recent_replies);
+	$result_post_recent_replies = $mysql->query($sql_post_recent_replies);
 
 	if(strval(mysqli_num_rows($result_temp_current_post_replies)) >=1) {
 	while($row_post_recent_replies = mysqli_fetch_assoc($result_post_recent_replies)) {
@@ -348,7 +348,7 @@ if(!isset($is_activity_feed_post) && !isset($is_identified_user_post) && time() 
 	else {
 	
 	$sql_post_recent_replies_user = 'SELECT * FROM people WHERE people.pid = "' . $row_post_recent_replies['pid'] . '"';
-	$result_post_recent_replies_user = mysqli_query($mysql, $sql_post_recent_replies_user);
+	$result_post_recent_replies_user = $mysql->query($sql_post_recent_replies_user);
 	$row_post_recent_replies_user = mysqli_fetch_assoc($result_post_recent_replies_user);
 	
 	

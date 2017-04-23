@@ -8,7 +8,7 @@ noLogin(); grpfinish($mysql); exit();
 $pagetitle = 'Notifications';
 $mnselect = 'news';
 printHeader('old'); printMenu('old');
-$search_news = $mysql->query('SELECT * FROM grape.news WHERE news.to_pid = "'.$_SESSION['pid'].'" AND news.merged IS NULL ORDER BY news.created_at DESC LIMIT 65');
+$search_news = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$_SESSION['pid'].'" AND news.merged IS NULL ORDER BY news.created_at DESC LIMIT 65');
 print '<div id="main-body">
 
 
@@ -35,7 +35,7 @@ print '<div class="list news-list">
 
 while($news_row = $search_news->fetch_assoc()) {
 printNews($news_row);
-$mysql->query('UPDATE grape.news SET news.has_read = "1" WHERE news.news_id = "'.$news_row['news_id'].'"');
+$mysql->query('UPDATE news SET news.has_read = "1" WHERE news.news_id = "'.$news_row['news_id'].'"');
 }
 print '
 

@@ -5,15 +5,15 @@ require_once '../grplib-php/init.php';
 
 # Community listing.
 if(isset($_GET['community_id'])) {
-$community_uid = mysqli_real_escape_string($mysql, $_GET['community_id']);
-$title_uid = mysqli_real_escape_string($mysql, $_GET['title_id']);
+$community_uid = $mysql->real_escape_string($_GET['community_id']);
+$title_uid = $mysql->real_escape_string($_GET['title_id']);
 $sql_comm = 'SELECT * FROM communities WHERE communities.olive_community_id = "' . htmlspecialchars($community_uid) . '" AND communities.olive_title_id ="' . $title_uid . '"';
-$result_comm = mysqli_query($mysql, $sql_comm);
+$result_comm = $mysql->query($sql_comm);
 $row_comm = mysqli_fetch_assoc($result_comm);
 
 
 $sql_title = 'SELECT * FROM titles WHERE titles.olive_title_id = "' . htmlspecialchars($title_uid) . '"';
-$result_title = mysqli_query($mysql, $sql_title);
+$result_title = $mysql->query($sql_title);
 $row_title = mysqli_fetch_assoc($result_title);
 
 if(!$result_comm)
@@ -66,7 +66,7 @@ printHeader(false);
 	if(empty($_SESSION['signed_in'])) {
 	$if_can_user_post = ' disabled'; } else {
 $row_my_poster1 = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_my_poster1 = mysqli_query($mysql, $row_my_poster1);
+$result_my_poster1 = $mysql->query($row_my_poster1);
 $row_my_poster1 = mysqli_fetch_assoc($result_my_poster1); 
 
     if(isset($row_current_peopleban)) {
@@ -85,7 +85,7 @@ else {
 <header id="header">
 <a id="header-post-button"' . $if_can_user_post . ' class="header-button' . $if_can_user_post . ' none"'.($if_can_user_post == '' ? 'href="#"' : '').' data-modal-open="#add-post-page">Post</a>';
 $sql_communityscroll = 'SELECT * FROM communities WHERE communities.olive_title_id = "' . htmlspecialchars($row_title['olive_title_id']) . '" AND type != "5"';
-$result_communityscroll = mysqli_query($mysql, $sql_communityscroll);
+$result_communityscroll = $mysql->query($sql_communityscroll);
 $communityscroll_amt = mysqli_num_rows($result_communityscroll);
 if(($communityscroll_amt) >= 2) {
 print '<a id="header-communities-button" href="/titles/' . htmlspecialchars($row_title['olive_title_id']) . '" data-pjax="#body">Related Communities</a>';
@@ -126,7 +126,7 @@ print '<span class="platform-tag platform-tag-wiiu"></span>'; }
 }
 
 if(!empty($_SESSION['pid'])) {
-$has_community_favorited = mysqli_num_rows(mysqli_query($mysql, 'SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" AND favorites.community_id = "'.$row_comm['community_id'].'"'));
+$has_community_favorited = mysqli_num_rows($mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" AND favorites.community_id = "'.$row_comm['community_id'].'"'));
 print '<a href="#" class="favorite-button favorite-button-mini button'.($has_community_favorited != 0 ? ' checked' : '').'" data-action-favorite="/titles/'.$row_comm['olive_title_id'].'/'.$row_comm['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$row_comm['olive_title_id'].'/'.$row_comm['olive_community_id'].'/unfavorite.json" data-sound="SE_WAVE_CHECKBOX_'.($has_community_favorited != 0 ? 'UN' : '').'CHECK" data-community-id="'.$row_comm['olive_community_id'].'" data-url-id="" data-track-label="community" data-title-id="'.$row_comm['olive_title_id'].'" data-track-action="cancelFavorite" data-track-category="favorite"></a>';
 }
 
@@ -163,7 +163,7 @@ print '<div id="community-tab-body" class="tab-body">';
 # Post list.
         $sql_post = 'SELECT * FROM posts WHERE posts.community_id = "' . $row_comm['community_id'] . '" AND posts.is_hidden = "0" ORDER BY posts.created_at DESC LIMIT 50';
         #$sql_post = 'SELECT * FROM posts LEFT JOIN people ON posts.pid = people.pid WHERE posts.community_id = "' . $row_comm['community_id'] . '" ORDER BY posts.created_at DESC';
-        $result_post = mysqli_query($mysql, $sql_post);
+        $result_post = $mysql->query($sql_post);
         if(!$result_post)
         {
 $no_content_message = ( "Server error." );
@@ -184,11 +184,11 @@ print '</div>';
 							
 if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strlen($_GET['offset']) >= 1) {
 
-	    $sql_post_offset = 'SELECT * FROM posts WHERE posts.community_id = "' . $row_comm['community_id'] . '" AND posts.is_hidden = "0" ORDER BY posts.created_at DESC LIMIT 50 OFFSET '.mysqli_real_escape_string($mysql, $_GET['offset']).'';
-        $result_post_offset = mysqli_query($mysql, $sql_post_offset);
+	    $sql_post_offset = 'SELECT * FROM posts WHERE posts.community_id = "' . $row_comm['community_id'] . '" AND posts.is_hidden = "0" ORDER BY posts.created_at DESC LIMIT 50 OFFSET '.$mysql->real_escape_string($_GET['offset']).'';
+        $result_post_offset = $mysql->query($sql_post_offset);
 	
 if(mysqli_num_rows($result_post_offset) > 49) {
-$what_is_my_new_offset1 = mysqli_real_escape_string($mysql, $_GET['offset']) + 50;
+$what_is_my_new_offset1 = $mysql->real_escape_string($_GET['offset']) + 50;
 $what_is_my_new_offset = '/titles/'.$row_comm['olive_title_id'].'/'.$row_comm['olive_community_id'].'?offset='.$what_is_my_new_offset1.'';
 }
 else {
@@ -199,18 +199,18 @@ $what_is_my_new_offset = ''; }
                 while($row_post_offset = mysqli_fetch_assoc($result_post_offset))
                 {
 	$sql_post_user = 'SELECT * FROM people WHERE people.pid = "' . $row_post_offset['pid'] . '"';
-	$result_post_user = mysqli_query($mysql, $sql_post_user);
+	$result_post_user = $mysql->query($sql_post_user);
 	$row_post_user = mysqli_fetch_assoc($result_post_user);
 	
 	$sql_post_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_post_offset['id'] . '" AND replies.is_hidden != "1"';
-	$result_post_replies = mysqli_query($mysql, $sql_post_replies);
+	$result_post_replies = $mysql->query($sql_post_replies);
 	$row_post_replies = mysqli_fetch_assoc($result_post_replies);
 	
 	$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_post_offset['id'] . '" AND replies.is_hidden != "1" AND replies.is_spoiler != "1" AND replies.pid !="'.$row_post_offset['pid'].'" ORDER BY replies.created_at DESC LIMIT 1';
-	$result_post_recent_replies = mysqli_query($mysql, $sql_post_recent_replies);
+	$result_post_recent_replies = $mysql->query($sql_post_recent_replies);
 	
 	$sql_post_empathies = 'SELECT * FROM empathies WHERE empathies.id = "' . $row_post_offset['id'] . '"';
-	$result_post_empathies = mysqli_query($mysql, $sql_post_empathies);
+	$result_post_empathies = $mysql->query($sql_post_empathies);
 	$row_post_empathies = mysqli_fetch_assoc($result_post_empathies);
 	
 $template_creator_pid = $row_post_user['pid'];
@@ -242,7 +242,7 @@ exit();
 				
 				
 				$sql_get_community_postamt = 'SELECT * FROM posts WHERE posts.community_id = "'.$row_comm['community_id'].'"';
-                $result_get_community_postamt = mysqli_query($mysql, $sql_get_community_postamt);
+                $result_get_community_postamt = $mysql->query($sql_get_community_postamt);
 				if(mysqli_num_rows($result_get_community_postamt) >= 50) {
 				$do_i_have_offset = '/titles/'.$row_comm['olive_title_id'].'/'.$row_comm['olive_community_id'].'?offset=50';
 				} else {
@@ -252,18 +252,18 @@ exit();
                 while($row_post = mysqli_fetch_assoc($result_post))
                 {
 	$sql_post_user = 'SELECT * FROM people WHERE people.pid = "' . $row_post['pid'] . '"';
-	$result_post_user = mysqli_query($mysql, $sql_post_user);
+	$result_post_user = $mysql->query($sql_post_user);
 	$row_post_user = mysqli_fetch_assoc($result_post_user);
 	
 	$sql_post_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_post['id'] . '" AND replies.is_hidden != "1"';
-	$result_post_replies = mysqli_query($mysql, $sql_post_replies);
+	$result_post_replies = $mysql->query($sql_post_replies);
 	$row_post_replies = mysqli_fetch_assoc($result_post_replies);
 	
 	$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_post['id'] . '"  AND replies.is_hidden != "1" AND replies.is_spoiler != "1" AND replies.pid !="'.$row_post['pid'].'" ORDER BY replies.created_at DESC LIMIT 1';
-	$result_post_recent_replies = mysqli_query($mysql, $sql_post_recent_replies);
+	$result_post_recent_replies = $mysql->query($sql_post_recent_replies);
 	
 	$sql_post_empathies = 'SELECT * FROM empathies WHERE empathies.id = "' . $row_post['id'] . '"';
-	$result_post_empathies = mysqli_query($mysql, $sql_post_empathies);
+	$result_post_empathies = $mysql->query($sql_post_empathies);
 	$row_post_empathies = mysqli_fetch_assoc($result_post_empathies);
 	
 $template_creator_pid = $row_post_user['pid'];
@@ -378,9 +378,9 @@ print $GLOBALS['div_body_head_end'];
 
 # Start of title listing.
 else {
-$title_uid = (isset($_GET['title_id']) ? mysqli_real_escape_string($mysql, $_GET['title_id']) : '');
+$title_uid = (isset($_GET['title_id']) ? $mysql->real_escape_string($_GET['title_id']) : '');
 $sql0 = 'SELECT * FROM titles WHERE titles.olive_title_id = "' . $title_uid . '"';
-$result0 = mysqli_query($mysql, $sql0);
+$result0 = $mysql->query($sql0);
 $row0 = mysqli_fetch_assoc($result0);
 
 if(!$result0)
@@ -441,7 +441,7 @@ print '<div class="community-list">';
 			';
 			
 $sql1 = 'SELECT * FROM communities WHERE communities.olive_title_id = "' . $title_uid . '"';
-$result1 = mysqli_query($mysql, $sql1);
+$result1 = $mysql->query($sql1);
                 while($row1 = mysqli_fetch_assoc($result1))
                 {
 			if(strval($row1['type']) == 5) {

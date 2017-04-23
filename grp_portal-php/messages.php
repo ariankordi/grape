@@ -9,20 +9,20 @@ notLoggedIn(); grpfinish($mysql); exit();
 # If the method is POST, then post.
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 if(empty($_GET['conversation_id'])) {
-$result_people_messagesearch = mysqli_query($mysql, 'SELECT * FROM people WHERE people.user_id = "'.mysqli_real_escape_string($mysql, $_POST['message_to_user_id']).'"');
+$result_people_messagesearch = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['message_to_user_id']).'"');
 if(mysqli_num_rows($result_people_messagesearch) == 0) {
 			$error_message[] = 'The user could not be found.';
 			$error_code[] = '1512012';
 } else {
 $row_people_messagesearch = mysqli_fetch_assoc($result_people_messagesearch);
-$result_relationshipsearch = mysqli_query($mysql, 'SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_people_messagesearch['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$row_people_messagesearch['pid'].'" LIMIT 1');
+$result_relationshipsearch = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_people_messagesearch['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$row_people_messagesearch['pid'].'" LIMIT 1');
 if(mysqli_num_rows($result_relationshipsearch) == 0) {
 			$error_message[] = 'You are not friends with this user.';
 			$error_code[] = '1512013';	
 }
 } }
 else {
-$result_people_messagesearch = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.conversation_id = "'.mysqli_real_escape_string($mysql, $_GET['conversation_id']).'"');
+$result_people_messagesearch = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->real_escape_string($_GET['conversation_id']).'"');
 if(mysqli_num_rows($result_people_messagesearch) == 0) {
 			$error_message[] = 'The user could not be found.';
 			$error_code[] = '1512012';
@@ -81,38 +81,38 @@ $gen_olive_url = $b64url_data;
 if(!isset($_POST['is_spoiler'])) { $_POST['is_spoiler'] = false; } if(empty($_POST['feeling_id'])) {
 $_POST['feeling_id'] = '0'; }
 if(empty($_GET['conversation_id'])) {
-$result_search_conversations = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_people_messagesearch['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'" AND conversations.sender = "'.$row_people_messagesearch['pid'].'"');
+$result_search_conversations = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_people_messagesearch['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'" AND conversations.sender = "'.$row_people_messagesearch['pid'].'"');
 if(mysqli_num_rows($result_search_conversations) == 0) {
 	
-$recipient_in_new_conversation1 = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$row_people_messagesearch['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" AND friend_relationships.source = "'.$row_people_messagesearch['pid'].'"'));
+$recipient_in_new_conversation1 = mysqli_fetch_assoc($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$row_people_messagesearch['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" AND friend_relationships.source = "'.$row_people_messagesearch['pid'].'"'));
 
-$recipient_in_new_conversation = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM people WHERE people.pid = "'.($recipient_in_new_conversation1['source'] == $_SESSION['pid'] ? $recipient_in_new_conversation1['target'] : $recipient_in_new_conversation1['source']).'"'));
+$recipient_in_new_conversation = mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.($recipient_in_new_conversation1['source'] == $_SESSION['pid'] ? $recipient_in_new_conversation1['target'] : $recipient_in_new_conversation1['source']).'"'));
 
-$create_new_conversation = mysqli_query($mysql, 'INSERT INTO conversations (sender, recipient) VALUES ("'.$_SESSION['pid'].'", "'.$recipient_in_new_conversation['pid'].'")');
+$create_new_conversation = $mysql->query('INSERT INTO conversations (sender, recipient) VALUES ("'.$_SESSION['pid'].'", "'.$recipient_in_new_conversation['pid'].'")');
 
-$new_message_conversation_id = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$recipient_in_new_conversation['pid'].'"'))['conversation_id'];
+$new_message_conversation_id = mysqli_fetch_assoc($mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$recipient_in_new_conversation['pid'].'"'))['conversation_id'];
 } 
 else {
 $new_message_conversation_id = mysqli_fetch_assoc($result_search_conversations)['conversation_id']; }
 }
 else {
-$new_message_conversation_id = mysqli_real_escape_string($mysql, $_GET['conversation_id']);	
+$new_message_conversation_id = $mysql->real_escape_string($_GET['conversation_id']);	
 }
 
         $sql = 'INSERT INTO
                     messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read)
                 VALUES("' . $new_message_conversation_id . '",
 				       "' . $gen_olive_url  . '",
-				       "' . mysqli_real_escape_string($mysql, $_SESSION['pid']) . '",
-                       "' . htmlspecialchars(mysqli_real_escape_string($mysql, $_POST['feeling_id'])) . '",
-                       "' . mysqli_real_escape_string($mysql, $_SESSION['platform_id']) . '",
-                       "' . mysqli_real_escape_string($mysql, $_POST['body']) . '",
-					   "' . (empty($_POST['screenshot']) ? NULL : mysqli_real_escape_string($mysql, $_POST['screenshot'])) . '",
-                       "' . (empty($_POST['is_spoiler']) ? '0' : mysqli_real_escape_string($mysql, $_POST['is_spoiler'])) . '",
+				       "' . $mysql->real_escape_string($_SESSION['pid']) . '",
+                       "' . htmlspecialchars($mysql->real_escape_string($_POST['feeling_id'])) . '",
+                       "1",
+                       "' . $mysql->real_escape_string($_POST['body']) . '",
+					   "' . (empty($_POST['screenshot']) ? NULL : $mysql->real_escape_string($_POST['screenshot'])) . '",
+                       "' . (empty($_POST['is_spoiler']) ? '0' : $mysql->real_escape_string($_POST['is_spoiler'])) . '",
                        "0")';
                          
-        $result = mysqli_query($mysql, $sql);
-		$resultUpdateFM = mysqli_query($mysql, 'UPDATE friend_relationships SET updated = CURRENT_TIMESTAMP WHERE relationship_id = "'.mysqli_fetch_assoc($result_relationshipsearch)['relationship_id'].'"');
+        $result = $mysql->query($sql);
+		$resultUpdateFM = $mysql->query('UPDATE friend_relationships SET updated = CURRENT_TIMESTAMP WHERE relationship_id = "'.mysqli_fetch_assoc($result_relationshipsearch)['relationship_id'].'"');
         if(!$result)
         {
             //MySQL error; print jsON response.
@@ -128,7 +128,7 @@ $new_message_conversation_id = mysqli_real_escape_string($mysql, $_GET['conversa
 		}
 		else {
 			// HTML fragment success response.
-$row_get_posted_message = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM messages WHERE messages.id = "'.$gen_olive_url.'"'));
+$row_get_posted_message = mysqli_fetch_assoc($mysql->query('SELECT * FROM messages WHERE messages.id = "'.$gen_olive_url.'"'));
 $message_template_row = $row_get_posted_message;
 include 'lib/messagelist-message-template.php';
 // End here.
@@ -158,21 +158,21 @@ exit("403 Forbidden\n");
 # If a user ID is specified, then display a special page for that, and if not, then display the message search.
 if(isset($_GET['user_id']) || isset($_GET['conversation_id'])) {
 if(!isset($_GET['conversation_id'])) {
-$result_get_person_formessage = mysqli_query($mysql, 'SELECT * FROM people WHERE people.user_id = "'.mysqli_real_escape_string($mysql, $_GET['user_id']).'"');
+$result_get_person_formessage = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"');
 if(mysqli_num_rows($result_get_person_formessage) == 0) {
 include_once '404.php'; exit();	} }
 
 else {
-$result_get_conversation = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.conversation_id = "'.mysqli_real_escape_string($mysql, $_GET['conversation_id']).'"');
+$result_get_conversation = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->real_escape_string($_GET['conversation_id']).'"');
 if(mysqli_num_rows($result_get_conversation) == 0) {
 include_once '404.php'; exit();	} }
 if(isset($_GET['user_id'])) {
 $row_get_person_formessage = mysqli_fetch_assoc($result_get_person_formessage);
-$result_search_person_relationship = mysqli_query($mysql, 'SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_get_person_formessage['pid'].'" AND friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" AND friend_relationships.source = "'.$row_get_person_formessage['pid'].'" LIMIT 1');
+$result_search_person_relationship = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_get_person_formessage['pid'].'" AND friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" AND friend_relationships.source = "'.$row_get_person_formessage['pid'].'" LIMIT 1');
 if(mysqli_num_rows($result_search_person_relationship) == 0) {
 header('Content-Type: text/plain; charset=UTF-8'); header("HTTP/1.1 403 Forbidden"); exit("403 Forbidden\n");   } }
 else {
-if(mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"'))['privilege'] < 5) {
+if(mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"'))['privilege'] < 5) {
 header('Content-Type: text/plain; charset=UTF-8'); header("HTTP/1.1 403 Forbidden"); exit("403 Forbidden\n");   } }
 if(!isset($_GET['offset'])) {
 if(isset($_GET['user_id'])) {
@@ -191,13 +191,13 @@ print '<header id="header">
 </header>';
 }
 if(isset($_GET['user_id'])) {
-$find_conversation_for_friend = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_person_formessage['pid'].'" OR conversations.sender = "'.$row_get_person_formessage['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
+$find_conversation_for_friend = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_person_formessage['pid'].'" OR conversations.sender = "'.$row_get_person_formessage['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
 }
 if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strval($_GET['offset']) >= 1) {
-$get_messages_for_friend = mysqli_query($mysql, 'SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? mysqli_real_escape_string($mysql, $_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20 OFFSET '.mysqli_real_escape_string($mysql, $_GET['offset']).'');	
+$get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20 OFFSET '.$mysql->real_escape_string($_GET['offset']).'');	
 }
 else {
-$get_messages_for_friend = mysqli_query($mysql, 'SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? mysqli_real_escape_string($mysql, $_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20');
+$get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20');
 }
 
 if(!empty($_GET['offset'])) { $my_new_offset = strval($_GET['offset']) + 20; } 
@@ -231,7 +231,7 @@ print '
 
 if(!isset($_GET['offset'])) {
 # Add message form
-$lookup_user = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"'));
+$lookup_user = mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"'));
 print '<div id="add-message-page" class="add-post-page'.($lookup_user['privilege'] >= 2 ? 
 ' official-user-post' : '').' none" data-modal-types="add-entry add-message require-body preview-body" data-is-template="1">
   <header class="add-post-page-header">
@@ -297,10 +297,10 @@ print '
 </div>';
 print $GLOBALS['div_body_head_end'];
 
-$result_get_all_conversation_ids = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'"');
+$result_get_all_conversation_ids = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'"');
 if(mysqli_num_rows($result_get_all_conversation_ids) != 0) {
 while($row_get_all_conversation_ids = mysqli_fetch_assoc($result_get_all_conversation_ids)) {
-$result_set_all_messages_unread = mysqli_query($mysql, 'UPDATE messages SET has_read = "1" WHERE messages.conversation_id = "'.$row_get_all_conversation_ids['conversation_id'].'" AND messages.pid != "'.$_SESSION['pid'].'"');
+$result_set_all_messages_unread = $mysql->query('UPDATE messages SET has_read = "1" WHERE messages.conversation_id = "'.$row_get_all_conversation_ids['conversation_id'].'" AND messages.pid != "'.$_SESSION['pid'].'"');
 } }
 
 (isset($_SERVER['HTTP_X_PJAX']) ? '' : printFooter());
@@ -320,9 +320,9 @@ print '<header id="header">
 
 </header>';
 
-$result_find_user_newstutorial = mysqli_query($mysql, 'SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.friend_messages = "1"');
+$result_find_user_newstutorial = $mysql->query('SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.friend_messages = "1"');
 
-$result_get_friendexistence = mysqli_query($mysql, 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" ORDER BY friend_relationships.updated DESC');
+$result_get_friendexistence = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" ORDER BY friend_relationships.updated DESC');
 
 print '<div class="body-content" id="messages-list">
 ';
@@ -342,7 +342,7 @@ print '<ul class="list-content-with-icon-and-text arrow-list">
 
 ';      
 while ($row_get_friendexistence = mysqli_fetch_assoc($result_get_friendexistence)) {
-$row_get_friend = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM people WHERE people.pid = "'.($row_get_friendexistence['target'] == $_SESSION['pid'] ? $row_get_friendexistence['source'] : $row_get_friendexistence['target']).'"'));
+$row_get_friend = mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.($row_get_friendexistence['target'] == $_SESSION['pid'] ? $row_get_friendexistence['source'] : $row_get_friendexistence['target']).'"'));
 if($row_get_friend['pid'] != $_SESSION['pid']) {
 if($row_get_friend['mii_hash']) {
 $mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_get_friend['mii_hash'] . '_normal_face.png'; 
@@ -353,9 +353,9 @@ $mii_face_output = htmlspecialchars($row_get_friend['user_face']);
 } else {
 $mii_face_output = '/img/mii/img_unknown_MiiIcon.png'; }
 }
-$find_conversation_for_friend1 = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_friend['pid'].'" OR conversations.sender = "'.$row_get_friend['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
+$find_conversation_for_friend1 = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_friend['pid'].'" OR conversations.sender = "'.$row_get_friend['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
 if(mysqli_num_rows($find_conversation_for_friend1) != 0) {
-$get_message_search_recent_messg1 = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM messages WHERE messages.conversation_id = "'.mysqli_fetch_assoc($find_conversation_for_friend1)['conversation_id'].'" ORDER BY messages.created_at DESC LIMIT 1')); }
+$get_message_search_recent_messg1 = mysqli_fetch_assoc($mysql->query('SELECT * FROM messages WHERE messages.conversation_id = "'.mysqli_fetch_assoc($find_conversation_for_friend1)['conversation_id'].'" ORDER BY messages.created_at DESC LIMIT 1')); }
 else { $get_message_search_recent_messg1 = array(
 'has_read'  => 1, 
 'pid'  => 1); }
@@ -372,12 +372,12 @@ print '
           
           
 		  ';
-$find_conversation_for_friend = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_friend['pid'].'" OR conversations.sender = "'.$row_get_friend['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
+$find_conversation_for_friend = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_friend['pid'].'" OR conversations.sender = "'.$row_get_friend['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
 if(mysqli_num_rows($find_conversation_for_friend) == 0) {
 print '          <p class="text placeholder">You haven'."'".'t exchanged messages with this user yet.</p>
 ';
 } else {
-$get_message_search_recent_messg = mysqli_fetch_assoc(mysqli_query($mysql, 'SELECT * FROM messages WHERE messages.conversation_id = "'.mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id'].'" ORDER BY messages.created_at DESC LIMIT 1'));
+$get_message_search_recent_messg = mysqli_fetch_assoc($mysql->query('SELECT * FROM messages WHERE messages.conversation_id = "'.mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id'].'" ORDER BY messages.created_at DESC LIMIT 1'));
 print '   <span class="timestamp">'.humanTiming(strtotime($get_message_search_recent_messg['created_at'])).'</span>
           <p class="text'.($get_message_search_recent_messg['pid'] == $_SESSION['pid'] ? ' my' : ' other').'">'.htmlspecialchars($get_message_search_recent_messg['body']).'</p>
 		  ';
@@ -398,10 +398,10 @@ print '
 print '
 </div>';
 print $GLOBALS['div_body_head_end'];
-$result_get_all_conversation_ids = mysqli_query($mysql, 'SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'"');
+$result_get_all_conversation_ids = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'"');
 if(mysqli_num_rows($result_get_all_conversation_ids) != 0) {
 while($row_get_all_conversation_ids = mysqli_fetch_assoc($result_get_all_conversation_ids)) {
-$result_set_all_messages_unread = mysqli_query($mysql, 'UPDATE messages SET has_read = "1" WHERE messages.conversation_id = "'.$row_get_all_conversation_ids['conversation_id'].'" AND messages.pid != "'.$_SESSION['pid'].'"');
+$result_set_all_messages_unread = $mysql->query('UPDATE messages SET has_read = "1" WHERE messages.conversation_id = "'.$row_get_all_conversation_ids['conversation_id'].'" AND messages.pid != "'.$_SESSION['pid'].'"');
 } }
 
 (isset($_SERVER['HTTP_X_PJAX']) ? '' : printFooter());

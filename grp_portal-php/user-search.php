@@ -17,8 +17,8 @@ print '<div class="body-content" id="user-search-list-page">'."\n".'';
 if(empty($_GET['query']) || !isset($_GET['query'])) {
 $_GET['query'] = 'empty-grp-0000069420'; }
 
-$sql_usersearch = "SELECT * FROM people WHERE CONCAT_WS('', user_id, screen_name) LIKE '".mysqli_real_escape_string($mysql, $_GET['query'])."%' ORDER BY people.pid DESC";
-$result_usersearch = mysqli_query($mysql, $sql_usersearch);
+$sql_usersearch = "SELECT * FROM people WHERE CONCAT_WS('', user_id, screen_name) LIKE '".$mysql->real_escape_string($_GET['query'])."%' ORDER BY people.pid DESC";
+$result_usersearch = $mysql->query($sql_usersearch);
 
 if(mysqli_num_rows($result_usersearch) == 0 || $_GET['query'] == '' || $_GET['query'] == '0') {
 if($_GET['query'] == 'empty-grp-0000069420') {

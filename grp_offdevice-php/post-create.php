@@ -43,7 +43,7 @@ $error_code[] = 1515003; }
 elseif($is_post_valid == 'invalid') {
 $error_message[] = 'The URL you have specified is not valid.';
 $error_code[] = 1515005; }
-elseif($is_post_valid == 'invalid-screenshot') {
+elseif($is_post_valid == 'invalid_screenshot') {
 $error_message[] = 'The screenshot you have specified is not valid.';
 $error_code[] = 1515005; }
 }
@@ -52,27 +52,6 @@ http_response_code(400); header('Content-Type: application/json; charset=utf-8')
 'message' => $error_message[0],
 'error_code' => $error_code[0]
 )], 'code' => 400)); grpfinish($mysql); exit();
-}
-
-if(isset($_POST['screenshot']) && strlen($_POST['screenshot']) > 1) {
-$ch_imgu = curl_init();
-curl_setopt($ch_imgu, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
-curl_setopt($ch_imgu, CURLOPT_POST, TRUE);
-curl_setopt($ch_imgu, CURLOPT_RETURNTRANSFER, TRUE);
-curl_setopt($ch_imgu, CURLOPT_HTTPHEADER, array( 'Authorization: Client-ID ef7417cca96d79f' ));
-curl_setopt($ch_imgu, CURLOPT_POSTFIELDS, array( 'image' => $_POST['screenshot'] ));
-$reply_imgu = curl_exec($ch_imgu);
-curl_close($ch_imgu);
-
-$reply_imgu2 = json_decode($reply_imgu, true);
-if($reply_imgu2['success'] == false) {
-http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
-print json_encode(array(
-'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1511000 + $reply_imgu2['status'])], 'code' => 500));
-exit();
-} else {
-$result_imgu = 'https://i.imgur.com/'.$reply_imgu2['data']['id'].'.png'; }
 }
 
 require_once '../grplib-php/olv-url-enc.php';

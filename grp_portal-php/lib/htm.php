@@ -125,6 +125,11 @@ if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH']
 '; }
 }
 
+function truncate($text, $chars) {
+$truncate_post_bodyp1 = mb_substr(($text), 0, $chars, 'utf-8');
+return (mb_strlen($text, 'utf-8') >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
+}
+
 function printMenu() {
 if(empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 	if(!empty($_SESSION['pid'])) {
@@ -190,16 +195,11 @@ function generalError($code, $message) {
 (empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? http_response_code($code) : null);
 printHeader('err');
 printMenu();
-
-print $GLOBALS['div_body_head'];
-print '
-<header id="header">
+print $GLOBALS['div_body_head']; print "\n".'<header id="header">
 <h1 id="page-title" class="left">Error</h1>
 </header>';
 print '<div class="body-content track-error" data-track-error="'.$code.'">';
-noContentWindow((!empty($message) ? $message : 'The screen could not be displayed.'));
-print $GLOBALS['div_body_head_end'];
-printFooter();
+noContentWindow((!empty($message) ? $message : 'The screen could not be displayed.')); print $GLOBALS['div_body_head_end']; printFooter();
 }
 	  
 function actError($error, $subheader, $location) {

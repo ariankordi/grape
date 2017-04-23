@@ -21,7 +21,7 @@ else {
     }
 
         $sql_update_profile = 'UPDATE profiles SET profiles.favorite_screenshot = NULL WHERE profiles.pid = "'.$_SESSION['pid'].'"';	
-	    $result_update_profile = mysqli_query($mysql, $sql_update_profile);
+	    $result_update_profile = $mysql->query($sql_update_profile);
         if(!$result_update_profile)
         {
             //MySQL error; print jsON response.

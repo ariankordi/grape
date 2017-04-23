@@ -10,19 +10,19 @@ header('Location: http://' . $_SERVER['HTTP_HOST'] .'/guest_menu', true, 302); }
 else {
  
 $sql_profilecreate_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "' . $_SESSION['pid'] . '"';
-$result_profilecreate_user_profile = mysqli_query($mysql, $sql_profilecreate_user_profile);
+$result_profilecreate_user_profile = $mysql->query($sql_profilecreate_user_profile);
 $row_profilecreate_user_profile = mysqli_fetch_assoc($result_profilecreate_user_profile); 
  
 if(mysqli_num_rows($result_profilecreate_user_profile) == 0) {
 $sql_profilecreate_user = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
-$result_profilecreate_user = mysqli_query($mysql, $sql_profilecreate_user);
+$result_profilecreate_user = $mysql->query($sql_profilecreate_user);
 $row_profilecreate_user = mysqli_fetch_assoc($result_profilecreate_user);
         $sql = "INSERT INTO
                     profiles(pid, platform_id)
-                VALUES('" . mysqli_real_escape_string($mysql, $_SESSION['pid']) . "',
-                       '" . mysqli_real_escape_string($mysql, $_SESSION['platform_id']) . "')";
+                VALUES('" . $mysql->real_escape_string($_SESSION['pid']) . "',
+                       '" . $mysql->real_escape_string($_SESSION['platform_id']) . "')";
                          
-        $result = mysqli_query($mysql, $sql);
+        $result = $mysql->query($sql);
         if(!$result)
         {
             //MySQL error; print jsON response.

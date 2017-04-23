@@ -28,7 +28,7 @@ if($template_reply_is_hidden == 1 && $template_reply_hidden_resp == '1') {
 print null;	} else {
 
 $sql_reply_post = 'SELECT * FROM posts WHERE posts.id = "' . $template_reply_to_id . '"';
-$result_reply_post = mysqli_query($mysql, $sql_reply_post);
+$result_reply_post = $mysql->query($sql_reply_post);
 $row_reply_post = mysqli_fetch_assoc($result_reply_post);
 
 // If the post's creator PID is equal to the reply creator's PID, then add class 'my'.
@@ -143,8 +143,8 @@ print '    </header>
 
 // Has the user given this reply a yeah?
     if(isset($_SESSION['pid'])) {	
-$sql_reply_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . mysqli_real_escape_string($mysql, $template_reply_id) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
-$result_reply_hasempathy = mysqli_query($mysql, $sql_reply_hasempathy);
+$sql_reply_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . $mysql->real_escape_string($template_reply_id) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$result_reply_hasempathy = $mysql->query($sql_reply_hasempathy);
 
 if(mysqli_num_rows($result_reply_hasempathy)!=0) {
     $mii_face_miitoo = 'Unyeah';

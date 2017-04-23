@@ -43,7 +43,7 @@ json_encode(array('success' => 1));
         $getposter = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
 
 	// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM grape.news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
+	$check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
     if($check_fastnews->num_rows == 0) {
     $check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.id = "'.$post['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
 	$check_mergedusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.id = "'.$post['id'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
@@ -159,11 +159,11 @@ require_once '../grplib-php/community-helper.php';
 print displayReply($ogpost, $search_post_created);
 
 
-		$get_empathy_poster = $mysql->query('SELECT * FROM grape.people WHERE people.pid = "'.$ogpost['pid'].'"')->fetch_assoc();
+		$get_empathy_poster = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'"')->fetch_assoc();
 
 		if($_SESSION['pid'] == $get_empathy_poster['pid']) {
 		# send notifications to all commenters	
-		$sql_news_getcomments = 'SELECT replies.pid FROM grape.replies WHERE replies.reply_to_id = "'.$ogpost['id'].'" AND replies.pid != "'.$get_empathy_poster['pid'].'" AND replies.is_hidden = "0" GROUP BY replies.pid';
+		$sql_news_getcomments = 'SELECT replies.pid FROM replies WHERE replies.reply_to_id = "'.$ogpost['id'].'" AND replies.pid != "'.$get_empathy_poster['pid'].'" AND replies.is_hidden = "0" GROUP BY replies.pid';
 		$result_news_getcomments = $mysql->query($sql_news_getcomments);
 		while($row_news_getcomments = mysqli_fetch_assoc($result_news_getcomments)) {
 		$result_check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$row_news_getcomments['pid'].'" AND news.news_context = "5" AND news.id = "'.$ogpost['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
@@ -176,7 +176,7 @@ print displayReply($ogpost, $search_post_created);
 		}
 		else {
 	// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$result_check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM grape.news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$get_empathy_poster['pid'].'" AND news.news_context = "4" AND news.created_at > NOW() - 1 ORDER BY news.created_at DESC');
+	$result_check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$get_empathy_poster['pid'].'" AND news.news_context = "4" AND news.created_at > NOW() - 1 ORDER BY news.created_at DESC');
     if($result_check_fastnews->num_rows == 0) {
     $result_check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$get_empathy_poster['pid'].'" AND news.news_context = "4" AND news.id = "'.$ogpost['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
 $row_check_ownusernews = $result_check_ownusernews->fetch_assoc();
@@ -271,8 +271,8 @@ json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-if($mysql->query('SELECT profiles.favorite_screenshot FROM grape.profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows == 0); {
-$delete_user_favoritepost = $mysql->query('UPDATE grape.profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); }	
+if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows == 0); {
+$delete_user_favoritepost = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); }	
 
 require_once 'lib/htm.php';
 $pagetitle = 'Error'; printHeader('old'); printMenu('old');

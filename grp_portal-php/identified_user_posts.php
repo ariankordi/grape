@@ -32,12 +32,11 @@ $posts[] = $get_latest_post->fetch_assoc(); } }
 
 print ' 	<ul class="list-content-with-icon-and-text js-post-list post-list test-identified-post-list" data-next-page-url="'.(isset($posts) && count($posts) > 49 ? '/identified_user_posts?offset='.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : '50') : null).'">';
 if(count($posts) != 0) {
-require_once 'lib/htmUser.php';
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 foreach($posts as &$post_row) {
 print "<li class=\"scroll\">\n";
-userpageTemplate($post_row, false, true);
+printPost($post_row, true, false, true);
 print "\n</li>";
 }
 

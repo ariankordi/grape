@@ -8,7 +8,7 @@ header('Location: http://' . $_SERVER['HTTP_HOST'] .'/guest_menu', true, 302);
 else {
 
 $sql_profile_edit_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "' . $_SESSION['pid'] . '"';
-$result_profile_edit_user_profile = mysqli_query($mysql, $sql_profile_edit_user_profile);
+$result_profile_edit_user_profile = $mysql->query($sql_profile_edit_user_profile);
 $row_profile_edit_user_profile = mysqli_fetch_assoc($result_profile_edit_user_profile); 
  
 if(mysqli_num_rows($result_profile_edit_user_profile) == 0) {
@@ -47,7 +47,7 @@ print '        <p class="settings-label">Favorite Post<span class="note">You can
       </li>'; }
 else {
 print '<p class="settings-label">Favorite Post<span class="note">You can set one of your own screenshot posts as your favorite via the settings button of that post.</span></p>';
-$result_posts_getfavoritepost = mysqli_query($mysql, 'SELECT * FROM posts WHERE posts.id = "'.mysqli_real_escape_string($mysql, $row_profile_edit_user_profile['favorite_screenshot']).'"');
+$result_posts_getfavoritepost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($row_profile_edit_user_profile['favorite_screenshot']).'"');
 print '<a id="profile-post" href="#" class="scroll-focus"><img src="'.htmlspecialchars(mysqli_fetch_assoc($result_posts_getfavoritepost)['screenshot']).'"><span class="remove-button-label">Remove</span></a>
 '; }
 	  
@@ -256,23 +256,23 @@ else {
 	// Update user's profile.	
 	
 	if(isset($_POST['game_skill'])) {
-    $sql_update = 'UPDATE profiles SET game_experience="'.mysqli_real_escape_string($mysql, $_POST['game_skill']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET game_experience="'.$mysql->real_escape_string($_POST['game_skill']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($_POST['profile_comment'])) {
-    $sql_update = 'UPDATE profiles SET comment="'.mysqli_real_escape_string($mysql, $_POST['profile_comment']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET comment="'.$mysql->real_escape_string($_POST['profile_comment']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($_POST['country'])) {
-    $sql_update = 'UPDATE profiles SET country="'.mysqli_real_escape_string($mysql, $_POST['country']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET country="'.$mysql->real_escape_string($_POST['country']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($_POST['gender'])) {
-    $sql_update = 'UPDATE profiles SET gender="'.mysqli_real_escape_string($mysql, $_POST['gender']).'" WHERE pid="'.$_SESSION['pid'].'"';
+    $sql_update = 'UPDATE profiles SET gender="'.$mysql->real_escape_string($_POST['gender']).'" WHERE pid="'.$_SESSION['pid'].'"';
     }
 	
 	if(isset($sql_update)) {
-	    $result = mysqli_query($mysql, $sql_update);
+	    $result = $mysql->query($sql_update);
         if(!$result)
         {
             //MySQL error; print jsON response.

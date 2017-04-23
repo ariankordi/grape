@@ -31,17 +31,17 @@ Description (2200 characters): <textarea type="text" name="community.description
 	}
 	else
 	{
-		$pidgen = mysqli_num_rows(mysqli_query($mysql, 'SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432;
-		$pidgen2 = mysqli_num_rows(mysqli_query($mysql, 'SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432 + 1;
+		$pidgen = mysqli_num_rows($mysql->query('SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432;
+		$pidgen2 = mysqli_num_rows($mysql->query('SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432 + 1;
 		//the form has been posted, so save it
 		$sql_title = 'INSERT INTO titles(olive_title_id, olive_community_id, icon, name, platform_id, platform_type)
 		   VALUES('."83955116433$pidgen".',
 		          '."83955116433$pidgen2".',
-				  "' . mysqli_real_escape_string($mysql, $_POST['title_icon']) . '",
-				  "' . mysqli_real_escape_string($mysql, $_POST['title_name']) . '",
-				  "' . (empty($_POST['title_platform_id']) ? '' : mysqli_real_escape_string($mysql, $_POST['title_platform_id'])) . '",
-				  "' . (empty($_POST['title_platform_type']) ? NULL : mysqli_real_escape_string($mysql, $_POST['title_platform_type'])) . '")';
-		$result_title = mysqli_query($mysql, $sql_title);
+				  "' . $mysql->real_escape_string($_POST['title_icon']) . '",
+				  "' . $mysql->real_escape_string($_POST['title_name']) . '",
+				  "' . (empty($_POST['title_platform_id']) ? '' : $mysql->real_escape_string($_POST['title_platform_id'])) . '",
+				  "' . (empty($_POST['title_platform_type']) ? NULL : $mysql->real_escape_string($_POST['title_platform_type'])) . '")';
+		$result_title = $mysql->query($sql_title);
 		if(!$result_title)
 		{
 			//something went wrong, display the error

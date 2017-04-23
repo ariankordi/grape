@@ -10,10 +10,10 @@ require_once '../grplib-php/init.php';
         }
 
 $sql_find_user_newstutorial = 'SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.my_news = "1"';
-$result_find_user_newstutorial = mysqli_query($mysql, $sql_find_user_newstutorial);
+$result_find_user_newstutorial = $mysql->query($sql_find_user_newstutorial);
 
 $sql_find_user_fmtutorial = 'SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.friend_messages = "1"';
-$result_find_user_fmtutorial = mysqli_query($mysql, $sql_find_user_fmtutorial);
+$result_find_user_fmtutorial = $mysql->query($sql_find_user_fmtutorial);
 
 if(strval(mysqli_num_rows($result_find_user_newstutorial)) >= 1) {
             $error_message[] = 'You have already accomplished this.';
@@ -43,7 +43,7 @@ if(strval(mysqli_num_rows($result_find_user_fmtutorial)) >= 1) {
     }
 	
 	if(isset($sql_update)) {
-	    $result = mysqli_query($mysql, $sql_update);
+	    $result = $mysql->query($sql_update);
         if(!$result)
         {
             //MySQL error; print jsON response.

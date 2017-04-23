@@ -1,7 +1,7 @@
 <?php
 require_once '../grplib-php/init.php';
 if(empty($_GET['pid'])) { $_GET['pid'] = ''; }
-$user_show_search_pid = mysqli_query($mysql, 'SELECT * FROM people WHERE people.pid = "'.mysqli_real_escape_string($mysql, $_GET['pid']).'"');
+$user_show_search_pid = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$mysql->real_escape_string($_GET['pid']).'"');
 if(mysqli_num_rows($user_show_search_pid) == 0 || $_GET['pid'] == '') {
 
 (isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));

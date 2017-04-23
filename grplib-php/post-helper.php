@@ -24,8 +24,8 @@ if(mb_strlen($_POST['screenshot'], 'utf-8') > 255) { return 'max'; } elseif(mb_s
 if(substr($contentType1,0,5) != 'image' || $contentType1 == 'image/gif') { return 'invalid'; } } else {
 $finfo_imgu = new finfo(FILEINFO_MIME_TYPE);
 $bufferimg = $finfo_imgu->buffer(base64_decode($_POST['screenshot']));
-if($bufferimg != 'image/jpeg' || $bufferimg != 'image/png' || $bufferimg != 'image/bmp') { return 'invalid_screenshot'; }
-		if(strlen(base64_decode($_POST['screenshot'])) > 600000)
+if(substr($bufferimg,0,5) != 'image' || $bufferimg == 'image/gif') { return 'invalid_screenshot'; }
+                if(strlen(base64_decode($_POST['screenshot'])) > 600000)
         { return 'max'; }
 }
 }
