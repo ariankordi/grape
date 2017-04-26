@@ -390,6 +390,7 @@ print '<header id="header">
 </header>';
 print '<div class="body-content" id="community-top">
 		';
+require_once 'lib/htmCommunity.php';
 if(!empty($title['banner'])) {
 print '<div class="header-banner-container"><img src="'.htmlspecialchars($title['banner']).'" class="header-banner"></div>'; }
 		
@@ -397,41 +398,9 @@ print '<div class="community-list">';
 		print '<ul class="list-content-with-icon-and-text arrow-list">
 			
 			';
-			
-$search_communities = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$title['olive_title_id'].'" ORDER BY communities.created_at ASC');
-                while($row1 = mysqli_fetch_assoc($result1))
-                {
-			if(strval($row1['type']) == 5) {
-		    print null; }
-			else {
-			if (empty($row1['icon'])) {
-			  $row1['icon'] = 'https://miiverse.nintendo.net/img/title-icon-default.png';
-		   }
-                        print '<li id="community-' . htmlspecialchars($row1['olive_community_id']) . '" class="';
-                        if(($row1['type']) == '1' || ($row1['type']) == '2') {
-						print 'with-news-community-badge';
-						}
-		                print '">';
-						print '<span class="icon-container"><img src="' . htmlspecialchars($row1['icon']) . '" class="icon"></span>
-						';
-						print '<a href="/titles/' . htmlspecialchars($row0['olive_title_id']) . '/' . htmlspecialchars($row1['olive_community_id']) . '" data-pjax="#body" class="scroll arrow-button"></a>
-						';
-						print '<div class="body">';
-						print '<div class="body-content">
-						';
-						if(($row1['type']) == '1') {
-						print '<span class="news-community-badge">Main Community</span>
-						';
-						}
-						if(($row1['type']) == '2') {
-						print '<span class="news-community-badge">Announcement Community</span>
-						';
-						}
-						print '<span class="community-name title">' . htmlspecialchars($row1['name']) . '</span>
-						';
-						print '<span class="text">' . htmlspecialchars($row0['name']) . '</span>
-						
-						';
+$search_communities = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$title['olive_title_id'].'" ORDER BY communities.created_at');
+                while($community = $search_communities->fetch_assoc()) {
+printCommunityforTitle($community);
             }
 print '
    </div>
