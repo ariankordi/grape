@@ -2,65 +2,49 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
+$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" LIMIT 1');
+
+if(!$search_title) {
+include '404.php'; grpfinish($mysql); exit(); }
+elseif($search_title->num_rows == 0) {
+include_once '404.php'; grpfinish($mysql); exit(); }
+
 # Community listing.
-if(isset($_GET['community_id'])) {
-$community_uid = $mysql->real_escape_string($_GET['community_id']);
-$title_uid = $mysql->real_escape_string($_GET['title_id']);
-$sql_comm = 'SELECT * FROM communities WHERE communities.olive_community_id = "' . htmlspecialchars($community_uid) . '" AND communities.olive_title_id ="' . $title_uid . '"';
-$result_comm = $mysql->query($sql_comm);
-$row_comm = mysqli_fetch_assoc($result_comm);
+if(isset($_GET['community_id']) && isset($_GET['title_id'])) {
+$search_community = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$mysql->real_escape_string($_GET['community_id']).'" AND communities.olive_community_id = "'.$mysql->real_escape_string($_GET['title_id']).'" LIMIT 1');
 
-
-$sql_title = 'SELECT * FROM titles WHERE titles.olive_title_id = "' . htmlspecialchars($title_uid) . '"';
-$result_title = $mysql->query($sql_title);
-$row_title = mysqli_fetch_assoc($result_title);
-
-if(!$result_comm)
-{
-http_response_code(500);
-$pagetitle = ('Error');
-	require_once 'lib/htm.php';
+function noCommErr() {
+(empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? http_response_code(404) : null);
+$pagetitle = 'Communities';
 printHeader(false);
-	printMenu();
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">' . $pagetitle . '</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="500">';
-$no_content_message = ( 'Server error.' );
-include 'lib/no-content-window.php';
-print $GLOBALS['div_body_head_end'];
-}
-else
-{	
-if(isset($row_comm['type'])) {
-$commtype = strval($row_comm['type']); }
-else { $commtype = 0; }
-    if(mysqli_num_rows($result_comm) == 0 || $commtype == 5)
-    {
-(isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
-$pagetitle = ('Communities');
-	require_once 'lib/htm.php';
-printHeader(false);
-	printMenu();
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">' . $pagetitle . '</h1>
+printMenu();
+print $GLOBALS['div_body_head']; print "\n".'<header id="header">
+<h1 id="page-title" class="left">'.$pagetitle.'</h1>
 </header>';
 print '<div class="body-content track-error" data-track-error="community-404">';
-$no_content_message = ( 'Community could not be found.' );
-include 'lib/no-content-window.php';
-print $GLOBALS['div_body_head_end'];
-    }
-    else
-    {
+noContentWindow('Community could not be found.'); print $GLOBALS['div_body_head_end']; printFooter();
+}
 
-# Success, show community. 
-$pagetitle = htmlspecialchars($row_title['name']);
-if(!isset($_SERVER['HTTP_X_PJAX_CONTAINER']) || $_SERVER['HTTP_X_PJAX_CONTAINER'] != '#community-tab-body') {
-	require_once 'lib/htm.php';
-printHeader(false);
-	printMenu();
+if(!$search_community) {
+include '404.php'; grpfinish($mysql); exit(); }
+elseif($search_community->num_rows == 0) {
+noCommErr(); grpfinish($mysql); exit(); }
+$community = $search_community->fetch_assoc();
+if($community['type'] == 5) {
+noCommErr(); grpfinish($mysql); exit(); }
+$title = $search_title->fetch_assoc();
+
+# Success, show community.
+require_once '../grplib-php/community-helper.php';
+$pagetitle = htmlspecialchars($title['name']);
+if(empty($_SERVER['HTTP_X_PJAX_CONTAINER']) || $_SERVER['HTTP_X_PJAX_CONTAINER'] != '#community-tab-body') {
+printHeader(false); printMenu();
+# have if can user post here using postPermission() in community-helper.php
+
+if(!empty($_SESSION['pid'])) {
+$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc(); }
+
+/* Cut this in favor of postPermission() !!!!
 
 	if(empty($_SESSION['signed_in'])) {
 	$if_can_user_post = ' disabled'; } else {
@@ -79,10 +63,11 @@ $row_my_poster1 = mysqli_fetch_assoc($result_my_poster1);
 else {
 	$if_can_user_post = ' disabled'; }	
 	}
+*/
     print $GLOBALS['div_body_head'];
 	print '
 <header id="header">
-<a id="header-post-button"' . $if_can_user_post . ' class="header-button' . $if_can_user_post . ' none"'.($if_can_user_post == '' ? 'href="#"' : '').' data-modal-open="#add-post-page">Post</a>';
+<a id="header-post-button"' . (empty($_SESSION['pid']) || !postPermission($user, $community) ? ' disabled' : null) . ' class="header-button' . $if_can_user_post . ' none"'.($if_can_user_post == '' ? 'href="#"' : '').' data-modal-open="#add-post-page">Post</a>';
 $sql_communityscroll = 'SELECT * FROM communities WHERE communities.olive_title_id = "' . htmlspecialchars($row_title['olive_title_id']) . '" AND type != "5"';
 $result_communityscroll = $mysql->query($sql_communityscroll);
 $communityscroll_amt = mysqli_num_rows($result_communityscroll);
@@ -366,20 +351,13 @@ print '
 
 ';
 print $GLOBALS['div_body_head_end'];
-	}
-}
 	# End of community listing.
 	}
 (empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
 }
 elseif(isset($_GET['title_id'])) {
 # Start of title listing.
-$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" LIMIT 1');
 
-if(!$search_title) {
-include '404.php'; grpfinish($mysql); exit(); }
-elseif($search_title->num_rows == 0) {
-include_once '404.php'; grpfinish($mysql); exit(); }
 $title = $search_title->fetch_assoc();
 // Yes communities ; print start.
 $pagetitle = htmlspecialchars($title['name']);
@@ -400,7 +378,7 @@ print '<div class="community-list">';
 			';
 $search_communities = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$title['olive_title_id'].'" ORDER BY communities.created_at');
                 while($community = $search_communities->fetch_assoc()) {
-printCommunityforTitle($community);
+printCommunityforTitle($community, $title);
             }
 print '
    </div>
