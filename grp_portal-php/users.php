@@ -80,7 +80,7 @@ $result_userpage_user_posts = $mysql->query($sql_userpage_user_posts);
 $sql_userpage_user_empathies = 'SELECT * FROM empathies WHERE empathies.pid = "' . $row_userpage_user['pid'] . '"';
 $result_userpage_user_empathies = $mysql->query($sql_userpage_user_empathies);
 
-$sql_userpage_user_posts_view = 'SELECT * FROM posts WHERE posts.pid = "' . $row_userpage_user['pid'] . '" ORDER BY posts.created_at DESC LIMIT 50 OFFSET '.$mysql->real_escape_string($_GET['offset']).'';
+$sql_userpage_user_posts_view = 'SELECT * FROM posts WHERE posts.pid = "' . $row_userpage_user['pid'] . '" ORDER BY posts.created_at DESC LIMIT 50 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'';
 $result_userpage_user_posts_view = $mysql->query($sql_userpage_user_posts_view);	
 
 if(mysqli_num_rows($result_userpage_user_posts_view) > 49) {
@@ -407,7 +407,7 @@ $result_userpage_user_followers = $mysql->query($sql_userpage_user_followers);
 $sql_userpage_user_following = 'SELECT * FROM relationships WHERE relationships.source = "' . $row_userpage_user['pid'] . '" AND relationships.is_me2me = "0"';
 $result_userpage_user_following = $mysql->query($sql_userpage_user_following);
 
-$sql_userpage_user_empathies_view = 'SELECT * FROM empathies WHERE empathies.pid = "' . $row_userpage_user['pid'] . '" ORDER BY empathies.created_at DESC LIMIT 20 OFFSET '.$mysql->real_escape_string($_GET['offset']).'';
+$sql_userpage_user_empathies_view = 'SELECT * FROM empathies WHERE empathies.pid = "' . $row_userpage_user['pid'] . '" ORDER BY empathies.created_at DESC LIMIT 20 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'';
 $result_userpage_user_empathies_view = $mysql->query($sql_userpage_user_empathies_view);
 
 if(mysqli_num_rows($result_userpage_user_empathies_view) > 19) {

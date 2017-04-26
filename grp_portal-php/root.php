@@ -72,7 +72,7 @@ $result_feed_me = $mysql->query($sql_feed_me);
 $row_feed_me = mysqli_fetch_assoc($result_feed_me); 
 
 if(isset($_GET['offset']) && is_numeric($_GET['offset'])) {
-$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET '.$mysql->real_escape_string($_GET['offset']).'';
+$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'';
 $result_feed_my_following = $mysql->query($sql_feed_my_following); } else {
 $sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50';
 $result_feed_my_following = $mysql->query($sql_feed_my_following);

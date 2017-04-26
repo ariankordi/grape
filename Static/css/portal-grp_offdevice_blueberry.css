@@ -5290,11 +5290,13 @@ input.fixed-bottom-button {
   -webkit-border-radius: 5px;
 }
 .title-capture-container.capture-container .title-capture {
-  width: 480px;
-  min-height: 270px;
-  vertical-align: bottom;
-  border-radius: 5px;
-  -webkit-border-radius: 5px;
+    max-width: 480px;
+    width: auto;
+    height: auto;
+    min-height: 270px;
+    vertical-align: bottom;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 .post-tag {
   position: relative;

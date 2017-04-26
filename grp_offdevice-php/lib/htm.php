@@ -100,6 +100,12 @@ print '
 </div>';
 }
 
+function noContentWindow($message) {
+print '<div class="no-content"><div>
+    <p>'.$message.'</p>
+  </div></div>';
+}
+
 function printFooter($mode) {
 print '
       

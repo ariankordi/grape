@@ -194,7 +194,7 @@ if(isset($_GET['user_id'])) {
 $find_conversation_for_friend = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_person_formessage['pid'].'" OR conversations.sender = "'.$row_get_person_formessage['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
 }
 if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strval($_GET['offset']) >= 1) {
-$get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20 OFFSET '.$mysql->real_escape_string($_GET['offset']).'');	
+$get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'');	
 }
 else {
 $get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20');

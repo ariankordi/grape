@@ -5,7 +5,7 @@ global $mysql;
 if($my == true) { global $my_empathy_added; }
 $empathies_person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($my == true ? $_SESSION['pid'] : $row['pid']).'" LIMIT 1')->fetch_assoc();
 $empathies_person_mii = getMii($empathies_person, $post['feeling_id']);
-print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" class="post-permalink-feeling-icon'.($my == true ? ' visitor' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
+print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" class="post-permalink-feeling-icon'.($empathies_person_mii['official'] == true ? ' official-user' : null).''.($my == true ? ' visitor' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
 }
 
 function displayreply($ogpost, $reply) {
@@ -13,7 +13,7 @@ if($reply['hidden_resp'] != '1') {
 global $mysql;
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].'" LIMIT 1')->fetch_assoc();
 $mii = getMii($user, $reply['feeling_id']);
-print '<li id="reply-'.$reply['id'].'" data-href="/replies/'.$reply['id'].'" class="'.($reply['pid'] == $ogpost['pid'] ? 'my' : 'other').''.($reply['is_spoiler'] == 1 ? (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? '' : ' hidden') : '').' trigger">
+print '<li id="reply-'.$reply['id'].'" data-href'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']? null :($reply['is_spoiler'] == 1 ? '-hidden' : null)).'="/replies/'.$reply['id'].'" class="'.($reply['pid'] == $ogpost['pid'] ? 'my' : 'other').''.($reply['is_spoiler'] == 1 ? (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? '' : ' hidden') : '').' trigger">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" class="icon"></a>
   <div class="body">
   ';

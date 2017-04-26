@@ -1,7 +1,6 @@
 <?php
-//Communities screen
-$body_id = 'main';
 require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
 
 # Community listing.
 if(isset($_GET['community_id'])) {
@@ -184,7 +183,7 @@ print '</div>';
 							
 if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strlen($_GET['offset']) >= 1) {
 
-	    $sql_post_offset = 'SELECT * FROM posts WHERE posts.community_id = "' . $row_comm['community_id'] . '" AND posts.is_hidden = "0" ORDER BY posts.created_at DESC LIMIT 50 OFFSET '.$mysql->real_escape_string($_GET['offset']).'';
+	    $sql_post_offset = 'SELECT * FROM posts WHERE posts.community_id = "' . $row_comm['community_id'] . '" AND posts.is_hidden = "0" ORDER BY posts.created_at DESC LIMIT 50 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'';
         $result_post_offset = $mysql->query($sql_post_offset);
 	
 if(mysqli_num_rows($result_post_offset) > 49) {
@@ -236,8 +235,7 @@ include 'lib/postlist-post-template.php';
 				
 				
 				}
-			print '</div>';		
-exit();
+			print '</div>';
 			}
 				
 				
@@ -298,9 +296,7 @@ include 'lib/postlist-post-template.php';
 if(!isset($_SERVER['HTTP_X_PJAX_CONTAINER']) || $_SERVER['HTTP_X_PJAX_CONTAINER'] != '#community-tab-body') {
 
 # Post form.
-print '<div id="add-post-page" class="add-post-page '.(strval($lookup_user['image_perm']) >= 1 ? 'official-user-post ' : '');
-
-print 'none " data-modal-types="add-entry add-post require-body preview-body" data-is-template="1">
+print '<div id="add-post-page" class="add-post-page '.($lookup_user['image_perm'] >= 1 ? 'official-user-post ' : '').'none " data-modal-types="add-entry add-post require-body preview-body" data-is-template="1">
 <header class="add-post-page-header">
 ';
 print '<h1 class="page-title">Post to ' . htmlspecialchars($row_comm['name']) . '</h1>
@@ -374,10 +370,10 @@ print $GLOBALS['div_body_head_end'];
 }
 	# End of community listing.
 	}
+(empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
 }
-
+elseif(isset($_GET['title_id'])) {
 # Start of title listing.
-else {
 $title_uid = (isset($_GET['title_id']) ? $mysql->real_escape_string($_GET['title_id']) : '');
 $sql0 = 'SELECT * FROM titles WHERE titles.olive_title_id = "' . $title_uid . '"';
 $result0 = $mysql->query($sql0);
@@ -490,5 +486,8 @@ print
 </div>';
 print $GLOBALS['div_body_head_end'];
     }
-	}
 (empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
+}
+else {
+include_once '404.php';	grpfinish($mysql); exit();
+}

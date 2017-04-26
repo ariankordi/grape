@@ -33,9 +33,10 @@ print '  <span class="title">'.htmlspecialchars($community['name']).'</span>
   <span class="text">'.htmlspecialchars($community['description']).'</span>
   <div class="buttons-content">
   ';
-#if(!empty($_SESSION['pid'])) {
-# put favorite/unfavorite checks here
-#print '	<button type="button" class="symbol button favorite-button" data-action-favorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/unfavorite.json"><span class="favorite-button-text">Favorite</span></button>'; }
+if(!empty($_SESSION['pid'])) {
+$find_community_favorite = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" AND favorites.community_id = "'.$community['community_id'].'"');
+print '	<button type="button" class="symbol button favorite-button'.($find_community_favorite->num_rows != 0 ? ' checked' : '').'" data-action-favorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/unfavorite.json"><span class="favorite-button-text">Favorite</span></button>'; }
+
 print '
 	</div>
   ';
@@ -92,7 +93,8 @@ printFooter('old');
 } }
 
 
-} elseif(isset($_GET['title_id'])) {
+}
+elseif(isset($_GET['title_id'])) {
 require_once 'lib/htmCommunity.php';
 # Display title	
 $search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'"');

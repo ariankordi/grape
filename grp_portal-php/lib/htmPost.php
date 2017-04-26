@@ -21,7 +21,7 @@ print '		   <li id="reply-'.$reply['id'].'" class="test-fresh-reply scroll'.($og
 if($reply['is_hidden'] == 1 && $reply['hidden_resp'] == 0) {
 	print '<div class="reply-content">
         <p class="deleted-message">Deleted by administrator.</p>
-        <p class="deleted-message">Comment ID: '.getPostID($template_reply_id).'</p>
+        <p class="deleted-message">Comment ID: '.getPostID($reply['id']).'</p>
 
 
       </div>

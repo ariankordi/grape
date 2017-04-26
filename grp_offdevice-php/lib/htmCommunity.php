@@ -41,6 +41,24 @@ if(!empty($row['type']) && $row['type'] >= 1) {
 </li>';
 }
 
+function printCommunity($row) {
+global $mysql;
+$row_t = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$row['olive_title_id'].'"')->fetch_assoc();
+print '<li id="community-'.$row['olive_community_id'].'" class="trigger " data-href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" tabindex="0">
+  <span class="icon-container"><img src="'.getIcon($row).'" class="icon"></span>
+  <div class="body">
+      <a class="title" href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" tabindex="-1">'.htmlspecialchars($row['name']).'</a>
+	  ';
+if(!empty($row_t['platform_id'])) {
+print '        <span class="platform-tag"><img src="https://i.imgur.com/'.($row_t['platform_id'] == 1 ? 'nZkp8NW' : 'VaXHOg6').'.png"></span>
+';
+print '
+      <span class="text">'.htmlspecialchars($row_t['name']).'</span>
+'; }
+print '  </div>
+        </li>';
+}
+
 function postForm($community, $user, $placeholder) {
 if(postPermission($user, $community) == true) {
 	print '
@@ -98,7 +116,7 @@ if(substr($row['url'], 0, 4) == "http" || substr($row['url'], 0, 5) == "https") 
 $videopost = substr($row['url'], (substr($row['url'], 0, 5) == "https" ? 32 : 31), 11);
 } } }
 
-print '<div id="post-'.$row['id'].'" data-href="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="post trigger'.(!empty($row['screenshot']) || isset($videopost) ? ' with-image' : '').($row['is_spoiler'] == 1 ? (isset($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? '' : ' hidden') : '').'" tabindex="0">
+print '<div id="post-'.$row['id'].'" data-href'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? null : ($row['is_spoiler'] == 1 ? '-hidden' : null)).'="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="post trigger'.(!empty($row['screenshot']) || isset($videopost) ? ' with-image' : '').($row['is_spoiler'] == 1 ? (isset($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? '' : ' hidden') : '').'" tabindex="0">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="icon-container'.($usermii['official'] ? ' official-user' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
     <p class="timestamp-container">
 	';

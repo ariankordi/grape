@@ -4133,7 +4133,8 @@ div#activity-feed-tutorial.no-content p.tleft {
   text-align: center;
 }
 .post-list .screenshot-container.still-image img {
-  width: auto;
+  width = auto;
+  max-width: 320px;
   height: auto;
   max-height: 320px;
 }

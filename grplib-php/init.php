@@ -121,7 +121,5 @@ if($search_relationships_own->num_rows == 0) {
 $mysql->query('INSERT INTO relationships (source, target, is_me2me) VALUES ("'.$_SESSION['pid'].'", "'.$_SESSION['pid'].'", "1")'); }
 }
 
-
-if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && substr($_SERVER['REQUEST_URI'],0,5) != '/act/') {
-header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/act/login', true, 302);
-}
+if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/login' && $_SERVER['REQUEST_URI'] != '/login' && $_SERVER['REQUEST_URI'] != '/act/create' && $_SERVER['REQUEST_URI'] != '/people') {
+header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/act/login', true, 302); }

@@ -20,8 +20,25 @@ print '
       <input type="text" name="query" placeholder="Search Communities" minlength="2" maxlength="20"><input type="submit" value="q" title="Search">
     </form>
   </div>
+';
+if(!empty($_SESSION['pid'])) {
+$search_favorite_communitities = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" ORDER BY created_at DESC');
+if($search_favorite_communitities->num_rows != 0) {
+print '<h3 class="label">Favorite Communities</h3>
+<ul class="list community-list">
+';
+while($favorites = $search_favorite_communitities->fetch_assoc()) {
+$fav_comm = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$favorites['community_id'].'"')->fetch_assoc();
+printCommunity($fav_comm);
+}
+print '
+  </ul>
+<div class="buttons-content">
+      <a href="/communities/favorites" class="button">Show More</a>
+    </div>';
 
-
+} }
+print '
   <div id="identified-user-banner">
     <a href="/identified_user_posts" data-pjax="#body" class="list-button us">
       <span class="title">Get the latest news here!</span>

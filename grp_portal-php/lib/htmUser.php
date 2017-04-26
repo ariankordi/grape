@@ -100,8 +100,8 @@ $body = 'Followed by '.span_u($user['screen_name']).', '.span_u($m2fpu['screen_n
 
 print '<li>
   
-  <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="icon-container'.($usermii['official'] == true ? ' official-user' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
-  <a href="'.$newsurl.'" data-pjax="#body" class="arrow-button scroll"></a>
+  <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="icon-container'.($usermii['official'] == true ? ' official-user' : '').''.($news['has_read'] == 0 ? ' notify' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
+  <a href="'.$newsurl.'" data-pjax="#body" class="'.($news['news_context'] == 6 && $has_user_follow == false ? null : 'arrow-button ').'scroll"></a>
 
 ';
 if($news['news_context'] == 6 && $has_user_follow == false) {
