@@ -40,6 +40,22 @@ print '
 ';
 }
 
+function printCommunityforTitle($row, $title) {
+			if($row['type'] != 5) {
+       print '<li id="community-' . htmlspecialchars($row['olive_community_id']) . '" class="'.($row['type'] >= 1 ? 'with-news-community-badge' : null).'>
+       <span class="icon-container"><img src="'.getIcon($row).'" class="icon"></span>
+       <a href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" data-pjax="#body" class="scroll arrow-button"></a>
+	   <div class="body">
+       <div class="body-content">
+       ';
+       if($community['type'] >= 1) {
+       print '<span class="news-community-badge">'.($row['type'] == 2 ? 'Announcement Community' : 'Main Community').' Community</span>';
+	print '<span class="community-name title">'.htmlspecialchars($row['name']).'</span>
+	       <span class="text">'.htmlspecialchars($title['name']).'</span>
+						
+						';
+}
+
 function favoriteWithTitle($row_community) {
 global $mysql;
 $row_get_titles_from_cid = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$row_community['olive_title_id'].'"')->fetch_assoc();
