@@ -374,70 +374,31 @@ print $GLOBALS['div_body_head_end'];
 }
 elseif(isset($_GET['title_id'])) {
 # Start of title listing.
-$title_uid = (isset($_GET['title_id']) ? $mysql->real_escape_string($_GET['title_id']) : '');
-$sql0 = 'SELECT * FROM titles WHERE titles.olive_title_id = "' . $title_uid . '"';
-$result0 = $mysql->query($sql0);
-$row0 = mysqli_fetch_assoc($result0);
+$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" LIMIT 1');
 
-if(!$result0)
-// DB error.
-{
-http_response_code(500);
-$pagetitle = ('Error');
-require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">' . $pagetitle . '</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="500">';
-$no_content_message = ( 'Server error.' );
-include 'lib/no-content-window.php';
-include 'lib/no-content-window.php';
-}
-else
-// Title doesn't exist.
-{
-    if(mysqli_num_rows($result0) == 0)
-    {
-(isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
-$pagetitle = ('Error');
-require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">' . $pagetitle . '</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="404">';
-$no_content_message = ( 'The screen could not be displayed.' );
-include 'lib/no-content-window.php';
-    }
-    else
-    {
+if(!$search_title) {
+include '404.php'; grpfinish($mysql); exit(); }
+elseif($search_title->num_rows == 0) {
+include_once '404.php'; grpfinish($mysql); exit(); }
+$title = $search_title->fetch_assoc();
 // Yes communities ; print start.
-       $pagetitle = htmlspecialchars($row0['name']);
-	   require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
-       print $GLOBALS['div_body_head'];
-	   print '<header id="header">
-<h1 id="page-title">' . $pagetitle . '</h1>
+$pagetitle = htmlspecialchars($title['name']);
+printHeader(false); printMenu(); 
+print $GLOBALS['div_body_head'];
+print '<header id="header">
+<h1 id="page-title">'.$pagetitle.'</h1>
 </header>';
-        print '<div class="body-content" id="community-top">
+print '<div class="body-content" id="community-top">
 		';
-		if(!strlen($row0['banner']) < 2) {
-		print '<div class="header-banner-container"><img src="' . htmlspecialchars($row0['banner']) . '" class="header-banner"></div>';
-		}
+if(!empty($title['banner'])) {
+print '<div class="header-banner-container"><img src="'.htmlspecialchars($title['banner']).'" class="header-banner"></div>'; }
 		
 print '<div class="community-list">';
 		print '<ul class="list-content-with-icon-and-text arrow-list">
 			
 			';
 			
-$sql1 = 'SELECT * FROM communities WHERE communities.olive_title_id = "' . $title_uid . '"';
-$result1 = $mysql->query($sql1);
+$search_communities = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$title['olive_title_id'].'" ORDER BY communities.created_at ASC');
                 while($row1 = mysqli_fetch_assoc($result1))
                 {
 			if(strval($row1['type']) == 5) {
@@ -472,8 +433,6 @@ $result1 = $mysql->query($sql1);
 						
 						';
             }
-            }
-        }
 print '
    </div>
   </div>
@@ -488,6 +447,7 @@ print $GLOBALS['div_body_head_end'];
     }
 (empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
 }
+
 else {
-include_once '404.php';	grpfinish($mysql); exit();
+include '404.php';	grpfinish($mysql); exit();
 }
