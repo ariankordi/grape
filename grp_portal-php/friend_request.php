@@ -103,7 +103,7 @@ json_encode(array('success' => 1)); }
 	
 else {
 # Create friend!	
-$result_relationshipcreate = $mysql->query('INSERT INTO friend_relationships(source, target) VALUES ("' . $user['pid'] . '", "' . $_SESSION['pid'] . '")');
+$result_relationshipcreate = $mysql->query('INSERT INTO friend_relationships(source, target) VALUES ("'.$user['pid'].'", "'.$_SESSION['pid'].'")');
 $result_newscreate = $mysql->query('UPDATE friend_requests SET finished="1" WHERE sender="'.$user['pid'].'" AND recipient="'.$_SESSION['pid'].'"');
         if(!$result_relationshipcreate) {
 http_response_code(500);

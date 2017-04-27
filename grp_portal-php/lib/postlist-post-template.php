@@ -23,7 +23,7 @@
 #$template_result_post_empathies = $result_post_empathies;
 #$template_result_post_replies = $result_post_replies;
 
-#$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_post['id'] . '" ORDER BY replies.created_at DESC LIMIT 1';
+#$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "'.$row_post['id'].'" ORDER BY replies.created_at DESC LIMIT 1';
 #$result_post_recent_replies = $mysql->query($sql_post_recent_replies);
 
 #include 'lib/postlist-post-template.php';
@@ -34,27 +34,27 @@ if($template_post_is_hidden == true) {
 else {
 	if($template_creator_mii_hash) {
 if(($template_post_feeling_id) == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $template_creator_mii_hash . '_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$template_creator_mii_hash.'_normal_face.png'; 
 $mii_face_feeling = 'normal';
 $mii_face_miitoo = htmlspecialchars('Yeah!'); }
 if(($template_post_feeling_id) == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $template_creator_mii_hash . '_happy_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$template_creator_mii_hash.'_happy_face.png'; 
 $mii_face_feeling = 'happy'; }
 $mii_face_miitoo = htmlspecialchars('Yeah!');
 if(($template_post_feeling_id) == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $template_creator_mii_hash . '_like_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$template_creator_mii_hash.'_like_face.png'; 
 $mii_face_feeling = 'like';
 $mii_face_miitoo = htmlspecialchars('Yeah♥'); }
 if(($template_post_feeling_id) == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $template_creator_mii_hash . '_surprised_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$template_creator_mii_hash.'_surprised_face.png'; 
 $mii_face_feeling = 'surprised';
 $mii_face_miitoo = htmlspecialchars('Yeah!?'); }
 if(($template_post_feeling_id) == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $template_creator_mii_hash . '_frustrated_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$template_creator_mii_hash.'_frustrated_face.png'; 
 $mii_face_feeling = 'frustrated';
 $mii_face_miitoo = htmlspecialchars('Yeah...'); }
 if(($template_post_feeling_id) == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $template_creator_mii_hash . '_puzzled_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$template_creator_mii_hash.'_puzzled_face.png'; 
 $mii_face_feeling = 'puzzled';
 $mii_face_miitoo = htmlspecialchars('Yeah...'); }
 }
@@ -121,14 +121,14 @@ $is_poster_official_user = ' official-user';
 else {
 $is_poster_official_user = ''; }
 	
-	print '<div id="post-' . $template_post_id . '" class="post scroll post-subtype-default' . $if_has_can_spoiler_post . '' . $if_has_can_video_post . '' . $if_has_can_screenshot_post . '" data-post-permalink-url="/posts/' . $template_post_id . '">
-  <a href="/users/' . htmlspecialchars($template_creator_user_id) . '" class="user-icon-container scroll-focus' . $is_poster_official_user . '" data-pjax="#body"><img src="' . $mii_face_output . '" class="user-icon"></a>
+	print '<div id="post-'.$template_post_id.'" class="post scroll post-subtype-default'.$if_has_can_spoiler_post.''.$if_has_can_video_post.''.$if_has_can_screenshot_post.'" data-post-permalink-url="/posts/'.$template_post_id.'">
+  <a href="/users/'.htmlspecialchars($template_creator_user_id).'" class="user-icon-container scroll-focus'.$is_poster_official_user.'" data-pjax="#body"><img src="'.$mii_face_output.'" class="user-icon"></a>
   <div class="post-body-content">
     <div class="post-body">
       <header>
-        <span class="user-name">' . htmlspecialchars($template_creator_screen_name) . '</span>';
+        <span class="user-name">'.htmlspecialchars($template_creator_screen_name).'</span>';
 print '
-        <span class="timestamp">' . humanTiming(strtotime($template_post_created_at)) . '</span>';
+        <span class="timestamp">'.humanTiming(strtotime($template_post_created_at)).'</span>';
         // Spoilers
 		
 		if($template_post_spoiler == '1') { 
@@ -141,14 +141,14 @@ print '
 if(!empty(${"template_post_yt_url_$template_post_id"})) {
 
 print '<div class="title-capture-container video-container">
-<a class="video-thumbnail" href="/posts/' . $template_post_id . '#post-video" data-pjax="#body">
-<span><img width="120" height="90" src="https://i.ytimg.com/vi/' . ${"template_post_yt_url_$template_post_id"} . '/default.jpg"></span></a></div>';
+<a class="video-thumbnail" href="/posts/'.$template_post_id.'#post-video" data-pjax="#body">
+<span><img width="120" height="90" src="https://i.ytimg.com/vi/'.${"template_post_yt_url_$template_post_id"}.'/default.jpg"></span></a></div>';
 }
 
 // If screenshot was specified, display it (screenshot was checked before this)
 if(isset($template_post_screenshot)) {
 if(strlen($template_post_screenshot) > 3) {
-print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="' . htmlspecialchars($template_post_screenshot) . '"><img src="' . htmlspecialchars($template_post_screenshot) . '" class="title-capture"></a>';
+print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="'.htmlspecialchars($template_post_screenshot).'"><img src="'.htmlspecialchars($template_post_screenshot).'" class="title-capture"></a>';
   }
 }
 	  
@@ -163,7 +163,7 @@ if($template_post_type == 'artwork') {
 print '<p class="post-content-memo"><img src="'.htmlspecialchars($template_post_body).'" class="post-memo"></p>
 	  </div>'; } else {
 print '
-            <p class="post-content-text">' . preg_replace("/[\r\n]+/", "\n", $truncate_post_body) . '</p>
+            <p class="post-content-text">'.preg_replace("/[\r\n]+/", "\n", $truncate_post_body).'</p>
       </div>
 	  '; }
 	if ($template_post_spoiler == '1' && isset($_SESSION['pid'])) {
@@ -181,7 +181,7 @@ else {
     // Has the user given this post an empathy?
 
     if(isset($_SESSION['pid'])) {	
-$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . $mysql->real_escape_string($template_post_id) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "'.$mysql->real_escape_string($template_post_id).'" AND empathies.pid = "'.$_SESSION['pid'].'"';
 $result_hasempathy = $mysql->query($sql_hasempathy);
 
 if(mysqli_num_rows($result_hasempathy)!=0) {
@@ -208,10 +208,10 @@ ${"has_post_miitoo_given_$template_post_id"} = ''; }
 
 		print $can_post_user_miitoo;
 		print '
-		class="submit miitoo-button' . ${"has_post_miitoo_given_$template_post_id"} . '' . $can_post_user_miitoo . '" data-feeling="' . $mii_face_feeling . '" data-action="/posts/' . $template_post_id . '/empathies" data-sound="SE_WAVE_MII_ADD" data-url-id="' . $template_post_id . '" data-track-label="default" data-track-action="yeah" data-track-category="empathy">' . $mii_face_miitoo . '</button>
-        <a href="/posts/' . $template_post_id . '" class="to-permalink-button" data-pjax="#body">
-          <span class="feeling">' . mysqli_num_rows($result_post_empathies) . '</span>
-          <span class="reply">' . mysqli_num_rows($result_post_replies) . '</span>
+		class="submit miitoo-button'.${"has_post_miitoo_given_$template_post_id"}.''.$can_post_user_miitoo.'" data-feeling="'.$mii_face_feeling.'" data-action="/posts/'.$template_post_id.'/empathies" data-sound="SE_WAVE_MII_ADD" data-url-id="'.$template_post_id.'" data-track-label="default" data-track-action="yeah" data-track-category="empathy">'.$mii_face_miitoo.'</button>
+        <a href="/posts/'.$template_post_id.'" class="to-permalink-button" data-pjax="#body">
+          <span class="feeling">'.mysqli_num_rows($result_post_empathies).'</span>
+          <span class="reply">'.mysqli_num_rows($result_post_replies).'</span>
         </a>
       </div>
     </div>
@@ -226,7 +226,7 @@ ${"has_post_miitoo_given_$template_post_id"} = ''; }
 	
 	else {
 	
-	$sql_post_recent_replies_user = 'SELECT * FROM people WHERE people.pid = "' . $row_post_recent_replies['pid'] . '"';
+	$sql_post_recent_replies_user = 'SELECT * FROM people WHERE people.pid = "'.$row_post_recent_replies['pid'].'"';
 	$result_post_recent_replies_user = $mysql->query($sql_post_recent_replies_user);
 	$row_post_recent_replies_user = mysqli_fetch_assoc($result_post_recent_replies_user);
 	
@@ -239,17 +239,17 @@ ${"has_post_miitoo_given_$template_post_id"} = ''; }
 	
 		if($row_post_recent_replies_user['mii_hash']) {
 if(($row_post_recent_replies['feeling_id']) == '0') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_normal_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_normal_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '1') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_happy_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_happy_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '2') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_like_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_like_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '3') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_surprised_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_surprised_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '4') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_frustrated_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_frustrated_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '5') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_puzzled_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_puzzled_face.png'; }
 }
 else {
 if($row_post_recent_replies_user['user_face']) {
@@ -264,8 +264,8 @@ $truncate_reply_body = "$truncate_reply_bodyp1..."; }
 else {
 $truncate_reply_body = $truncate_reply_bodyp1; }
 
-	print '<div id="recent-reply-' . $row_post_recent_replies['id'] . '" class="recent-reply">
-  <a href="/users/' . htmlspecialchars($row_post_recent_replies_user['user_id']) . '" class="user-icon-container scroll-focus' . $is_recent_reply_poster_official_user . '" data-pjax="#body">
+	print '<div id="recent-reply-'.$row_post_recent_replies['id'].'" class="recent-reply">
+  <a href="/users/'.htmlspecialchars($row_post_recent_replies_user['user_id']).'" class="user-icon-container scroll-focus'.$is_recent_reply_poster_official_user.'" data-pjax="#body">
     <img src="'.$mii_face_recent_reply_output.'" class="user-icon">
   </a>
 

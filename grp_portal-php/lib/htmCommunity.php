@@ -17,7 +17,7 @@ global $mysql;
      print '<a href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" data-pjax="#body" class="scroll to-community-button"></a>
    <div class="body">
      <div class="body-content">
-        <span class="community-name title">' . htmlspecialchars($row['name']) . '</span>
+        <span class="community-name title">'.htmlspecialchars($row['name']).'</span>
 		
 		';
 if(!empty($row['platform_type'])) {
@@ -42,19 +42,19 @@ print '
 
 function printCommunityforTitle($row, $title) {
 			if($row['type'] != 5) {
-       print '<li id="community-' . htmlspecialchars($row['olive_community_id']) . '" class="'.($row['type'] >= 1 ? 'with-news-community-badge' : null).'>
+       print '<li id="community-'.htmlspecialchars($row['olive_community_id']).'" class="'.($row['type'] >= 1 ? 'with-news-community-badge' : null).'">
        <span class="icon-container"><img src="'.getIcon($row).'" class="icon"></span>
        <a href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" data-pjax="#body" class="scroll arrow-button"></a>
 	   <div class="body">
        <div class="body-content">
        ';
-       if($community['type'] >= 1) {
-       print '<span class="news-community-badge">'.($row['type'] == 2 ? 'Announcement Community' : 'Main Community').' Community</span>';
+       if($row['type'] >= 1) {
+       print '<span class="news-community-badge">'.($row['type'] == 2 ? 'Announcement Community' : 'Main Community').'</span>'; }
 	print '<span class="community-name title">'.htmlspecialchars($row['name']).'</span>
 	       <span class="text">'.htmlspecialchars($title['name']).'</span>
 						
 						';
-}
+} }
 
 function favoriteWithTitle($row_community) {
 global $mysql;
@@ -164,7 +164,7 @@ print '<div class="title-capture-container video-container">
 <span><img width="120" height="90" src="https://i.ytimg.com/vi/'.$videopost.'/default.jpg"></span></a></div>';
 }
 if(!empty($row['screenshot'])) {
-print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="' . htmlspecialchars($row['screenshot']) . '"><img src="'.htmlspecialchars($row['screenshot']).'" class="title-capture"></a>';
+print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="'.htmlspecialchars($row['screenshot']).'"><img src="'.htmlspecialchars($row['screenshot']).'" class="title-capture"></a>';
   } }
 print '
       <div class="post-content">
@@ -209,7 +209,7 @@ print '<div class="post-meta">
               </a>
             </div>
 			';
-} else {	
+} else {
 if(!empty($_SESSION['pid'])) {
 $canmiitoo = miitooCan($_SESSION['pid'], $row['id'], 'posts'); 
 $my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$row['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
@@ -263,14 +263,14 @@ $get_recent_repliesall = $mysql->query('SELECT * FROM replies WHERE replies.repl
 $get_recent_replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'" AND replies.is_hidden != "1" AND replies.pid != "'.$row['pid'].'" AND replies.is_spoiler != "1" ORDER BY replies.created_at DESC');
 
 	if($get_recent_replies->num_rows >=1) {
-	while($reply = $get_recent_replies->fetch_assoc()) {
+	$reply = $get_recent_replies->fetch_assoc();
 	if($reply['is_spoiler'] == '1' || $reply['is_hidden'] == '1' ) { }
 	else {
-	$reply_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
+	$reply_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].'" LIMIT 1')->fetch_assoc();
     $reply_user_mii = getMii($reply_user, $reply['feeling_id']);
 
-	print '<div id="recent-reply-' . $reply['id'] . '" class="recent-reply">
-  <a href="/users/' . htmlspecialchars($reply_user['user_id']) . '" class="user-icon-container scroll-focus'.($reply_user_mii['official'] ? ' official-user' : null).'" data-pjax="#body">
+	print '<div id="recent-reply-'.$reply['id'].'" class="recent-reply">
+  <a href="/users/'.htmlspecialchars($reply_user['user_id']).'" class="user-icon-container scroll-focus'.($reply_user_mii['official'] ? ' official-user' : null).'" data-pjax="#body">
     <img src="'.$reply_user_mii['output'].'" class="user-icon">
   </a>
 
@@ -304,7 +304,7 @@ print '</div><a href="/posts/'.$row['id'].'" class="button read-more-button to-p
 		 print '</div></div>'; }
 		 else {
 		 print '</div></div></div>'; }
-	}}
+	}
 		 if($is_activity) {
 		 print '</div></div></div>'; }
 	  }

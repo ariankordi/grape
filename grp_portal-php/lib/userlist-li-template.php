@@ -3,7 +3,7 @@
 #$row_user_to_view = $row_relationships_users;
 
 if($row_user_to_view['mii_hash']) {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_user_to_view['mii_hash'] . '_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_user_to_view['mii_hash'].'_normal_face.png'; 
 }
 else {
 if($row_user_to_view['user_face']) {
@@ -22,7 +22,7 @@ if(isset($is_always_button_have)) {
 $has_follow_scroll = ' arrow-button';
 }
 else {
-$sql_userwho = 'SELECT * FROM people WHERE people.pid = "' . $row_user_to_view['pid'] . '"';
+$sql_userwho = 'SELECT * FROM people WHERE people.pid = "'.$row_user_to_view['pid'].'"';
 $result_userwho = $mysql->query($sql_userwho);
 
 if(isset($_SESSION['pid'])) {

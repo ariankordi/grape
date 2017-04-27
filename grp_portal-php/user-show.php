@@ -11,7 +11,7 @@ printHeader(false);
 printMenu();
 print $GLOBALS['div_body_head'];
 print '<header id="header">
-<h1 id="page-title" class="left">' . $pagetitle . '</h1>
+<h1 id="page-title" class="left">'.$pagetitle.'</h1>
 </header>';
 print '<div class="body-content track-error" data-track-error="404">';
 $no_content_message = ( 'The user could not be found.' );
@@ -25,6 +25,6 @@ printFooter();
 }
 else {
 # Redir to profile
-header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/users/'.htmlspecialchars(mysqli_fetch_assoc($user_show_search_pid)['user_id']), true, 302);
+header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/users/'.htmlspecialchars(mysqli_fetch_assoc($user_show_search_pid)['user_id']), true, 302);
 }
 

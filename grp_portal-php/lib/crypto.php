@@ -25,7 +25,7 @@ return $decrypted;
 # Nintendo
   function GetTokenPart($decryptedToken, $id, $capture)
   {
-      if(preg_match('#\\\\' . $id . '\\\\(' . $capture . ')#', $decryptedToken, $matches) == 1)
+      if(preg_match('#\\\\'.$id.'\\\\('.$capture.')#', $decryptedToken, $matches) == 1)
           return $matches[1];
       
       return FALSE;

@@ -67,12 +67,12 @@ print '<header id="header">
 <h1 id="page-title">'.$pagetitle.'</h1>';
 
 
-$sql_feed_me = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$sql_feed_me = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
 $result_feed_me = $mysql->query($sql_feed_me);
 $row_feed_me = mysqli_fetch_assoc($result_feed_me); 
 
 if(isset($_GET['offset']) && is_numeric($_GET['offset'])) {
-$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'';
+$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET '.'.'';
 $result_feed_my_following = $mysql->query($sql_feed_my_following); } else {
 $sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50';
 $result_feed_my_following = $mysql->query($sql_feed_my_following);
@@ -86,7 +86,7 @@ if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '  <a id="header-post-button" class="header-button" href="#" data-modal-open="#add-post-page">Post</a>';
 print '<div id="add-post-page" class="add-post-page ';
 
-$row_my_poster2 = 'SELECT * FROM people WHERE people.pid = "' . $_SESSION['pid'] . '"';
+$row_my_poster2 = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
 $result_my_poster2 = $mysql->query($row_my_poster2);
 $row_my_poster2 = mysqli_fetch_assoc($result_my_poster2); 
 
@@ -113,14 +113,14 @@ print '<h1 class="page-title">Post to Activity Feed</h1>
     if(isset($_SESSION['signed_in'])) {
 	if($row_my_poster2['mii_hash']) {
 	print '<div class="feeling-selector expression">
-  <img src="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($row_my_poster2['mii_hash']) . '_normal_face.png" class="icon">
-  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($_SESSION['mii_hash']) . '_normal_face.png" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($_SESSION['mii_hash']) . '_happy_face.png" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($_SESSION['mii_hash']) . '_like_face.png" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($_SESSION['mii_hash']) . '_surprised_face.png" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($_SESSION['mii_hash']) . '_frustrated_face.png" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($_SESSION['mii_hash']) . '_puzzled_face.png" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>
+  <img src="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($row_my_poster2['mii_hash']).'_normal_face.png" class="icon">
+  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_normal_face.png" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_happy_face.png" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_like_face.png" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_surprised_face.png" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_frustrated_face.png" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_puzzled_face.png" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>
 </div>';
 	}
 	if(isset($row_my_poster2['user_face'])) {
 	if($row_my_poster2['user_face']) {	
 	print '<div class="feeling-selector expression">
-  <img src="' . htmlspecialchars($row_my_poster2['user_face']) . '" class="icon">
+  <img src="'.htmlspecialchars($row_my_poster2['user_face']).'" class="icon">
   
 </div>';
 	}
@@ -196,7 +196,7 @@ print '<div class="body-content js-post-list post-list" id="activity-feed" data-
 
 
 while($row_feed_my_following = mysqli_fetch_assoc($result_feed_my_following)) {
-$sql_act_followed_people = 'SELECT * FROM people WHERE people.pid = "' . $row_feed_my_following['target'] . '"';
+$sql_act_followed_people = 'SELECT * FROM people WHERE people.pid = "'.$row_feed_my_following['target'].'"';
 $result_act_followed_people = $mysql->query($sql_act_followed_people);
 $row_act_followed_people = mysqli_fetch_assoc($result_act_followed_people);
 

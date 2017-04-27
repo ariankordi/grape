@@ -2,9 +2,9 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
+if(empty($_GET['id'])) { include_once '404.php'; exit(); }
 $search_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.(isset($_GET['id']) ? $mysql->real_escape_string($_GET['id']) : 'a').'"');
 
-if(empty($_GET['id'])) { include_once '404.php'; exit(); }
 if(isset($_GET['mode']) && $_GET['mode'] == 'empathies') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # Display 404 if method isn't POST

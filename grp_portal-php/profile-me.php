@@ -5,7 +5,7 @@ if(empty($_SESSION['pid'])) {
     print '403 Forbidden'."\n".'';
 	exit();
 } else {
-    header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/users/'.$_SESSION['user_id'].'', true, 302);	
+    header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/users/'.$_SESSION['user_id'].'', true, 302);	
 	exit();
 }
 

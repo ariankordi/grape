@@ -6,7 +6,7 @@ require_once '../grplib-php/init.php';
         header('Content-Type: application/json; charset=utf-8');
             $error_message[] = 'You are not logged in.\nLog in to view notifications.';
 			$error_code[] = '1512005';
-		exit('{"success":0,"errors":[{"message":"' . $error_message[0] . '","error_code":' . $error_code[0] . '}],"code":"400"}');
+		exit('{"success":0,"errors":[{"message":"'.$error_message[0].'","error_code":'.$error_code[0].'}],"code":"400"}');
         }
 
 $sql_find_user_newstutorial = 'SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.my_news = "1"';
@@ -31,7 +31,7 @@ if(strval(mysqli_num_rows($result_find_user_fmtutorial)) >= 1) {
 		// JSON response for errors.
 			http_response_code(400);
             header('Content-Type: application/json; charset=utf-8');
-			print '{"success":0,"errors":[{"message":"' . $error_message[0] . '","error_code":' . $error_code[0] . '}],"code":"400"}';
+			print '{"success":0,"errors":[{"message":"'.$error_message[0].'","error_code":'.$error_code[0].'}],"code":"400"}';
 			print "\n";
     }
 	else {
@@ -54,7 +54,7 @@ if(strval(mysqli_num_rows($result_find_user_fmtutorial)) >= 1) {
 			#print $sql_update;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160'.mysqli_errno($mysql).'}],"code":"500"}';
 			print "\n";
 		}
 		else { 

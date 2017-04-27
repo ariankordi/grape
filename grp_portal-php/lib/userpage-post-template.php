@@ -19,27 +19,27 @@ $row_temp_current_post_type = 'posts'; }
 
 	if($row_temp_current_post_user['mii_hash']) {
 if($row_temp_current_post['feeling_id'] == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_temp_current_post_user['mii_hash'] . '_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_temp_current_post_user['mii_hash'].'_normal_face.png'; 
 $mii_face_feeling = 'normal';
 $mii_face_miitoo = htmlspecialchars('Yeah!'); }
 if($row_temp_current_post['feeling_id'] == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_temp_current_post_user['mii_hash'] . '_happy_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_temp_current_post_user['mii_hash'].'_happy_face.png'; 
 $mii_face_feeling = 'happy'; }
 $mii_face_miitoo = htmlspecialchars('Yeah!');
 if($row_temp_current_post['feeling_id'] == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_temp_current_post_user['mii_hash'] . '_like_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_temp_current_post_user['mii_hash'].'_like_face.png'; 
 $mii_face_feeling = 'like';
 $mii_face_miitoo = htmlspecialchars('Yeah♥'); }
 if($row_temp_current_post['feeling_id'] == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_temp_current_post_user['mii_hash'] . '_surprised_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_temp_current_post_user['mii_hash'].'_surprised_face.png'; 
 $mii_face_feeling = 'surprised';
 $mii_face_miitoo = htmlspecialchars('Yeah!?'); }
 if($row_temp_current_post['feeling_id'] == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_temp_current_post_user['mii_hash'] . '_frustrated_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_temp_current_post_user['mii_hash'].'_frustrated_face.png'; 
 $mii_face_feeling = 'frustrated';
 $mii_face_miitoo = htmlspecialchars('Yeah...'); }
 if($row_temp_current_post['feeling_id'] == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_temp_current_post_user['mii_hash'] . '_puzzled_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_temp_current_post_user['mii_hash'].'_puzzled_face.png'; 
 $mii_face_feeling = 'puzzled';
 $mii_face_miitoo = htmlspecialchars('Yeah...'); }
 }
@@ -121,7 +121,7 @@ print '        <span class="timestamp">'.humanTiming(strtotime($row_temp_current
 		print '	  <span class="spoiler-status spoiler">Spoilers</span>'; }
 		}
 
-$sql_userpage_user_posts_view_user_community = 'SELECT * FROM communities WHERE communities.community_id = "' . $row_temp_current_post['community_id'] . '"';
+$sql_userpage_user_posts_view_user_community = 'SELECT * FROM communities WHERE communities.community_id = "'.$row_temp_current_post['community_id'].'"';
 $result_userpage_user_posts_view_user_community = $mysql->query($sql_userpage_user_posts_view_user_community);
 $row_userpage_user_posts_view_user_community = mysqli_fetch_assoc($result_userpage_user_posts_view_user_community); 
 
@@ -141,27 +141,27 @@ print '        <a href="/posts/'.$row_temp_current_post['_post_type'].'" class="
           <span class="title-icon-container'.$is_post_reply1.'" data-pjax="#body"><img src="';
 
 
-$sql_userpage_user_posts_view_user_userreply = 'SELECT * FROM posts WHERE posts.id = "' . $row_temp_current_post['_post_type'] . '"';
+$sql_userpage_user_posts_view_user_userreply = 'SELECT * FROM posts WHERE posts.id = "'.$row_temp_current_post['_post_type'].'"';
 $result_userpage_user_posts_view_user_userreply = $mysql->query($sql_userpage_user_posts_view_user_userreply);
 $row_userpage_user_posts_view_user_userreply = mysqli_fetch_assoc($result_userpage_user_posts_view_user_userreply); 
 
-$sql_userpage_user_posts_view_user_userreplypp = 'SELECT * FROM people WHERE people.pid = "' . $row_userpage_user_posts_view_user_userreply['pid'] . '"';
+$sql_userpage_user_posts_view_user_userreplypp = 'SELECT * FROM people WHERE people.pid = "'.$row_userpage_user_posts_view_user_userreply['pid'].'"';
 $result_userpage_user_posts_view_user_userreplypp = $mysql->query($sql_userpage_user_posts_view_user_userreplypp);
 $row_userpage_user_posts_view_user_userreplypp = mysqli_fetch_assoc($result_userpage_user_posts_view_user_userreplypp); 	
 
 	if($row_userpage_user_posts_view_user_userreplypp['mii_hash']) {
 if(($row_userpage_user_posts_view_user_userreply['feeling_id']) == '0') {
-$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/' . $row_userpage_user_posts_view_user_userreplypp['mii_hash'] . '_normal_face.png'; }
+$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user_posts_view_user_userreplypp['mii_hash'].'_normal_face.png'; }
 if(($row_userpage_user_posts_view_user_userreply['feeling_id']) == '1') {
-$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/' . $row_userpage_user_posts_view_user_userreplypp['mii_hash'] . '_happy_face.png'; }
+$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user_posts_view_user_userreplypp['mii_hash'].'_happy_face.png'; }
 if(($row_userpage_user_posts_view_user_userreply['feeling_id']) == '2') {
-$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/' . $row_userpage_user_posts_view_user_userreplypp['mii_hash'] . '_like_face.png'; }
+$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user_posts_view_user_userreplypp['mii_hash'].'_like_face.png'; }
 if(($row_userpage_user_posts_view_user_userreply['feeling_id']) == '3') {
-$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/' . $row_userpage_user_posts_view_user_userreplypp['mii_hash'] . '_surprised_face.png'; }
+$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user_posts_view_user_userreplypp['mii_hash'].'_surprised_face.png'; }
 if(($row_userpage_user_posts_view_user_userreply['feeling_id']) == '4') {
-$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/' . $row_userpage_user_posts_view_user_userreplypp['mii_hash'] . '_frustrated_face.png'; }
+$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user_posts_view_user_userreplypp['mii_hash'].'_frustrated_face.png'; }
 if(($row_userpage_user_posts_view_user_userreply['feeling_id']) == '5') {
-$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/' . $row_userpage_user_posts_view_user_userreplypp['mii_hash'] . '_puzzled_face.png'; }
+$mii_face_outputr2 = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user_posts_view_user_userreplypp['mii_hash'].'_puzzled_face.png'; }
 }
 else {
 if($row_userpage_user_posts_view_user_userreplypp['user_face']) {
@@ -198,12 +198,12 @@ if($row_temp_current_post['is_hidden'] != 1 && $row_temp_current_post['hidden_re
 	  if(!empty(${"template_post_yt_url_$row_temp_post_id"})) {
 
 print '<div class="title-capture-container video-container">
-<a class="video-thumbnail" href="/posts/' . $row_temp_post_id . '#post-video" data-pjax="#body">
-<span><img width="120" height="90" src="https://i.ytimg.com/vi/' . ${"template_post_yt_url_$row_temp_post_id"} . '/default.jpg"></span></a></div>';
+<a class="video-thumbnail" href="/posts/'.$row_temp_post_id.'#post-video" data-pjax="#body">
+<span><img width="120" height="90" src="https://i.ytimg.com/vi/'.${"template_post_yt_url_$row_temp_post_id"}.'/default.jpg"></span></a></div>';
 }
 if(isset($row_temp_current_post['screenshot'])) {
 if(strlen($row_temp_current_post['screenshot']) > 3) {
-print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="' . htmlspecialchars($row_temp_current_post['screenshot']) . '"><img src="' . htmlspecialchars($row_temp_current_post['screenshot']) . '" class="title-capture"></a>';
+print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="'.htmlspecialchars($row_temp_current_post['screenshot']).'"><img src="'.htmlspecialchars($row_temp_current_post['screenshot']).'" class="title-capture"></a>';
   }
 } }
 print '
@@ -264,7 +264,7 @@ else {
 	
 	
     if(isset($_SESSION['pid'])) {
-$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "' . $mysql->real_escape_string($row_temp_current_post['id']) . '" AND empathies.pid = "' . $_SESSION['pid'] . '"';
+$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "'.$mysql->real_escape_string($row_temp_current_post['id']).'" AND empathies.pid = "'.$_SESSION['pid'].'"';
 $result_hasempathy = $mysql->query($sql_hasempathy);
 
 if(mysqli_num_rows($result_hasempathy)!=0) {
@@ -335,7 +335,7 @@ print '<div class="toggle-button">
 }
   
 if(!isset($is_activity_feed_post) && !isset($is_identified_user_post) && time() - strtotime($row_temp_current_post['created_at']) <= 432000) {
-	$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "' . $row_temp_current_post['id'] . '" AND replies.is_spoiler != "1" AND replies.is_hidden != "1" AND replies.pid !="'.$row_temp_current_post['pid'].'" ORDER BY replies.created_at DESC LIMIT 1';
+	$sql_post_recent_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "'.$row_temp_current_post['id'].'" AND replies.is_spoiler != "1" AND replies.is_hidden != "1" AND replies.pid !="'.$row_temp_current_post['pid'].'" ORDER BY replies.created_at DESC LIMIT 1';
 	$result_post_recent_replies = $mysql->query($sql_post_recent_replies);
 
 	if(strval(mysqli_num_rows($result_temp_current_post_replies)) >=1) {
@@ -347,7 +347,7 @@ if(!isset($is_activity_feed_post) && !isset($is_identified_user_post) && time() 
 	
 	else {
 	
-	$sql_post_recent_replies_user = 'SELECT * FROM people WHERE people.pid = "' . $row_post_recent_replies['pid'] . '"';
+	$sql_post_recent_replies_user = 'SELECT * FROM people WHERE people.pid = "'.$row_post_recent_replies['pid'].'"';
 	$result_post_recent_replies_user = $mysql->query($sql_post_recent_replies_user);
 	$row_post_recent_replies_user = mysqli_fetch_assoc($result_post_recent_replies_user);
 	
@@ -360,17 +360,17 @@ if(!isset($is_activity_feed_post) && !isset($is_identified_user_post) && time() 
 	
 		if($row_post_recent_replies_user['mii_hash']) {
 if(($row_post_recent_replies['feeling_id']) == '0') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_normal_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_normal_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '1') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_happy_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_happy_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '2') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_like_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_like_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '3') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_surprised_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_surprised_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '4') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_frustrated_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_frustrated_face.png'; }
 if(($row_post_recent_replies['feeling_id']) == '5') {
-$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/' . $row_post_recent_replies_user['mii_hash'] . '_puzzled_face.png'; }
+$mii_face_recent_reply_output = 'https://mii-secure.cdn.nintendo.net/'.$row_post_recent_replies_user['mii_hash'].'_puzzled_face.png'; }
 }
 else {
 if($row_post_recent_replies_user['user_face']) {
@@ -385,8 +385,8 @@ $truncate_reply_body = "$truncate_reply_bodyp1..."; }
 else {
 $truncate_reply_body = $truncate_reply_bodyp1; }
 
-	print '<div id="recent-reply-' . $row_post_recent_replies['id'] . '" class="recent-reply">
-  <a href="/users/' . htmlspecialchars($row_post_recent_replies_user['user_id']) . '" class="user-icon-container scroll-focus' . $is_recent_reply_poster_official_user . '" data-pjax="#body">
+	print '<div id="recent-reply-'.$row_post_recent_replies['id'].'" class="recent-reply">
+  <a href="/users/'.htmlspecialchars($row_post_recent_replies_user['user_id']).'" class="user-icon-container scroll-focus'.$is_recent_reply_poster_official_user.'" data-pjax="#body">
     <img src="'.$mii_face_recent_reply_output.'" class="user-icon">
   </a>
 

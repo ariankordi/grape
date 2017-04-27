@@ -38,27 +38,27 @@ return 'Less than a minute ago'; }
 if(!empty($feeling_id)) {
 	if(!empty($user['mii_hash'])) {
 if($feeling_id == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png'; 
 $mii_face_feeling = 'normal';
 $mii_face_miitoo = 'Yeah!'; }
 if($feeling_id == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_happy_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_happy_face.png'; 
 $mii_face_feeling = 'happy'; }
 $mii_face_miitoo = 'Yeah!';
 if($feeling_id == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_like_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_like_face.png'; 
 $mii_face_feeling = 'like';
 $mii_face_miitoo = htmlspecialchars('Yeah♥'); }
 if($feeling_id == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_surprised_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_surprised_face.png'; 
 $mii_face_feeling = 'surprised';
 $mii_face_miitoo = 'Yeah!?'; }
 if($feeling_id == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_frustrated_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_frustrated_face.png'; 
 $mii_face_feeling = 'frustrated';
 $mii_face_miitoo = 'Yeah...'; }
 if($feeling_id == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_puzzled_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_puzzled_face.png'; 
 $mii_face_feeling = 'puzzled';
 $mii_face_miitoo = 'Yeah...'; }
 	}
@@ -73,7 +73,7 @@ $mii_face_miitoo = 'Yeah!'; }
 }
 else {
 	if(!empty($user['mii_hash'])) {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $user['mii_hash'] . '_normal_face.png'; } elseif(!empty($user['user_face'])) { $mii_face_output = htmlspecialchars($user['user_face']); } else {
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png'; } elseif(!empty($user['user_face'])) { $mii_face_output = htmlspecialchars($user['user_face']); } else {
 $mii_face_output = '/img/mii/img_unknown_MiiIcon.png';	
 }
 
@@ -122,4 +122,4 @@ $mysql->query('INSERT INTO relationships (source, target, is_me2me) VALUES ("'.$
 }
 
 if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/login' && $_SERVER['REQUEST_URI'] != '/login' && $_SERVER['REQUEST_URI'] != '/act/create' && $_SERVER['REQUEST_URI'] != '/people') {
-header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/act/login', true, 302); }
+header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/act/login', true, 302); }

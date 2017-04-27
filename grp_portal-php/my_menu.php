@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 
 if(empty($_SESSION['pid'])) {
-header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/guest_menu', true, 302);
+header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/guest_menu', true, 302);
 }
 else {
 require_once 'lib/htm.php';

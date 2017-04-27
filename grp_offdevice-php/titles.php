@@ -74,7 +74,7 @@ print '<div class="no-content"><div>
       </div></div>';
 } else {
 $mynewoffset = (!empty($_GET['offset']) ? strval($_GET['offset']) + 20 : '');
-print '  <div class="list post-list" data-next-page-url="'.($community_get_posts->num_rows > 49 ? '/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'?offset='.(!empty($_GET['offset']) ? $mynewoffset : 50) : '').'">
+print '  <div class="list post-list" data-next-page-url="'.($community_get_posts->num_rows > 49 ? '/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'?offset='.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $mynewoffset : 50) : '').'">
 
 
 ';

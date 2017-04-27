@@ -39,5 +39,5 @@ require_once '../grplib-php/crypto.php';
 setcookie('grp_identity', base64_encode(encrypt_identity($grp_config_pubkey, gen_identity($grp_config_server_env, $check_login['pid'], $check_login['user_id'], $check_login['user_pass']))), time() + 604800, '/');
                     }
                      
-header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/my_menu', true, 302);
+header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/my_menu', true, 302);
         }

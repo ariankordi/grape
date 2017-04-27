@@ -69,6 +69,7 @@ Portal:
 	rewrite ^/posts/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)$ /posts.php?id=$1&mode=$2 last;
 	rewrite ^/replies/([A-Za-z0-9_-]+)$ /replies.php?id=$1 last;
 	rewrite ^/replies/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)$ /replies.php?id=$1&mode=$2 last;
+	rewrite ^/replies/([A-Za-z0-9_-]+).([A-Za-z0-9_-]+)$ /replies.php?id=$1&mode=$2 last;
 	rewrite ^/users/([A-Za-z0-9_-]+)$ /users.php?user_id=$1 last;
 	rewrite ^/users/([A-Za-z0-9_-]+)/([A-Za-z0-9]+)$ /users.php?user_id=$1&mode=$2 last;
 	rewrite ^/users/@me$ /profile-me.php last;
@@ -88,9 +89,9 @@ Offdevice:
 	rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)$ /titles.php?title_id=$1&community_id=$2;
 	rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)/new$ /titles.php?title_id=$1&community_id=$2;
 	rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)/([A-Za-z0-9]+)$ /titles.php?title_id=$1&community_id=$2&mode=$3;
-        rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)/favorite.json$ /communities-createfavorite.php?olive_community_id=$2 last;
-        rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)/unfavorite.json$ /communities-createfavorite.php?olive_community_id=$2&delete last;
-        rewrite ^/communities/favorites$ /communities-showfavorites.php last;
+    rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)/favorite.json$ /communities-createfavorite.php?olive_community_id=$2 last;
+    rewrite ^/titles/([A-Za-z0-9]+)/([A-Za-z0-9]+)/unfavorite.json$ /communities-createfavorite.php?olive_community_id=$2&delete last;
+    rewrite ^/communities/favorites$ /communities-showfavorites.php last;
 	rewrite ^/posts$ /post-create.php last;
 	rewrite ^/posts/([A-Za-z0-9_-]+)$ /posts.php?id=$1 last;
 	rewrite ^/posts/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)$ /posts.php?id=$1&mode=$2 last;

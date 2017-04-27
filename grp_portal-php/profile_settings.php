@@ -3,16 +3,16 @@ require_once '../grplib-php/init.php';
 
 # User checks.
 if(empty($_SESSION['pid'])) {
-header('Location: http://' . $_SERVER['HTTP_HOST'] .'/guest_menu', true, 302); 
+header('Location: http://'.$_SERVER['HTTP_HOST'] .'/guest_menu', true, 302); 
 }
 else {
 
-$sql_profile_edit_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "' . $_SESSION['pid'] . '"';
+$sql_profile_edit_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'"';
 $result_profile_edit_user_profile = $mysql->query($sql_profile_edit_user_profile);
 $row_profile_edit_user_profile = mysqli_fetch_assoc($result_profile_edit_user_profile); 
  
 if(mysqli_num_rows($result_profile_edit_user_profile) == 0) {
-header('Location: http://' . $_SERVER['HTTP_HOST'] .'/profiles', true, 302); }
+header('Location: http://'.$_SERVER['HTTP_HOST'] .'/profiles', true, 302); }
 else {
 # If method isn't POST, display profile settings page.
 if($_SERVER['REQUEST_METHOD'] != 'POST')
@@ -248,7 +248,7 @@ else {
 		// JSON response for errors.
 			http_response_code(400);
             header('Content-Type: application/json; charset=utf-8');
-			print '{"success":0,"errors":[{"message":"' . $error_message[0] . '","error_code":' . $error_code[0] . '}],"code":"400"}';
+			print '{"success":0,"errors":[{"message":"'.$error_message[0].'","error_code":'.$error_code[0].'}],"code":"400"}';
 			print "\n";
     }
 	
@@ -283,7 +283,7 @@ else {
 			#print $sql_update;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160'.mysqli_errno($mysql).'}],"code":"500"}';
 			print "\n";
 		}
 		else { 

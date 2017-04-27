@@ -5,27 +5,27 @@ $row_message_user = mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE
 
 	if($row_message_user['mii_hash']) {
 if(($message_template_row['feeling_id']) == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_message_user['mii_hash'] . '_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_message_user['mii_hash'].'_normal_face.png'; 
 $mii_face_feeling = 'normal';
 $mii_face_miitoo = htmlspecialchars('Yeah!'); }
 if(($message_template_row['feeling_id']) == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_message_user['mii_hash'] . '_happy_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_message_user['mii_hash'].'_happy_face.png'; 
 $mii_face_feeling = 'happy'; }
 $mii_face_miitoo = htmlspecialchars('Yeah!');
 if(($message_template_row['feeling_id']) == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_message_user['mii_hash'] . '_like_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_message_user['mii_hash'].'_like_face.png'; 
 $mii_face_feeling = 'like';
 $mii_face_miitoo = htmlspecialchars('Yeah♥'); }
 if(($message_template_row['feeling_id']) == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_message_user['mii_hash'] . '_surprised_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_message_user['mii_hash'].'_surprised_face.png'; 
 $mii_face_feeling = 'surprised';
 $mii_face_miitoo = htmlspecialchars('Yeah!?'); }
 if(($message_template_row['feeling_id']) == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_message_user['mii_hash'] . '_frustrated_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_message_user['mii_hash'].'_frustrated_face.png'; 
 $mii_face_feeling = 'frustrated';
 $mii_face_miitoo = htmlspecialchars('Yeah...'); }
 if(($message_template_row['feeling_id']) == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_message_user['mii_hash'] . '_puzzled_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_message_user['mii_hash'].'_puzzled_face.png'; 
 $mii_face_feeling = 'puzzled';
 $mii_face_miitoo = htmlspecialchars('Yeah...'); }
 }

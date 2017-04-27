@@ -71,7 +71,7 @@ if (filter_var($_POST['screenshot'], FILTER_VALIDATE_URL) === FALSE) {
 		// JSON response for errors.
 			http_response_code(400);
             header('Content-Type: application/json; charset=utf-8');
-			print '{"success":0,"errors":[{"message":"' . $error_message[0] . '","error_code":' . $error_code[0] . '}],"code":"400"}';
+			print '{"success":0,"errors":[{"message":"'.$error_message[0].'","error_code":'.$error_code[0].'}],"code":"400"}';
 			print "\n";
     }
 	else {
@@ -101,14 +101,14 @@ $new_message_conversation_id = $mysql->real_escape_string($_GET['conversation_id
 
         $sql = 'INSERT INTO
                     messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read)
-                VALUES("' . $new_message_conversation_id . '",
-				       "' . $gen_olive_url  . '",
-				       "' . $mysql->real_escape_string($_SESSION['pid']) . '",
-                       "' . htmlspecialchars($mysql->real_escape_string($_POST['feeling_id'])) . '",
+                VALUES("'.$new_message_conversation_id.'",
+				       "'.$gen_olive_url .'",
+				       "'.$mysql->real_escape_string($_SESSION['pid']).'",
+                       "'.htmlspecialchars($mysql->real_escape_string($_POST['feeling_id'])).'",
                        "1",
-                       "' . $mysql->real_escape_string($_POST['body']) . '",
-					   "' . (empty($_POST['screenshot']) ? NULL : $mysql->real_escape_string($_POST['screenshot'])) . '",
-                       "' . (empty($_POST['is_spoiler']) ? '0' : $mysql->real_escape_string($_POST['is_spoiler'])) . '",
+                       "'.$mysql->real_escape_string($_POST['body']).'",
+					   "'.(empty($_POST['screenshot']) ? NULL : $mysql->real_escape_string($_POST['screenshot'])).'",
+                       "'.(empty($_POST['is_spoiler']) ? '0' : $mysql->real_escape_string($_POST['is_spoiler'])).'",
                        "0")';
                          
         $result = $mysql->query($sql);
@@ -123,7 +123,7 @@ $new_message_conversation_id = $mysql->real_escape_string($_GET['conversation_id
 			#print $sql;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160'.mysqli_errno($mysql).'}],"code":"500"}';
 			print "\n";
 		}
 		else {
@@ -194,7 +194,7 @@ if(isset($_GET['user_id'])) {
 $find_conversation_for_friend = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_get_person_formessage['pid'].'" OR conversations.sender = "'.$row_get_person_formessage['pid'].'" AND conversations.recipient = "'.$_SESSION['pid'].'" LIMIT 1');
 }
 if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strval($_GET['offset']) >= 1) {
-$get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20 OFFSET "'.$mysql->real_escape_string($_GET['offset']).'"'.'');	
+$get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20 OFFSET '.'.'');	
 }
 else {
 $get_messages_for_friend = $mysql->query('SELECT * FROM messages WHERE messages.conversation_id = '.(!empty($_GET['conversation_id']) ? $mysql->real_escape_string($_GET['conversation_id']) : mysqli_fetch_assoc($find_conversation_for_friend)['conversation_id']).' ORDER BY messages.created_at DESC LIMIT 20');
@@ -259,14 +259,14 @@ print '
  ';
 	if($lookup_user['mii_hash']) {
 	print '<div class="feeling-selector expression">
-  <img src="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_normal_face.png" class="icon">
-  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_normal_face.png" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_happy_face.png" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_like_face.png" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_surprised_face.png" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_frustrated_face.png" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="https://mii-secure.cdn.nintendo.net/' . htmlspecialchars($lookup_user['mii_hash']) . '_puzzled_face.png" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>
+  <img src="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_normal_face.png" class="icon">
+  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_normal_face.png" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_happy_face.png" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_like_face.png" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_surprised_face.png" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_frustrated_face.png" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($lookup_user['mii_hash']).'_puzzled_face.png" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>
 </div>';
 	}
 	if(isset($lookup_user['user_face'])) {
 	if($lookup_user['user_face']) {	
 	print '<div class="feeling-selector expression">
-  <img src="' . htmlspecialchars($lookup_user['user_face']) . '" class="icon">
+  <img src="'.htmlspecialchars($lookup_user['user_face']).'" class="icon">
   
 </div>';
 	}
@@ -345,7 +345,7 @@ while ($row_get_friendexistence = mysqli_fetch_assoc($result_get_friendexistence
 $row_get_friend = mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.($row_get_friendexistence['target'] == $_SESSION['pid'] ? $row_get_friendexistence['source'] : $row_get_friendexistence['target']).'"'));
 if($row_get_friend['pid'] != $_SESSION['pid']) {
 if($row_get_friend['mii_hash']) {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/' . $row_get_friend['mii_hash'] . '_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_get_friend['mii_hash'].'_normal_face.png'; 
 }
 else {
 if($row_get_friend['user_face']) {

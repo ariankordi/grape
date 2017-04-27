@@ -4,7 +4,7 @@ require_once '../grplib-php/init.php';
 
 	if((strval($_SESSION['user_privilege']) <= 3) | (strval($_SESSION['user_status']) > 2)) {
 	#The user can't create a title, redirect them.
-    header('Location: http://' . $_SERVER['HTTP_HOST'] .'/communities', true, 302);
+    header('Location: http://'.$_SERVER['HTTP_HOST'] .'/communities', true, 302);
 	}
 else
 {
@@ -37,10 +37,10 @@ Description (2200 characters): <textarea type="text" name="community.description
 		$sql_title = 'INSERT INTO titles(olive_title_id, olive_community_id, icon, name, platform_id, platform_type)
 		   VALUES('."83955116433$pidgen".',
 		          '."83955116433$pidgen2".',
-				  "' . $mysql->real_escape_string($_POST['title_icon']) . '",
-				  "' . $mysql->real_escape_string($_POST['title_name']) . '",
-				  "' . (empty($_POST['title_platform_id']) ? '' : $mysql->real_escape_string($_POST['title_platform_id'])) . '",
-				  "' . (empty($_POST['title_platform_type']) ? NULL : $mysql->real_escape_string($_POST['title_platform_type'])) . '")';
+				  "'.$mysql->real_escape_string($_POST['title_icon']).'",
+				  "'.$mysql->real_escape_string($_POST['title_name']).'",
+				  "'.(empty($_POST['title_platform_id']) ? '' : $mysql->real_escape_string($_POST['title_platform_id'])).'",
+				  "'.(empty($_POST['title_platform_type']) ? NULL : $mysql->real_escape_string($_POST['title_platform_type'])).'")';
 		$result_title = $mysql->query($sql_title);
 		if(!$result_title)
 		{

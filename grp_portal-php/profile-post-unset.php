@@ -15,7 +15,7 @@ else {
 		// JSON response for errors.
 			http_response_code(400);
             header('Content-Type: application/json; charset=utf-8');
-			print '{"success":0,"errors":[{"message":"' . $error_message[0] . '","error_code":' . $error_code[0] . '}],"code":"400"}';
+			print '{"success":0,"errors":[{"message":"'.$error_message[0].'","error_code":'.$error_code[0].'}],"code":"400"}';
 			print "\n";
 			exit();
     }
@@ -32,7 +32,7 @@ else {
 			#print $sql_update;
 			#print "\n\n";			
 			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160' . mysqli_errno($mysql) . '}],"code":"500"}';
+			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160'.mysqli_errno($mysql).'}],"code":"500"}';
 			print "\n";
 		}
 		else { 

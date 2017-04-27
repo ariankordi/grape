@@ -120,8 +120,8 @@ actError(array('code'=>'160'.$mysql->errno,'message'=>'A database error has occu
         $act_template_subheader = 'Create Account';
 		$act_back_location = '/act/create'; 
 		if(isset($mii_hash_image)) {
-		$act_created_mii_image_body = '<img align="left" src="' . $mii_hash_image . '">';
-		$act_created_mii_image_face = '<img height="64" width="64" src="https://mii-secure.cdn.nintendo.net/' . $mii_hash_act . '_normal_face.png">';
+		$act_created_mii_image_body = '<img align="left" src="'.$mii_hash_image.'">';
+		$act_created_mii_image_face = '<img height="64" width="64" src="https://mii-secure.cdn.nintendo.net/'.$mii_hash_act.'_normal_face.png">';
 		}
 		else {
         $act_created_mii_image_body = null;
