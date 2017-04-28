@@ -213,6 +213,9 @@ generalError(404, 'Deleted by poster.'); }
 grpfinish($mysql); exit();
 }
 # Success
+require_once 'lib/htmPost.php';
+require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/post-helper.php';
 $mii = getMii($user, $reply['feeling_id']);
 $ogpost_mii = getMii($user, $reply['feeling_id']);
     print $GLOBALS['div_body_head'];
@@ -226,12 +229,8 @@ $truncate_post_bodyp1 = mb_substr((htmlspecialchars($ogpost['body'])), 0, 20, 'u
 $truncate_post_body = (mb_strlen($truncate_post_bodyp1, 'utf-8') >= 20 ? "$truncate_post_bodyp1..." : $truncate_post_bodyp1);
 
 print '
-  <a class="post-permalink-button info-ticker" href="/posts/'.$row_reply_ogpost['id'].'" data-pjax="#body">
-    <span>View <span class="post-user-description"><img src="'.$mii_ogpost_face_output.'" class="user-icon">';
-	print htmlspecialchars($row_reply_ogpost_user['screen_name']);
-	print "'s post (";
-	print $row_reply_ogpost['_post_type'] == 'artwork' ? 'handwritten' : $truncate_post_body;
-	print ')</span> for this comment.</span>';
+  <a class="post-permalink-button info-ticker" href="/posts/'.$ogpost['id'].'" data-pjax="#body">
+    <span>View <span class="post-user-description"><img src="'.$ogpost_mii['output'].'" class="user-icon">'.htmlspecialchars($ogpost_user['screen_name']).\'s post ('.($ogpost['_post_type'] == 'artwork' ? 'handwritten' : $truncate_post_body).')</span> for this comment.</span>';
 	print '
   </a>
   <div id="post-permalink-comments">
@@ -239,172 +238,82 @@ print '
   # Add no-empathy above
   print '<ul class="post-permalink-reply">
     <li>';
-	
-	if($row_reply_user['official_user'] == 1) {
-$is_replier_official_user = ' official-user';
-}
-else {
-$is_replier_official_user = ''; }
 
-print '<a href="/users/'.htmlspecialchars($row_reply_user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.$is_replier_official_user.'"><img src="'.$mii_face_output.'" class="user-icon"></a>';
+print '<a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii_face_output.'" class="user-icon"></a>';
 print '
 <div class="reply-content">
         <header>
-          <span class="user-name">'.htmlspecialchars($row_reply_user['screen_name']).'</span>
-          <span class="timestamp">'.humanTiming(strtotime($row_reply['created_at'])).'</span>
-		  <span class="spoiler-status">Spoilers</span>
-		  ';
-		  if($row_reply['is_spoiler'] == '1') { 
-	 print '<span class="spoiler-status spoiler">Spoilers</span>'; }
-	print '	  </header>
+          <span class="user-name">'.htmlspecialchars($user['screen_name']).'</span>
+          <span class="timestamp">'.humanTiming(strtotime($reply['created_at'])).'</span>
+		  <span class="spoiler-status'.($reply['is_spoiler'] == 1 ? ' spoiler' : null).'">Spoilers</span>
+	    	  </header>
 
 
 
-            <p class="reply-content-text">'.htmlspecialchars($row_reply['body']).'</p>';
-	 if(isset($row_reply['screenshot'])) {
-     if(strlen($row_reply['screenshot']) > 3) {
+            <p class="reply-content-text">'.htmlspecialchars($reply['body']).'</p>';
+	 if(!empty($reply['screenshot'])) {
 	print '<div class="capture-container">
-          <img src="'.htmlspecialchars($row_reply['screenshot']).'" class="capture">
+          <img src="'.htmlspecialchars($reply['screenshot']).'" class="capture">
         </div>
 		'; 
-	 } }
+	 }
 
-if(isset($_SESSION['pid'])) {  
-if($_SESSION['pid'] == $row_reply['pid']) {
-$reply_meta_button_output = '<a href="#" role="button" class="edit-button edit-reply-button" data-modal-open="#edit-post-page">Edit</a>';	}
-else {
-require 'lib/olv-url-enc.php';
-$is_report_disabled = (strval($row_reply_user['official_user']) == 1 || isset($row_current_peopleban) ? ' disabled' : '');
-$reply_meta_button_output = '<a '.(strval($row_reply_user['official_user']) == 1 || isset($row_current_peopleban) ? '' : 'href="#" ').' role="button"'.$is_report_disabled.' class="report-button'.$is_report_disabled.'" data-modal-open="#report-violation-page" data-screen-name="'.htmlspecialchars($row_reply_user['screen_name']).'" data-support-text="'.getPostID($row_reply['id']).'" data-action="/replies/'.$row_reply['id'].'/violations" data-is-permalink="1" data-can-report-spoiler="'.(strval($row_reply['is_spoiler']) == 1 ? '1' : '0').'" data-community-id="" data-url-id="'.$row_reply['id'].'" data-track-label="reply" data-title-id="" data-track-action="openReportModal" data-track-category="reportViolation">Report Violation</a>'; }
- }
-else {
-$reply_meta_button_output = '<a disabled="" role="button" class="report-button disabled">Report Violation</a>';	 
- }
-if(isset($row_current_peopleban)) {
-$can_reply_user_miitoo = ' disabled'; }
-    elseif(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true && $row_reply_user['pid'] != $_SESSION['pid']) {
-	$can_reply_user_miitoo = ''; }
-	else {
-	$can_reply_user_miitoo = ' disabled'; }
-
-if(!empty($_SESSION['pid'])) {  		
-$sql_hasempathy = 'SELECT * FROM empathies WHERE empathies.id = "'.$mysql->real_escape_string($row_reply['id']).'" AND empathies.pid = "'.$_SESSION['pid'].'"';
-$result_hasempathy = $mysql->query($sql_hasempathy);
-}
-
-$sql_empathyamt = 'SELECT * FROM empathies WHERE empathies.id = "'.$mysql->real_escape_string($row_reply['id']).'"';
-$result_empathyamt = $mysql->query($sql_empathyamt);
-if(!empty($_SESSION['pid']) && mysqli_num_rows($result_hasempathy)!=0) {
-    $mii_face_miitoo = 'Unyeah';
-	$has_reply_miitoo_given_v2 = ''; 
-    $has_reply_miitoo_given = ' empathy-added';
-	$has_reply_miitoo_given_snd = 'SE_WAVE_MII_CANCEL';
-    $reply_miitoo_amt_other = mysqli_num_rows($result_empathyamt) - 1;	}
-	else {
-	$has_reply_miitoo_given_v2 = ' style="display: none;"';
-	$has_reply_miitoo_given = '';
-	$has_reply_miitoo_given_snd = 'SE_WAVE_MII_ADD';
-    $reply_miitoo_amt_other = mysqli_num_rows($result_empathyamt);	} 
-	
+        // Has the user given this post an empathy?
+if(!empty($_SESSION['pid'])) {
+$canmiitoo = miitooCan($_SESSION['pid'], $post['id'], 'posts'); 
+$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
+}	
 	
 	 print '<div class="reply-meta">
         
 
         <div class="expression">
 		';
-        print '<button type="button" '.$can_reply_user_miitoo.' 
-		class="submit miitoo-button'.$has_reply_miitoo_given.'" 
-		data-feeling="'.$mii_face_feeling.'" 
+        print '<button type="button" '.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : null).' 
+		class="submit miitoo-button'.(!empty($_SESSION['pid']) && $my_empathy_added == true ? ' empathy-added' : null).'" 
+		data-feeling="'.$mii['feeling'].'" 
 		data-action="/replies/'.$row_reply['id'].'/empathies" 
-		data-other-empathy-count="'.$reply_miitoo_amt_other.'" 
-		data-sound="'.$has_reply_miitoo_given_snd.'" 
+		data-other-empathy-count="'.(isset($my_empathy_added) && $my_empathy_added == true ? $empathies->num_rows - 1 : $empathies->num_rows).'" 
+		data-sound="SE_WAVE_MII_'.(isset($my_empathy_added) && $my_empathy_added == true ? 'CANCEL' : 'ADD').'" 
 		data-url-id="'.$row_reply['id'].'" 
 		data-track-label="default" 
 		data-track-action="yeah" 
-		data-track-category="empathy">'.$mii_face_miitoo.'</button>
+		data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? 'Unyeah' : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
         </div>';
 
-print $reply_meta_button_output;		
-		print '</div>
+if(!empty($_SESSION['pid'])) {
+if($_SESSION['pid'] == $post['pid']) {
+print '<a href="#" role="button" class="edit-button edit-post-button" data-modal-open="#edit-post-page">Edit</a>';	}
+else {
+$is_report_disabled = $mii['official'] != true;
+print '<a '.($is_report_disabled ? 'href="#" ' : null).'role="button"'.($is_report_disabled ? null : ' disabled').' class="report-button'.($is_report_disabled ? null : ' disabled').'" data-modal-open="#report-violation-page" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-support-text="'.getPostID($reply['id']).'" data-action="/posts/'.$reply['id'].'/violations" data-is-post="1" data-is-permalink="1" data-can-report-spoiler="'.($reply['is_spoiler'] == 1 ? '1' : '0').'" data-community-id="" data-url-id="'.$reply['id'].'" data-track-label="default" data-title-id="" data-track-action="openReportModal" data-track-category="reportViolation">Report Violation</a>'; }
+}
+else {
+print '<a disabled role="button" class="report-button disabled">Report Violation</a>';	 
+}
+		print '
+		</div>
 		';
 
-print '        <div class="post-permalink-feeling">
-<p class="post-permalink-feeling-text"></p>';
-
-if(isset($_SESSION['pid'])) {	  
-if($_SESSION['pid']) {
-$sql_reply_me = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
-$result_reply_me = $mysql->query($sql_reply_me);
-$row_reply_me = mysqli_fetch_assoc($result_reply_me); 	}  }
-	  
-	  if(isset($_SESSION['signed_in'])) {
-	  if($row_reply_me['mii_hash']) {
-	  $my_mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_reply_me['mii_hash'].'_'.$mii_face_feeling.'_face.png';
+	  print '</div>
+	  <div class="post-permalink-feeling">
+      <p class="post-permalink-feeling-text"></p>
+	  <div class="post-permalink-feeling-icon-container">
+	  ';
+$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 15');
+	  if(!empty($_SESSION['pid'])) {
+print displayempathy($post, $post, true);
 	  }
-	  else {
-	  if($row_reply_me['user_face']) {
-	  $my_mii_face_output = $row_reply_me['user_face'];
-	  }
-	  else {
-	  $my_mii_face_output = '/img/mii/img_unknown_MiiIcon.png';
-	  }
-	  }
-
-	 # User's own empathy.
-
-if($row_reply_me['official_user'] == 1) {
-$is_yeaher_official_user = ' official-user';
+while($row_empathies = $empathies_display->fetch_assoc()) {
+print displayempathy($row_empathies, $post, false);
 }
-else {
-$is_yeaher_official_user = ''; }
-
-	 print '<div class="post-permalink-feeling-icon-container"><a href="/users/'.htmlspecialchars($_SESSION['user_id']).'" data-pjax="#body" class="post-permalink-feeling-icon visitor'.$is_yeaher_official_user.'"'.$has_reply_miitoo_given_v2.'><img src="'.htmlspecialchars($my_mii_face_output).'" class="user-icon"></a>'; 
-	  }
-	 # Put other users' empathies here.
-
-	$sql_reply_empathies2 = 'SELECT * FROM empathies WHERE empathies.id = "'.$row_reply['id'].'" ORDER BY empathies.created_at DESC LIMIT 36';
-	$result_reply_empathies2 = $mysql->query($sql_reply_empathies2);	 
-	while($row_reply_empathies2 = mysqli_fetch_assoc($result_reply_empathies2)) {	
-
-$sql_reply_empathies_user = 'SELECT * FROM people WHERE people.pid = "'.$row_reply_empathies2['pid'].'"';
-$result_reply_empathies_user = $mysql->query($sql_reply_empathies_user);
-$row_reply_empathies_user = mysqli_fetch_assoc($result_reply_empathies_user);	
-		# Don't display your own Mii!
-		if(isset($_SESSION['pid']) && $row_reply_empathies_user['pid']==$_SESSION['pid']) {
-		print null; }
-		else {
-			
-if($row_reply_empathies_user['official_user'] == 1) {
-$is_yeaher_official_user = ' official-user';
-}
-else {
-$is_yeaher_official_user = ''; }
-		
-	  if($row_reply_empathies_user['mii_hash']) {
-	  $our_mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_reply_empathies_user['mii_hash'].'_'.$mii_face_feeling.'_face.png';
-	  }
-	  else {
-	  if($row_reply_empathies_user['user_face']) {
-	  $our_mii_face_output = $row_reply_empathies_user['user_face'];
-	  }
-	  else {
-	  $our_mii_face_output = '/img/mii/img_unknown_MiiIcon.png';
-	  }
-	  }
-			
-		print '<a href="/users/'.$row_reply_empathies_user['user_id'].'" data-pjax="#body" class="post-permalink-feeling-icon'.$is_yeaher_official_user.'"><img src="'.$our_mii_face_output.'" class="user-icon"></a>';	
-		
-		}
-}
-       print ' </div>
+print '
       </div>';
 	# End ul
 	print '</ul>
   </li>';
-  # End post-permalink-comments
     print '</div>';
 	print '</div>';
-require_once 'lib/htmPost.php';
-   postsFooter('replies', $row_reply);
+   postsFooter('replies', $reply);
     print $GLOBALS['div_body_head_end'];
 (empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
