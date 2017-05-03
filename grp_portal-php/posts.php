@@ -506,9 +506,10 @@ print '
 
   </div>
        </div>';
-	# Add reply page	
+	# Add reply page
+if(!empty($_SESSION['pid'])) {
 postForm('replies', $post, $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc());
-
+}
 	# Posts footer, mandatory for a posts page.
 postsFooter('posts', $post);
       if(!isset($hvideopost) && !empty($post['url'])) {

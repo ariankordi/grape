@@ -193,7 +193,8 @@ $has_the_act_tutorial = ' id="activity-feed"'; }
 }
 if(!empty($_GET['offset'])) { $my_new_offset1 = 50 + $_GET['offset']; }
 print '<div class="body-content js-post-list post-list" id="activity-feed" data-next-page-url="'.(mysqli_num_rows($result_feed_my_following) > 60 ? '?offset='.$my_new_offset1.'' : '').'">';
-
+require_once 'lib/htmCommunity.php';
+require_once '../grplib-php/community-helper.php';
 
 while($row_feed_my_following = mysqli_fetch_assoc($result_feed_my_following)) {
 $sql_act_followed_people = 'SELECT * FROM people WHERE people.pid = "'.$row_feed_my_following['target'].'"';
@@ -203,26 +204,8 @@ $row_act_followed_people = mysqli_fetch_assoc($result_act_followed_people);
 $sql_act_people_posts1 = 'SELECT * FROM posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
 $result_act_people_posts1 = $mysql->query($sql_act_people_posts1);
 
-$sql_act_people_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
-$result_act_people_posts = $mysql->query($sql_act_people_posts);
-$row_act_people_posts = mysqli_fetch_assoc($result_act_people_posts);
-
-$sql_act_people_posts_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "'.$row_act_people_posts['id'].'" AND replies.is_hidden != "1"';
-$result_act_people_posts_replies = $mysql->query($sql_act_people_posts_replies);
-$sql_act_people_posts_empathies = 'SELECT * FROM empathies WHERE empathies.id = "'.$row_act_people_posts['id'].'"';
-$result_act_people_posts_empathies = $mysql->query($sql_act_people_posts_empathies);
-
-if(mysqli_num_rows($result_act_people_posts) == 0) {
-print null;
-}
-
-else {
-$row_temp_current_post = $row_act_people_posts;
-$result_temp_current_post_replies = $result_act_people_posts_replies;
-$result_temp_current_post_empathies = $result_act_people_posts_empathies;
-$row_temp_current_post_user = $row_act_followed_people;
-$is_activity_feed_post = 1;
-include 'lib/userpage-post-template.php'; }
+if(mysqli_num_rows($result_act_people_posts) != 0) {
+printPost($result_act_people_posts1->fetch_assoc(), true, true, false); }
 
 }
 

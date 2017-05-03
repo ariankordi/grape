@@ -173,16 +173,16 @@ if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profil
 $delete_user_favoritepost = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); }	
 
 require_once 'lib/htm.php';
-print '    <title>Your Post</title>
+print '    <title>Your Comment</title>
 <header id="header">
   
-  <h1 id="page-title">Your Post</h1>
+  <h1 id="page-title">Your PComment</h1>
 
 </header>
 
 <div class="body-content track-error" id="post-permalink" data-track-error="deleted">
 ';
-noContentWindow('Deleted by poster.');
+noContentWindow('Deleted by the author of the comment.');
 print '
   </div>
 </div>';
@@ -209,7 +209,7 @@ require '../grplib-php/olv-url-enc.php';
 generalError(404, 'Deleted by adminsistrator.</p>
 <p>Comment ID: '.getPostID($reply['id']));  }
 if($reply['hidden_resp'] == '1') {
-generalError(404, 'Deleted by poster.'); }
+generalError(404, 'Deleted by the author of the comment.'); }
 grpfinish($mysql); exit();
 }
 # Success
@@ -218,6 +218,9 @@ require_once '../grplib-php/community-helper.php';
 require_once '../grplib-php/post-helper.php';
 $mii = getMii($user, $reply['feeling_id']);
 $ogpost_mii = getMii($user, $reply['feeling_id']);
+$pagetitle = htmlspecialchars($user['screen_name']).'\'s Comment';
+printHeader(false); printMenu();
+
     print $GLOBALS['div_body_head'];
 	print '<header id="header">
 	
@@ -230,7 +233,7 @@ $truncate_post_body = (mb_strlen($truncate_post_bodyp1, 'utf-8') >= 20 ? "$trunc
 
 print '
   <a class="post-permalink-button info-ticker" href="/posts/'.$ogpost['id'].'" data-pjax="#body">
-    <span>View <span class="post-user-description"><img src="'.$ogpost_mii['output'].'" class="user-icon">'.htmlspecialchars($ogpost_user['screen_name']).\'s post ('.($ogpost['_post_type'] == 'artwork' ? 'handwritten' : $truncate_post_body).')</span> for this comment.</span>';
+    <span>View <span class="post-user-description"><img src="'.$ogpost_mii['output'].'" class="user-icon">'.htmlspecialchars($ogpost_user['screen_name']).'\'s post ('.($ogpost['_post_type'] == 'artwork' ? 'handwritten' : $truncate_post_body).')</span> for this comment.</span>';
 	print '
   </a>
   <div id="post-permalink-comments">
@@ -239,7 +242,7 @@ print '
   print '<ul class="post-permalink-reply">
     <li>';
 
-print '<a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii_face_output.'" class="user-icon"></a>';
+print '<a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" class="user-icon"></a>';
 print '
 <div class="reply-content">
         <header>
@@ -260,10 +263,12 @@ print '
 
         // Has the user given this post an empathy?
 if(!empty($_SESSION['pid'])) {
-$canmiitoo = miitooCan($_SESSION['pid'], $post['id'], 'posts'); 
-$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
-}	
-	
+$canmiitoo = miitooCan($_SESSION['pid'], $reply['id'], 'replies'); 
+$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
+}
+$empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"');
+require '../grplib-php/olv-url-enc.php';
+
 	 print '<div class="reply-meta">
         
 
@@ -272,18 +277,18 @@ $my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = 
         print '<button type="button" '.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : null).' 
 		class="submit miitoo-button'.(!empty($_SESSION['pid']) && $my_empathy_added == true ? ' empathy-added' : null).'" 
 		data-feeling="'.$mii['feeling'].'" 
-		data-action="/replies/'.$row_reply['id'].'/empathies" 
+		data-action="/replies/'.$reply['id'].'/empathies" 
 		data-other-empathy-count="'.(isset($my_empathy_added) && $my_empathy_added == true ? $empathies->num_rows - 1 : $empathies->num_rows).'" 
 		data-sound="SE_WAVE_MII_'.(isset($my_empathy_added) && $my_empathy_added == true ? 'CANCEL' : 'ADD').'" 
-		data-url-id="'.$row_reply['id'].'" 
+		data-url-id="'.$reply['id'].'" 
 		data-track-label="default" 
 		data-track-action="yeah" 
 		data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? 'Unyeah' : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
         </div>';
 
 if(!empty($_SESSION['pid'])) {
-if($_SESSION['pid'] == $post['pid']) {
-print '<a href="#" role="button" class="edit-button edit-post-button" data-modal-open="#edit-post-page">Edit</a>';	}
+if($_SESSION['pid'] == $reply['pid']) {
+print '<a href="#" role="button" class="edit-button edit-reply-button" data-modal-open="#edit-post-page">Edit</a>';	}
 else {
 $is_report_disabled = $mii['official'] != true;
 print '<a '.($is_report_disabled ? 'href="#" ' : null).'role="button"'.($is_report_disabled ? null : ' disabled').' class="report-button'.($is_report_disabled ? null : ' disabled').'" data-modal-open="#report-violation-page" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-support-text="'.getPostID($reply['id']).'" data-action="/posts/'.$reply['id'].'/violations" data-is-post="1" data-is-permalink="1" data-can-report-spoiler="'.($reply['is_spoiler'] == 1 ? '1' : '0').'" data-community-id="" data-url-id="'.$reply['id'].'" data-track-label="default" data-title-id="" data-track-action="openReportModal" data-track-category="reportViolation">Report Violation</a>'; }
@@ -291,21 +296,18 @@ print '<a '.($is_report_disabled ? 'href="#" ' : null).'role="button"'.($is_repo
 else {
 print '<a disabled role="button" class="report-button disabled">Report Violation</a>';	 
 }
-		print '
-		</div>
-		';
 
 	  print '</div>
 	  <div class="post-permalink-feeling">
       <p class="post-permalink-feeling-text"></p>
 	  <div class="post-permalink-feeling-icon-container">
 	  ';
-$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 15');
+$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 15');
 	  if(!empty($_SESSION['pid'])) {
-print displayempathy($post, $post, true);
+print displayempathy($reply, $reply, true);
 	  }
 while($row_empathies = $empathies_display->fetch_assoc()) {
-print displayempathy($row_empathies, $post, false);
+print displayempathy($row_empathies, $reply, false);
 }
 print '
       </div>';

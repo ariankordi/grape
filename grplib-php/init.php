@@ -36,6 +36,15 @@ return 'Less than a minute ago'; }
 
 	function getMii($user, $feeling_id) {
 if(!empty($feeling_id)) {
+/* Please fix!
+
+$att_userfaceJSON = json_decode($user['user_face']);
+if($att_userfaceJSON) {
+if($feeling_id == '0' && !empty($att_userfaceJSON->normal)) {
+
+}
+
+*/
 	if(!empty($user['mii_hash'])) {
 if($feeling_id == '0') {
 $mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png'; 
@@ -62,7 +71,7 @@ $mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_pu
 $mii_face_feeling = 'puzzled';
 $mii_face_miitoo = 'Yeah...'; }
 	}
-elseif($user['user_face']) {
+elseif(!empty($user['user_face'])) {
 $mii_face_output = htmlspecialchars($user['user_face']);
 $mii_face_feeling = 'normal';
 $mii_face_miitoo = 'Yeah!';
@@ -101,8 +110,7 @@ if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQU
 if(isset($grp_config_privkey) && isset($grp_config_pubkey)) {
 require_once 'crypto.php';
 $identity_auth = initToken(decrypt_identity($grp_config_privkey, base64_decode($_COOKIE['grp_identity'])));
-if($identity_auth == false) { }
-else {
+if($identity_auth) {
 	$_SESSION['signed_in'] = true;
 		                $_SESSION['pid']    = $identity_auth['pid'];
                         $_SESSION['user_id']    = $identity_auth['user_id'];
@@ -122,4 +130,4 @@ $mysql->query('INSERT INTO relationships (source, target, is_me2me) VALUES ("'.$
 }
 
 if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/login' && $_SERVER['REQUEST_URI'] != '/login' && $_SERVER['REQUEST_URI'] != '/act/create' && $_SERVER['REQUEST_URI'] != '/people') {
-header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/act/login', true, 302); }
+header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302); }

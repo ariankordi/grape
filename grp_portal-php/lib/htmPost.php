@@ -5,7 +5,7 @@ global $mysql;
 if($my == true) { global $my_empathy_added; }
 $empathies_person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($my == true ? $_SESSION['pid'] : $row['pid']).'" LIMIT 1')->fetch_assoc();
 $empathies_person_mii = getMii($empathies_person, $post['feeling_id']);
-print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" data-pjax="#body"  class="post-permalink-feeling-icon'.($my == true ? ' visitor' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
+print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" data-pjax="#body"  class="post-permalink-feeling-icon'.($empathies_person_mii['official'] == true ? ' official-user' : null).''.($my == true ? ' visitor' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
 
 }
 
@@ -57,7 +57,7 @@ if(!empty($_SESSION['pid'])) { $myempathy = $mysql->query('SELECT * FROM empathi
 
     <div class="reply-meta">
       <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : null).'
-              class="submit miitoo-button'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').''.($myempathy ? ' empathy-added' : null).'"
+              class="submit miitoo-button'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').''.(!empty($_SESSION['pid']) && $myempathy ? ' empathy-added' : null).'"
               data-feeling="'.$mii['feeling'].'"
               data-action="/replies/'.$reply['id'].'/empathies"
               data-sound="SE_WAVE_MII'.(!empty($_SESSION['pid']) && $myempathy ? 'CANCEL' : 'ADD').'"

@@ -2,17 +2,9 @@
 
 #$row_user_to_view = $row_relationships_users;
 
-if($row_user_to_view['mii_hash']) {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_user_to_view['mii_hash'].'_normal_face.png'; 
-}
-else {
-if($row_user_to_view['user_face']) {
-$mii_face_output = htmlspecialchars($row_user_to_view['user_face']);
-} else {
-$mii_face_output = '/img/mii/img_unknown_MiiIcon.png'; }
-}
+$mii = getMii($row_user_to_view, 0);
 
-if($row_user_to_view['official_user'] == 1) {
+if($mii['official']) {
 $is_user_official_user = ' official-user';
 }
 else {
@@ -40,7 +32,7 @@ $has_follow_scroll = ' arrow-button'; }
 }
 
 print '<li class="scroll test-user-'.htmlspecialchars($row_user_to_view['user_id']).'">
-    <a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus icon-container'.$is_user_official_user.'" data-pjax="#body"><img src="'.$mii_face_output.'" class="icon"></a>
+    <a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus icon-container'.$is_user_official_user.'" data-pjax="#body"><img src="'.$mii['output'].'" class="icon"></a>
     
 
 	
@@ -59,11 +51,11 @@ if(isset($is_friends_added_list)) {
 if($is_friends_added_list = true && isset($is_friends_pending_list)) {
 $search_frienduserlistli1 = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$row_user_to_view['pid'].'" AND friend_requests.finished = "0"');
 $search_frienduserlistli = mysqli_fetch_assoc($search_frienduserlistli1);
-print '<button type="button" class="button friend-requested-button relationship-button remove-button" data-modal-open="#sent-request-confirm-page" '.($row_user_to_view['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_user_to_view['user_id']).'" data-screen-name="'.htmlspecialchars($row_user_to_view['screen_name']).'" data-mii-face-url="'.$mii_face_output.'" data-pid="'.$search_frienduserlistli['recipient'].'" data-body="'.htmlspecialchars($search_frienduserlistli['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($search_frienduserlistli['created_at'])).'">Request Pending</button>';
+print '<button type="button" class="button friend-requested-button relationship-button remove-button" data-modal-open="#sent-request-confirm-page" '.($row_user_to_view['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_user_to_view['user_id']).'" data-screen-name="'.htmlspecialchars($row_user_to_view['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-pid="'.$search_frienduserlistli['recipient'].'" data-body="'.htmlspecialchars($search_frienduserlistli['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($search_frienduserlistli['created_at'])).'">Request Pending</button>';
 } 
 
 else {
-print '<button type="button" class="button friend-button relationship-button remove-button" data-modal-open="#breakup-confirm-page" '.($row_user_to_view['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_user_to_view['user_id']).'" data-screen-name="'.htmlspecialchars($row_user_to_view['screen_name']).'" data-mii-face-url="'.$mii_face_output.'" data-pid="'.htmlspecialchars($row_user_to_view['pid']).'">Friends</button>'; }
+print '<button type="button" class="button friend-button relationship-button remove-button" data-modal-open="#breakup-confirm-page" '.($row_user_to_view['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_user_to_view['user_id']).'" data-screen-name="'.htmlspecialchars($row_user_to_view['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-pid="'.htmlspecialchars($row_user_to_view['pid']).'">Friends</button>'; }
 }
 	
 else {

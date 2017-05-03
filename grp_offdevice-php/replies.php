@@ -141,7 +141,7 @@ print '
 
 <div class="no-content track-error" data-track-error="404">
   <div>
-    <p>Deleted by poster.</p>
+    <p>Deleted by the author of the comment.</p>
   </div>
 </div>
 
@@ -202,7 +202,7 @@ require '../grplib-php/olv-url-enc.php';
 notFound('Deleted by adminsistrator.</p>
 <p>Comment ID: '.getPostID($reply['id']), true);  }
 if($reply['hidden_resp'] == '1') {
-notFound ('Deleted by poster.', true); }
+notFound ('Deleted by the author of the comment.', true); }
 # Other deleted messages
 printFooter('old'); grpfinish($mysql); exit();
 }

@@ -32,3 +32,8 @@ if(substr($bufferimg,0,5) != 'image' || $bufferimg == 'image/gif') { return 'inv
 # End checks
 else { return 'ok'; }
 }
+
+function privatePostValid($user) {
+
+
+}
