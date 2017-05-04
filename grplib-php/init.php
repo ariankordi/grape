@@ -2,7 +2,7 @@
 require_once '../config.php';
 $dev_server = $grp_config_server_type == 'dev';
 
-define('VERSION', '0.7.3');
+define('VERSION', '0.7.4');
 
 function connectSQL($server, $user, $pw, $name) {
 $mysql = new mysqli($server, $user, $pw, $name);
@@ -15,8 +15,7 @@ date_default_timezone_set('America/New_York');
 return $mysql;
 }
 function initAll() {
-global $grp_config_database_server; global $grp_config_database_user; global $grp_config_database_pw; global $grp_config_database_name;
-$mysql = connectSQL($grp_config_database_server, $grp_config_database_user, $grp_config_database_pw, $grp_config_database_name);
+$mysql = connectSQL(CONFIG_DB_SERVER, CONFIG_DB_USER, CONFIG_DB_PASS, CONFIG_DB_NAME);
 return $mysql;
 }
 
@@ -129,5 +128,5 @@ if($search_relationships_own->num_rows == 0) {
 $mysql->query('INSERT INTO relationships (source, target, is_me2me) VALUES ("'.$_SESSION['pid'].'", "'.$_SESSION['pid'].'", "1")'); }
 }
 
-if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/login' && $_SERVER['REQUEST_URI'] != '/login' && $_SERVER['REQUEST_URI'] != '/act/create' && $_SERVER['REQUEST_URI'] != '/people') {
+if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && substr($_SERVER['REQUEST_URI'],0,10) != '/act/login' && substr($_SERVER['REQUEST_URI'],0,6) != '/login' && $_SERVER['REQUEST_URI'] != '/act/create' && $_SERVER['REQUEST_URI'] != '/people') {
 header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302); }

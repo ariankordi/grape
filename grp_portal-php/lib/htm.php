@@ -209,6 +209,8 @@ actTemplate($subheader, $location, '<div class="num3">
 </div>');
 }
 
+
+
 function notLoggedIn() {
 if(isset($_SERVER['HTTP_X_PJAX'])) {
 header('Content-Type: application/json; charset=UTF-8');
@@ -217,8 +219,12 @@ exit(json_encode(array('success' => 0, 'errors' => [array('message' => 'You have
 Please log back in.', 'error_code' => 1510110)], 'code' => 401)));
 }
 else {
-header('Content-Type: text/plain; charset=UTF-8');
-http_response_code(403);
-exit('403 Forbidden');
+plainErr(403, '403 Forbidden');
 } 
+}
+
+function plainErr($code, $message) {
+http_response_code(!empty($code) ? $code : 403);
+header('Content-Type: text/plain; charset=UTF-8');
+print !empty($message) ? $message."\n" : "403 Forbidden\n";
 }

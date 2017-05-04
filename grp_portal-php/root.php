@@ -15,9 +15,7 @@ header("HTTP/1.1 401 Unauthorized");
 			exit ("\n");
 }
 else {
-header('Content-Type: text/plain; charset=UTF-8');
-header("HTTP/1.1 403 Forbidden");
-exit("403 Forbidden\n");
+plainErr(403, '403 Forbidden'); grpfinish($mysql); exit();
 }
 }
 }

@@ -60,9 +60,14 @@ print '
 </html>';
 } }
 
-function noLogin() {
+function plainErr($code, $message) {
+http_response_code(!empty($code) ? $code : 403);
 header('Content-Type: text/plain; charset=UTF-8');
-print "403 Forbidden\n";
+print !empty($message) ? $message."\n" : "403 Forbidden\n";
+}
+
+function noLogin() {
+plainErr(403, '403 Forbidden');
 }
 
 

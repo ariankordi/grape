@@ -6,105 +6,58 @@ require 'lib/htm.php';
 notLoggedIn(); grpfinish($mysql); exit();
 }
 
+$me_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"')->fetch_assoc();
+
 # If the method is POST, then post.
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-if(empty($_GET['conversation_id'])) {
-$result_people_messagesearch = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['message_to_user_id']).'"');
-if(mysqli_num_rows($result_people_messagesearch) == 0) {
-			$error_message[] = 'The user could not be found.';
-			$error_code[] = '1512012';
+require_once '../grplib-php/user-helper.php';
+if(!empty($_GET['conversation_id'])) {
+if($me_user['privilege'] <= 6) { header(plainErr(403, '403 Forbidden'); grpfinish($mysql); exit(); } else {
+$search_conversation = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->real_escape_string().'" LIMIT 1');
+if(!$search_conversation || $search_conversation->num_rows == 0) { plainErr(404, '404 Not Found'); grpfinish($mysql); exit(); }
+	}   
 } else {
-$row_people_messagesearch = mysqli_fetch_assoc($result_people_messagesearch);
-$result_relationshipsearch = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_people_messagesearch['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.source = "'.$row_people_messagesearch['pid'].'" LIMIT 1');
-if(mysqli_num_rows($result_relationshipsearch) == 0) {
-			$error_message[] = 'You are not friends with this user.';
-			$error_code[] = '1512013';	
+$user_id = userIDtoPID($mysql->real_escape_string($_GET['message_to_user_id']));
+if(!$user_id) { plainErr(404, '404 Not Found'); grpfinish($mysql); exit(); }
+$relationship = getFriendRelationship($_SESSION['pid'], $user_id);
+if(!$relationship) { plainErr(403, '403 Forbidden'); grpfinish($mysql); exit(); }
 }
-} }
-else {
-$result_people_messagesearch = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->real_escape_string($_GET['conversation_id']).'"');
-if(mysqli_num_rows($result_people_messagesearch) == 0) {
-			$error_message[] = 'The user could not be found.';
-			$error_code[] = '1512012';
+require_once '../grplib-php/post-helper.php';
+$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+$is_post_valid = postValid($me_user, 'upload');
+if($is_post_valid != 'ok') {
+if($is_post_valid == 'blank') {
+$error_message[] = 'The content you have entered is blank.
+Please enter content into your post.';
+$error_code[] = 1515001; }
+elseif($is_post_valid == 'max') {
+$error_message[] = 'You have exceeded the amount of characters that you can send.';
+$error_code[] = 1515002; }
+} if(!empty($error_code)) {
+http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [array(
+'message' => $error_message[0],
+'error_code' => $error_code[0]
+)], 'code' => 400)); grpfinish($mysql); exit();
 }
 
-        if(strlen($_POST['body']) <= 0)
-        {
-            $error_message[] = 'The content you have entered is blank.\nPlease enter content into your post.';
-			$error_code[] = '1515001';
-        }
-        if(preg_replace( '/[\x{200B}-\x{200D}]/u', '', $_POST['body'] ) == '') {
-            $error_message[] = 'The content you have entered is blank.\nPlease enter content into your post.';
-			$error_code[] = '1515001';
-}
-if(ctype_space(preg_replace( '/[\x{200B}-\x{200D}]/u', '', $_POST['body'] ))) {
-            $error_message[] = 'The content you have entered is blank.\nPlease enter content into your post.';
-			$error_code[] = '1515001';
-}
-		# start url checks
-		if(isset($_POST['screenshot'])) {
-      	if(strlen($_POST['screenshot']) >= 1) {
-		if(strlen($_POST['screenshot']) > 255)
-        {
-            $error_message[] = 'You have exceeded the amount of characters that you can send.';
-			$error_code[] = '1515002';
-        }
-		if (substr($_POST['screenshot'], 0, 4) != "http" && strlen($_POST['screenshot']) >= 3) {
-            $error_message[] = 'The screenshot URL you have specified is not of HTTP or HTTPS.';
-			$error_code[] = '1515003';
-        }
-		if(strlen($_POST['screenshot']) < 11 && strlen($_POST['screenshot']) >= 3) {
-		    $error_message[] = 'The screenshot URL you have specified is too short.';
-			$error_code[] = '1515004';	
-		}
-if (filter_var($_POST['screenshot'], FILTER_VALIDATE_URL) === FALSE) {
-		    $error_message[] = 'The screenshot URL you have specified is not valid.';
-			$error_code[] = '1515005';			
-        }
-		}
-		}		
+require_once '../grplib-php/olv-url-enc.php';
+$gen_olive_url = genURL();
 
-		# end url checks
-}
-	    if(!empty($error_code) || !empty($error_message) ) /*Got errors?*/
-    {
-		// JSON response for errors.
-			http_response_code(400);
-            header('Content-Type: application/json; charset=utf-8');
-			print '{"success":0,"errors":[{"message":"'.$error_message[0].'","error_code":'.$error_code[0].'}],"code":"400"}';
-			print "\n";
-    }
-	else {
-require 'lib/olv-url-enc.php';
-$gen_olive_url = $b64url_data;
+if(empty($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6 || !is_numeric($_POST['feeling_id'])) { $_POST['feeling_id'] = 0; }
 
-if(!isset($_POST['is_spoiler'])) { $_POST['is_spoiler'] = false; } if(empty($_POST['feeling_id'])) {
-$_POST['feeling_id'] = '0'; }
 if(empty($_GET['conversation_id'])) {
-$result_search_conversations = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$row_people_messagesearch['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'" AND conversations.sender = "'.$row_people_messagesearch['pid'].'"');
-if(mysqli_num_rows($result_search_conversations) == 0) {
-	
-$recipient_in_new_conversation1 = mysqli_fetch_assoc($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$row_people_messagesearch['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'" AND friend_relationships.source = "'.$row_people_messagesearch['pid'].'"'));
-
-$recipient_in_new_conversation = mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.($recipient_in_new_conversation1['source'] == $_SESSION['pid'] ? $recipient_in_new_conversation1['target'] : $recipient_in_new_conversation1['source']).'"'));
-
-$create_new_conversation = $mysql->query('INSERT INTO conversations (sender, recipient) VALUES ("'.$_SESSION['pid'].'", "'.$recipient_in_new_conversation['pid'].'")');
-
-$new_message_conversation_id = mysqli_fetch_assoc($mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" AND conversations.recipient = "'.$recipient_in_new_conversation['pid'].'"'))['conversation_id'];
-} 
-else {
-$new_message_conversation_id = mysqli_fetch_assoc($result_search_conversations)['conversation_id']; }
+$conversation_id = $search_conversation->fetch_assoc()['conversation_id'];
 }
 else {
-$new_message_conversation_id = $mysql->real_escape_string($_GET['conversation_id']);	
+$conversation_id = $relationship['conversation_id'];
 }
 
         $sql = 'INSERT INTO
                     messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read)
-                VALUES("'.$new_message_conversation_id.'",
+                VALUES("'.$conversation_id.'",
 				       "'.$gen_olive_url .'",
-				       "'.$mysql->real_escape_string($_SESSION['pid']).'",
-                       "'.htmlspecialchars($mysql->real_escape_string($_POST['feeling_id'])).'",
+				       "'.$_SESSION['pid'].'",
+                       "'.$mysql->real_escape_string($_POST['feeling_id']).'",
                        "1",
                        "'.$mysql->real_escape_string($_POST['body']).'",
 					   "'.(empty($_POST['screenshot']) ? NULL : $mysql->real_escape_string($_POST['screenshot'])).'",
@@ -112,7 +65,7 @@ $new_message_conversation_id = $mysql->real_escape_string($_GET['conversation_id
                        "0")';
                          
         $result = $mysql->query($sql);
-		$resultUpdateFM = $mysql->query('UPDATE friend_relationships SET updated = CURRENT_TIMESTAMP WHERE relationship_id = "'.mysqli_fetch_assoc($result_relationshipsearch)['relationship_id'].'"');
+		$resultUpdateFM = $mysql->query('UPDATE friend_relationships SET updated = NOW() WHERE relationship_id = "'.$relationship['relationship_id'].'"');
         if(!$result)
         {
             //MySQL error; print jsON response.
@@ -135,7 +88,6 @@ include 'lib/messagelist-message-template.php';
 		
 		}
 
-	}
 }
 
 # If not, then do everything else.
@@ -173,7 +125,7 @@ if(mysqli_num_rows($result_search_person_relationship) == 0) {
 header('Content-Type: text/plain; charset=UTF-8'); header("HTTP/1.1 403 Forbidden"); exit("403 Forbidden\n");   } }
 else {
 if(mysqli_fetch_assoc($mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"'))['privilege'] < 5) {
-header('Content-Type: text/plain; charset=UTF-8'); header("HTTP/1.1 403 Forbidden"); exit("403 Forbidden\n");   } }
+plainErr(403, '403 Forbidden'); grpfinish($mysql); exit();   } }
 if(!isset($_GET['offset'])) {
 if(isset($_GET['user_id'])) {
 $pagetitle = 'Conversation with '.htmlspecialchars($row_get_person_formessage['screen_name']).' ('.htmlspecialchars($row_get_person_formessage['user_id']).')';
@@ -296,12 +248,6 @@ print '
   </form>
 </div>';
 print $GLOBALS['div_body_head_end'];
-
-$result_get_all_conversation_ids = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$_SESSION['pid'].'" OR conversations.recipient = "'.$_SESSION['pid'].'"');
-if(mysqli_num_rows($result_get_all_conversation_ids) != 0) {
-while($row_get_all_conversation_ids = mysqli_fetch_assoc($result_get_all_conversation_ids)) {
-$result_set_all_messages_unread = $mysql->query('UPDATE messages SET has_read = "1" WHERE messages.conversation_id = "'.$row_get_all_conversation_ids['conversation_id'].'" AND messages.pid != "'.$_SESSION['pid'].'"');
-} }
 
 (isset($_SERVER['HTTP_X_PJAX']) ? '' : printFooter());
 }

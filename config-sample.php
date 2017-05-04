@@ -23,10 +23,10 @@ $grp_config_server_nss_keys = array(
 );
 
 # Database connection info for a MySQL database.
-$grp_config_database_server = 'localhost:3306';
-$grp_config_database_user = 'root';
-$grp_config_database_pw = '[password]';
-$grp_config_database_name = 'grape';
+const CONFIG_DB_SERVER = 'localhost:3306';
+const CONFIG_DB_USER = 'root';
+const CONFIG_DB_PASS = '[password]';
+const CONFIG_DB_NAME = 'grape';
 
 # Default protocol for redirects.
 $grp_config_default_redir_prot = 'https://';
