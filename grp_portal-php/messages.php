@@ -1,8 +1,8 @@
 <?php
 require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
 
 if(empty($_SESSION['pid'])) {
-require 'lib/htm.php';
 notLoggedIn(); grpfinish($mysql); exit();
 }
 
@@ -52,8 +52,7 @@ else {
 $conversation_id = $relationship['conversation_id'];
 }
 
-        $sql = 'INSERT INTO
-                    messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read)
+        $create_message = $mysql->query('INSERT INTO messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read)
                 VALUES("'.$conversation_id.'",
 				       "'.$gen_olive_url .'",
 				       "'.$_SESSION['pid'].'",
@@ -62,53 +61,28 @@ $conversation_id = $relationship['conversation_id'];
                        "'.$mysql->real_escape_string($_POST['body']).'",
 					   "'.(empty($_POST['screenshot']) ? NULL : $mysql->real_escape_string($_POST['screenshot'])).'",
                        "'.(empty($_POST['is_spoiler']) ? '0' : $mysql->real_escape_string($_POST['is_spoiler'])).'",
-                       "0")';
-                         
-        $result = $mysql->query($sql);
-		$resultUpdateFM = $mysql->query('UPDATE friend_relationships SET updated = NOW() WHERE relationship_id = "'.$relationship['relationship_id'].'"');
-        if(!$result)
-        {
-            //MySQL error; print jsON response.
-			http_response_code(400);  
-			header('Content-Type: application/json; charset=utf-8');
-			
-			// Enable in debug
-			#print $sql;
-			#print "\n\n";			
-			
-			print '{"success":0,"errors":[{"message":"A database error has occurred.\nPlease try again later, or report the\nerror code to the webmaster.","error_code":160'.mysqli_errno($mysql).'}],"code":"500"}';
-			print "\n";
+                       "0")');
+		$updateFM = $mysql->query('UPDATE friend_relationships SET updated = NOW() WHERE relationship_id = "'.$relationship['relationship_id'].'"');
+if(!$createpost) {
+http_response_code(500);
+header('Content-Type: application/json; charset=utf-8');
+print json_encode(array(
+'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
+} else {
+# Success, print post.
+require_once 'lib/htmUser.php';
+printMessage($createpost->fetch_assoc());
 		}
-		else {
-			// HTML fragment success response.
-$row_get_posted_message = mysqli_fetch_assoc($mysql->query('SELECT * FROM messages WHERE messages.id = "'.$gen_olive_url.'"'));
-$message_template_row = $row_get_posted_message;
-include 'lib/messagelist-message-template.php';
-// End here.
-		
-		}
-
+grpfinish($mysql); exit();
 }
-
 # If not, then do everything else.
 
-else {
 # If user isn't logged in, then 403 them.
 if(empty($_SESSION['pid'])) {
-if(isset($_SERVER['HTTP_X_PJAX'])) {
-header('Content-Type: application/json; charset=UTF-8');
-header("HTTP/1.1 401 Unauthorized");
-			print '{"success":0,"errors":[{"message":"You have been logged out.\nPlease log back in.","error_code":1510110}],"code":"401"}';
-			exit ("\n");
-}
-else {
-header('Content-Type: text/plain; charset=UTF-8');
-header("HTTP/1.1 403 Forbidden");
-exit("403 Forbidden\n");
-}
+notLoggedIn(); grpfinish($mysql); exit();
 }
 # If a user ID is specified, then display a special page for that, and if not, then display the message search.
-if(isset($_GET['user_id']) || isset($_GET['conversation_id'])) {
+if(!empty($_GET['user_id']) || !empty($_GET['conversation_id'])) {
 if(!isset($_GET['conversation_id'])) {
 $result_get_person_formessage = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"');
 if(mysqli_num_rows($result_get_person_formessage) == 0) {
@@ -255,10 +229,7 @@ print $GLOBALS['div_body_head_end'];
 
 else {
 $pagetitle = 'Messages';
-require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
-
+printHeader(false); printMenu();
 print $GLOBALS['div_body_head'];
 print '<header id="header">
   
@@ -351,5 +322,4 @@ $result_set_all_messages_unread = $mysql->query('UPDATE messages SET has_read = 
 } }
 
 (isset($_SERVER['HTTP_X_PJAX']) ? '' : printFooter());
-} }
-
+}

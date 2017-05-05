@@ -121,3 +121,27 @@ print '    <span class="timestamp"> '.humanTiming(strtotime($news['created_at'])
 
 }
 
+function printMessage($row) {
+$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row['pid'].'"')->fetch_assoc();
+$mii = getMii($user, $row['feeling_id']);
+
+print '<div id="message-'.$row['id'].'" class="post scroll '.($user['pid'] == $_SESSION['pid'] ? 'my' : 'other').'-post">
+  <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" class="user-icon"></a>
+  <header>
+    <span class="timestamp">'.humanTiming(strtotime($row['created_at'])).'</span>
+    
+  </header>
+  <div class="post-body">
+
+
+      <p class="post-content">'.htmlspecialchars($row['body']).'</p>
+
+      ';
+	  if(!empty($row['screenshot'])) {
+	  print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="'.htmlspecialchars($row['screenshot']).'"><img src="'.htmlspecialchars($row['screenshot']).'" class="title-capture"></a>'; }
+	  print '
+        
+      
+  </div>
+</div>';
+}
