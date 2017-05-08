@@ -317,7 +317,7 @@ json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows == 0); {
+if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows != 0); {
 $delete_user_favoritepost = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); }	
 
 require_once 'lib/htm.php';
@@ -351,6 +351,7 @@ $post = $search_post->fetch_assoc();
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
 $community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$post['community_id'].'" LIMIT 1')->fetch_assoc();
 $title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
+$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
 if($post['is_hidden'] == '1') {
 if($post['hidden_resp'] == 0) {
 require '../grplib-php/olv-url-enc.php';
@@ -365,7 +366,6 @@ require_once 'lib/htmCommunity.php';
 require_once 'lib/htmPost.php';
 require_once '../grplib-php/community-helper.php';
 require_once '../grplib-php/olv-url-enc.php';
-$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
 $mii = getMii($user, $post['feeling_id']);
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"');
 printHeader(false); printMenu();
@@ -477,12 +477,15 @@ print '
       <p class="post-permalink-feeling-text"></p>
 	  <div class="post-permalink-feeling-icon-container">
 	  ';
-$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 15');
+$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 36');
 	  if(!empty($_SESSION['pid'])) {
-print displayempathy($post, $post, true);
+print displayempathy($post, $post, true, false);
 	  }
+$i = 1;
+$numbr = $empathies_display->num_rows;
 while($row_empathies = $empathies_display->fetch_assoc()) {
-print displayempathy($row_empathies, $post, false);
+print displayempathy($row_empathies, $post, false, ($empathies_display->num_rows == 36 && $i > $numbr ? true: false));
+$i++;
 }
 print '</div>
 </div>

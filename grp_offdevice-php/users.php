@@ -133,6 +133,7 @@ $createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'
 } else {
 $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
@@ -149,7 +150,8 @@ print '
 ';
 # End of user-page
 
-$search_user_friends = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$user['pid'].'" OR friend_relationships.target = "'.$user['pid'].'" ORDER BY friend_relationships.relationship_id DESC');
+}
+$search_user_friends = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$user['pid'].'" OR friend_relationships.target = "'.$user['pid'].'" ORDER BY friend_relationships.relationship_id DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
 print '<div class="list follow-list friends">
 ';
 if($search_user_friends->num_rows == 0) {
@@ -168,9 +170,12 @@ print '
 
 print '
 </div>';
+
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '
 </div>';
 printFooter('old');
+                                           }
 exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'following') {
@@ -186,6 +191,7 @@ $createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'
 } else {
 $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
@@ -202,7 +208,8 @@ print '
 ';
 # End of user-page
 
-$search_user_following = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me != "1" ORDER BY relationships.relationship_id DESC');
+}
+$search_user_following = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me != "1" ORDER BY relationships.relationship_id DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
 print '<div class="list follow-list following">
 ';
 if($search_user_following->num_rows == 0) {
@@ -211,7 +218,7 @@ print '<div id="user-page-no-content" class="no-content"><div>
 	To follow someone, select Follow from his or her profile screen.'; } else { print 'No followed users.'; } print '</p>
 </div></div>'; } else {
 print '<div id="user-page-no-content" class="none"></div>
-  <ul class="list-content-with-icon-and-text arrow-list" id="following-list-content" data-next-page-url="">';
+  <ul class="list-content-with-icon-and-text arrow-list" id="following-list-content" data-next-page-url="'.($search_user_following->num_rows > 49 ? '?offset='.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : 50) : '').'">';
 while($follow = $search_user_following->fetch_assoc()) {
 $get_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$follow['target'].'" LIMIT 1')->fetch_assoc();
 userObject($get_user, true, true);
@@ -222,9 +229,11 @@ print '
 
 print '
 </div>';
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '
 </div>';
 printFooter('old');
+                                           }
 exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'followers') {
@@ -240,6 +249,7 @@ $createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'
 } else {
 $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
@@ -256,7 +266,8 @@ print '
 ';
 # End of user-page
 
-$search_user_following = $mysql->query('SELECT * FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me != "1" ORDER BY relationships.relationship_id DESC');
+}
+$search_user_following = $mysql->query('SELECT * FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me != "1" ORDER BY relationships.relationship_id DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
 print '<div class="list follow-list followers">
 ';
 if($search_user_following->num_rows == 0) {
@@ -264,7 +275,7 @@ print '<div id="user-page-no-content" class="no-content"><div>
     <p>'; if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { print 'You have no followers.'; } else { print 'This user has no followers.'; } print '</p>
 </div></div>'; } else {
 print '<div id="user-page-no-content" class="none"></div>
-  <ul class="list-content-with-icon-and-text arrow-list" id="follower-list-content" data-next-page-url="">';
+  <ul class="list-content-with-icon-and-text arrow-list" id="follower-list-content" data-next-page-url="'.($search_user_following->num_rows > 49 ? '?offset='.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : 50) : '').'">';
 while($follow = $search_user_following->fetch_assoc()) {
 $get_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$follow['source'].'" LIMIT 1')->fetch_assoc();
 userObject($get_user, true, true);
@@ -275,9 +286,11 @@ print '
 
 print '
 </div>';
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '
 </div>';
 printFooter('old');
+                                           }
 exit();
 }
 

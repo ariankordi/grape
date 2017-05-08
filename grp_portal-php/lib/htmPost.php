@@ -1,11 +1,11 @@
 <?php
 
-function displayempathy($row, $post, $my) {
+function displayempathy($row, $post, $my, $last) {
 global $mysql;
 if($my == true) { global $my_empathy_added; }
 $empathies_person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($my == true ? $_SESSION['pid'] : $row['pid']).'" LIMIT 1')->fetch_assoc();
 $empathies_person_mii = getMii($empathies_person, $post['feeling_id']);
-print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" data-pjax="#body"  class="post-permalink-feeling-icon'.($empathies_person_mii['official'] == true ? ' official-user' : null).''.($my == true ? ' visitor' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
+print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" data-pjax="#body"  class="post-permalink-feeling-icon'.($empathies_person_mii['official'] == true ? ' official-user' : null).''.($my == true ? ' visitor' : '').''.($last == true ? ' extra' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
 
 }
 
@@ -133,10 +133,10 @@ print '
             <select name="edit-type">
                 <option value="" data-action="" selected="">Select an option.</option>
 ';
-if($type == 'posts' && !empty($row_post['screenshot'])) {
+if($type == 'posts' && !empty($post['screenshot'])) {
 print '<option value="screenshot-profile-post" data-action="/posts/'.$post['id'].'/screenshot.set_profile_post">Set Screenshot as Favorite Post</option>'; }
 print '
-              <option value="spoiler"'.($post['is_spoiler'] == 1 ? null : ' disabled').' data-action="'."{$type}/{$post['id']}".'.set_spoiler">Set as Spoiler</option>
+              <option value="spoiler"'.($post['is_spoiler'] == 1 ? ' disabled' : null).' data-action="/'."{$type}/{$post['id']}".'.set_spoiler">Set as Spoiler</option>
               <option value="delete" data-action="/'."{$type}/{$post['id']}".'.delete" data-track-label="default" data-track-action="deletePost" data-track-category="post">
                 Delete
               </option>

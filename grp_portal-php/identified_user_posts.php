@@ -22,7 +22,7 @@ print '<div class="body-content identified-user-page">
   <div class="tab-body">
     <div class="identified-user-page-content identified-user-list">'."\n".'';
 }
-$identified_users_select = $mysql->query('select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join people a on bm.pid = a.pid WHERE a.official_user = "1" ORDER BY recent_created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 'OFFSET '.' : null));	
+$identified_users_select = $mysql->query('select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join people a on bm.pid = a.pid WHERE a.official_user = "1" ORDER BY recent_created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : null));	
 
 while($identified_users = $identified_users_select->fetch_assoc()) {
 $person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$identified_users['pid'].'"')->fetch_assoc();
@@ -34,10 +34,12 @@ print ' 	<ul class="list-content-with-icon-and-text js-post-list post-list test-
 if(count($posts) != 0) {
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/olv-url-enc.php';
 foreach($posts as &$post_row) {
+if($post_row['is_hidden'] != 1) {
 print "<li class=\"scroll\">\n";
 printPost($post_row, true, false, true);
-print "\n</li>";
+print "\n</li>";                }
 }
 
        }

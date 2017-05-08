@@ -21,7 +21,7 @@ else {
 require_once '../grplib-php/account-helper.php';
 $act_template_subheader = 'Authenticate';
 $act_back_location = '/act/login';
-$check_login = actLoginCheck($_POST['user_id'], $_POST['password']);
+$check_login = actLoginCheck($mysql->real_escape_string($_POST['user_id']), $mysql->real_escape_string($_POST['password']));
 
       if($check_login == 'none' || $check_login == 'fail') {
 actError(array('code'=>'1022611','message'=>'Invalid account ID and password combination.

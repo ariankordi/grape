@@ -5,7 +5,7 @@ $lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSI
 function printHeader($is_act) {
 global $pagetitle;
 global $has_header_js;
-if($is_act == true && $is_act === true) { $pagetitle = 'Grape::Account'; } elseif($is_act == 'err') { $pagetitle = 'Error'; }
+if($is_act == true && $is_act === true) { $pagetitle = 'Grape::Account'; } elseif($is_act == 'err' && empty($pagetitle)) { $pagetitle = 'Error'; }
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
 	print '<title>'.(isset($pagetitle) ? $pagetitle : 'grp.portal.page_title').'</title>
 	';
@@ -193,10 +193,14 @@ print '<div class="no-content-window"><div class="window">
 
 function generalError($code, $message) {
 (empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? http_response_code($code) : null);
+global $pagetitle;
+if(empty($pagetitle)) {
+$pagetitle = 'Error';
+}
 printHeader('err');
 printMenu();
 print $GLOBALS['div_body_head']; print "\n".'<header id="header">
-<h1 id="page-title" class="left">Error</h1>
+<h1 id="page-title" class="left">'.$pagetitle.'</h1>
 </header>';
 print '<div class="body-content track-error" data-track-error="'.$code.'">';
 noContentWindow((!empty($message) ? $message : 'The screen could not be displayed.')); print $GLOBALS['div_body_head_end']; printFooter();

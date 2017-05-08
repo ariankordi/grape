@@ -11,7 +11,7 @@ return array(
 
 function userIDtoPID($user_id) {
 global $mysql;
-$query = $mysql->query('SELECT user_id FROM people WHERE people.user_id = "'.$user_id.'" LIMIT 1');
+$query = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$user_id.'" LIMIT 1');
 if(!$query || $query->num_rows == 0) { return false; }
 return $query->fetch_assoc()['pid'];
 }
@@ -32,16 +32,17 @@ if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.recipient 
 }
 
 function getFriendRelationship($source, $target) {
-$search_relationship = $mysql->prepare('SELECT * FROM friend_relationships WHERE friend_relationhips.source = ? AND friend_relationships.target = ? OR friend_relationships.target = ? AND friend_relationships.source = ?'); $search_relationship->bind_param('iiii', $source, $target, $target, $source); $search_relationship->execute(); $result_relationship = $search_relationship->get_result();
-if(!$result_relationship || $result_relationship->num_rows == 0) { return false; }
-$relationship = $result_relationship->fetch_assoc();
-$search_conversation = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$source['pid'].'" AND conversations.recipient = "'.$target['pid'].'" OR conversations.sender = "'.$target['pid'].'" AND conversations.recipient = "'.$source['pid'].'"');
+global $mysql;
+$search_relationship = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$source.'" AND friend_relationships.target = "'.$target.'" OR friend_relationships.source = "'.$target.'" AND friend_relationships.target = "'.$source.'"');
+if(!$search_relationship || $search_relationship->num_rows == 0) { return false; }
+$relationship = $search_relationship->fetch_assoc();
+$search_conversation = $mysql->query('SELECT * FROM conversations WHERE conversations.sender = "'.$source.'" AND conversations.recipient = "'.$target.'" OR conversations.sender = "'.$target.'" AND conversations.recipient = "'.$source.'"');
 if($search_conversation->num_rows != 0) { $conversation = $search_conversation->fetch_assoc(); }
 
 return array(
 'relationship_id' => $relationship['relationship_id'],
 'updated' => $relationship['updated'],
 'conversation_id' => ($search_conversation->num_rows != 0 ? $conversation['conversation_id'] : false),
-'conversation_createdat' = ($search_conversation->num_rows != 0 ? $conversation['created_at'] : false)
+'conversation_createdat' => ($search_conversation->num_rows != 0 ? $conversation['created_at'] : false)
 );
 }

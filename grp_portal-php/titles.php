@@ -46,7 +46,7 @@ $user_permission = empty($_SESSION['pid']) || !postPermission($user, $community)
     print $GLOBALS['div_body_head'];
 	print '
 <header id="header">
-<a id="header-post-button"'.($user_permission ? ' disabled' : null).' class="header-button'.($user_permission ? ' disabled' : null).' none"'.($user_permission ? 'href="#"' : '').' data-modal-open="#add-post-page">Post</a>';
+<a id="header-post-button"'.($user_permission ? ' disabled' : null).' class="header-button'.($user_permission ? ' disabled' : null).' none"'.($user_permission ? '' : ' href="#"').' data-modal-open="#add-post-page">Post</a>';
 $communities_search_others = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$title['olive_title_id'].'" AND communities.type != 5');
 if($communities_search_others->num_rows >= 2) {
 print '<a id="header-communities-button" href="/titles/'.$title['olive_title_id'].'" data-pjax="#body">Related Communities</a>'; }

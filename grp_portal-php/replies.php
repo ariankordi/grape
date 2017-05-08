@@ -203,6 +203,7 @@ $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].
 
 $ogpost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$reply['reply_to_id'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
+$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
 if($reply['is_hidden'] == '1') {
 if($reply['hidden_resp'] == 0) {
 require '../grplib-php/olv-url-enc.php';
@@ -302,12 +303,15 @@ print '<a disabled role="button" class="report-button disabled">Report Violation
       <p class="post-permalink-feeling-text"></p>
 	  <div class="post-permalink-feeling-icon-container">
 	  ';
-$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 15');
+$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 36');
 	  if(!empty($_SESSION['pid'])) {
-print displayempathy($reply, $reply, true);
+print displayempathy($reply, $reply, true, false);
 	  }
+$i = 1;
+$numbr = $empathies_display->num_rows;
 while($row_empathies = $empathies_display->fetch_assoc()) {
-print displayempathy($row_empathies, $reply, false);
+print displayempathy($row_empathies, $reply, false, ($empathies_display->num_rows == 36 && $i > $numbr == $lastArrayKey ? true: false));
+$i++;
 }
 print '
       </div>';

@@ -20,7 +20,7 @@ print '
   </div>
   <div class="guide-message content">
     <span class="icon-container official-user"><img src="/content/special/admin-us.png" class="icon test-official-user-img"></span>
-    <p class="message-text">Tom from Nintendo here. We want to inform you that we'."'".'ve fucked Miiverse up for no god damn reason other than to annoy all of our users, because fuck you, users. Thank you!</p>
+    <p class="message-text">Tom from Nintendo here. We want to inform you that we\'ve fucked Miiverse up for no god damn reason other than to annoy all of our users, because fuck you, users. Thank you!</p>
   </div>
   <div class="album-guide content">
     <a class="album-screenshot title-capture-container">
@@ -38,8 +38,8 @@ print '
     <img src="/content/special/diary-screenshot-us.png" class="diary-screenshot-image test-diary-screenshot-img">
     <div class="diary-guide-conteiner">
       <h2>Your Play Journal</h2>
-      <p>We don'."'".'t know why we implemented this.</p>
-      <p class="note">◆ We just wanted to pretend that we have an alternative to Activity Feed, even though we don'."'".'t.. we really don'."'".'t.</p>
+      <p>We don\'t know why we implemented this.</p>
+      <p class="note">◆ We just wanted to pretend that we have an alternative to Activity Feed, even though we don\'t.. we really don\'t.</p>
     </div>
     
   </div>
@@ -52,10 +52,10 @@ print '
     <div class="community-guide-conteiner">
       <p>We divided them into 3 sections for some reason.</p>
       <h3 class="diary"><img src="/content/special/com-diary-image.png">Play Journal Entries</h3>
-      <p>We don'."'".'t know what freedom is.</p>
+      <p>We don\'t know what freedom is.</p>
       <h3 class="artwork"><img src="/content/special/com-artwork-image.png">Drawings</h3>
       <p>Because fuck you.</p>
-      <p class="note">◆ You can'."'".'t make handwritten drawings anywhere else, lolololololololol.</p>
+      <p class="note">◆ You can\'t make handwritten drawings anywhere else, lolololololololol.</p>
       <h3 class="topic"><img src="/content/special/com-topic-image.png">Discussions</h3>
       <p>If you want to ask the meaning of life, here you go.</p>
     </div>
@@ -65,7 +65,7 @@ print '
     <h2 class="other">Other Changes</h2>
     <ul>
       <li>Did we mention the Activity Feed was gone?</li>
-      <li>Oh yeah, and there'."'".'s a post limit. If you post anything over 30 posts or comments, you won'."'".'t be happy.</li>
+      <li>Oh yeah, and there\'s a post limit. If you post anything over 30 posts or comments, you won\'t be happy.</li>
     </ul>
   </div>
 

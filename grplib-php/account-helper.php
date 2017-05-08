@@ -17,3 +17,15 @@ return 'fail'; } }
 return $user;
 
 }
+
+function setLoginVars($user, $login) {
+if($login == true) {
+      $_SESSION['signed_in'] = true;       
+	  $_SESSION['pid'] = $user['pid'];
+      $_SESSION['user_id'] = $user['user_id'];
+} else {
+      $_SESSION['signed_in'] = false;       
+	  $_SESSION['pid'] = null;
+      $_SESSION['user_id'] = null;
+}
+}

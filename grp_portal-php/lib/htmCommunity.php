@@ -171,7 +171,7 @@ print '
 
 ';
 if($row['is_hidden'] == 1 && $row['hidden_resp'] == 0) {
-require_once '../../grplib-php/olv-url-enc.php';
+require_once '../grplib-php/olv-url-enc.php';
 print '
         <p class="deleted-message">Deleted by administrator.</p>
         <p class="deleted-message">Post ID: '.getPostID($row['id']).'</p>
@@ -314,6 +314,7 @@ print '</div>';
 }
 
 function postForm($type, $community, $user) {
+global $act_feed;
 global $pagetitle;
 print '<div id="add-'.($type == 'replies' ? 'reply' : 'post').'-page" class="add-post-page'.($user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' ? ' official-user-post' : '').' none" data-modal-types="add-entry add-'.($type == 'replies' ? 'reply' : 'post').' require-body preview-body" data-is-template="1">
   <header class="add-post-page-header">
@@ -347,7 +348,7 @@ print '
             </label></li>
           
         </menu>
-        <textarea type="text" name="body" class="textarea-text" value="" maxlength="1000" placeholder="'.($type == 'replies' ? 'Add a comment here.' : 'Share your thoughts in a post to this community.').'"></textarea>
+        <textarea type="text" name="body" class="textarea-text" value="" maxlength="1000" placeholder="'.($type == 'replies' ? 'Add a comment here.' : (!empty($act_feed) && $act_feed ? 'Write a post here to people who are following you.' : 'Share your thoughts in a post to this community.')).'"></textarea>
         <div class="textarea-memo trigger" data-sound=""><div class="textarea-memo-preview"></div><input type="hidden" name="painting"></div>
       </div>
 	  ';

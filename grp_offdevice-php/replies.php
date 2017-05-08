@@ -267,10 +267,13 @@ print '
 ';
 $empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 8');
 	  if(!empty($_SESSION['pid'])) {
-print displayempathy($reply, $reply, true);
+print displayempathy($reply, $reply, true, false);
 	  }
+$i = 1;
+$numbr = $empathies_display->num_rows;
 while($row_empathies = $empathies_display->fetch_assoc()) {
-print displayempathy($row_empathies, $reply, false);
+print displayempathy($row_empathies, $reply, false, ($empathies_display->num_rows == 8 && $i > $numbr ? true: false));
+$i++;
 }
 print '
     </div>

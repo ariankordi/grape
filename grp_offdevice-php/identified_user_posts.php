@@ -27,12 +27,14 @@ $posts[] = $get_latest_post->fetch_assoc(); } }
 if(isset($posts) && count($posts) >= 1) {
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/olv-url-enc.php';
 print '<div class="list post-list" data-next-page-url="'.(isset($posts) && count($posts) > 49 ? '/identified_user_posts?offset='.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : '50') : null).'">
 ';
 
 foreach($posts as &$post_row) {
+if($post_row['is_hidden'] != 1) {
 $identified = true;
-printPost($post_row);	
+printPost($post_row);	}
 }
 
 print '

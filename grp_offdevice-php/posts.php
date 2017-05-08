@@ -271,7 +271,7 @@ json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows == 0); {
+if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows != 0); {
 $delete_user_favoritepost = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); }	
 
 require_once 'lib/htm.php';
@@ -368,8 +368,9 @@ $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print no
 $post = $search_post->fetch_assoc();
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
 $community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$post['community_id'].'" LIMIT 1')->fetch_assoc();
+$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
 if($post['is_hidden'] == '1') {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old');
+printHeader('old'); printMenu('old');
 if($post['hidden_resp'] == 0) {
 require '../grplib-php/olv-url-enc.php';
 notFound('Deleted by adminsistrator.</p>
@@ -456,10 +457,13 @@ print '<div id="empathy-content'.($empathies->num_rows == 0 ? '" class="none"' :
 ';
 $empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 15');
 	  if(!empty($_SESSION['pid'])) {
-print displayempathy($post, $post, true);
+print displayempathy($post, $post, true, false);
 	  }
+$i = 1;
+$numbr = $empathies_display->num_rows;
 while($row_empathies = $empathies_display->fetch_assoc()) {
-print displayempathy($row_empathies, $post, false);
+print displayempathy($row_empathies, $post, false, ($empathies_display->num_rows == 15 && $i > $numbr ? true: false));
+$i++;
 }
 print '</div>
 ';

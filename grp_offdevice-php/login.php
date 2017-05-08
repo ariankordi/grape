@@ -21,7 +21,7 @@ print '<h1 id="page-title">Grape::Account</h1>
 </div></div>';
 	grpfinish($mysql);	exit(); } else {
 require_once '../grplib-php/account-helper.php';
-$check_login = actLoginCheck($_POST['user_id'], $_POST['password']);
+$check_login = actLoginCheck($mysql->real_escape_string($_POST['user_id']), $mysql->real_escape_string($_POST['password']));
 
   if($check_login == 'none' || $check_login == 'fail') {
 $bodyID = 'help';

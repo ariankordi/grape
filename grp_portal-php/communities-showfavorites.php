@@ -17,7 +17,7 @@ if(!empty($is_fav_own)) {
 $row_userfavorites_user = mysqli_fetch_assoc($mysql->query('SELECT user_id, screen_name, pid FROM people WHERE people.pid = "'.$mysql->real_escape_string($is_fav_own).'"'));
 $pagetitle = htmlspecialchars($row_userfavorites_user['screen_name'])."'s Favorite Communities"; }
 else {
-$pagetitle = (isset($grp_config_server_type) && $grp_config_server_type == 'dev' && isset($grp_config_server_env) ? 'Communities ('.$grp_config_server_env.')' : 'Communities' );  }
+$pagetitle = 'Communities';  }
    
     require_once 'lib/htm.php';
 printHeader(false);

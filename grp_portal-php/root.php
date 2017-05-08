@@ -3,29 +3,22 @@ require_once '../grplib-php/init.php';
 
 # If user isn't logged in, then 403 them.
 if(empty($_SESSION['pid'])) {
-if(isset($grp_config_server_type) && $grp_config_server_type == 'prod') {
-include_once 'communities.php';
-exit();
-}
-else {
-if(isset($_SERVER['HTTP_X_PJAX'])) {
-header('Content-Type: application/json; charset=UTF-8');
-header("HTTP/1.1 401 Unauthorized");
-			print '{"success":0,"errors":[{"message":"You have been logged out.\nPlease log back in.","error_code":1510110}],"code":"401"}';
-			exit ("\n");
-}
-else {
+if($dev_server) {
 plainErr(403, '403 Forbidden'); grpfinish($mysql); exit();
 }
+else {
+include_once 'communities.php';
+grpfinish($mysql); exit();
+     }
 }
-}
-if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-$pagetitle = 'Activity Feed';
 require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
+$pagetitle = 'Activity Feed';
+printHeader(false); printMenu();
 
-$act_feed_loading = '
+function actFeedLoading() {
+print $GLOBALS['div_body_head'];
+print '
 <header id="header">
   
   <h1 id="page-title" class="">Activity Feed</h1>
@@ -46,181 +39,97 @@ $act_feed_loading = '
       </div>
     </div>
   </div>
-</div>';
-
-# Requesting "loading activity feed" page.
-if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && isset($_SERVER['HTTP_X_PJAX'])) {
-print $GLOBALS['div_body_head'];
-print $act_feed_loading;
+</div>
+';
 print $GLOBALS['div_body_head_end'];
 }
-if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !isset($_SERVER['HTTP_X_PJAX'])) {
-print $GLOBALS['div_body_head'];
-print $act_feed_loading;
-print $GLOBALS['div_body_head_end']; }
+
+# Requesting "loading activity feed" page.
+if((!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_PJAX'])) || (empty($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_PJAX']))) {
+actFeedLoading();
+         }
 }
 # User is trying to load the activity feed.
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !isset($_SERVER['HTTP_X_PJAX'])) {
-print '<header id="header">
-<h1 id="page-title">'.$pagetitle.'</h1>';
-
-
-$sql_feed_me = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
-$result_feed_me = $mysql->query($sql_feed_me);
-$row_feed_me = mysqli_fetch_assoc($result_feed_me); 
-
-if(isset($_GET['offset']) && is_numeric($_GET['offset'])) {
-$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50 OFFSET '.'.'';
-$result_feed_my_following = $mysql->query($sql_feed_my_following); } else {
-$sql_feed_my_following = 'select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50';
-$result_feed_my_following = $mysql->query($sql_feed_my_following);
-}
-
-$sql_feed_my_following2 = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"';
-$result_feed_my_following2 = $mysql->query($sql_feed_my_following2);
-
-if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-# Activity Feed post button + form
-print '  <a id="header-post-button" class="header-button" href="#" data-modal-open="#add-post-page">Post</a>';
-print '<div id="add-post-page" class="add-post-page ';
-
-$row_my_poster2 = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
-$result_my_poster2 = $mysql->query($row_my_poster2);
-$row_my_poster2 = mysqli_fetch_assoc($result_my_poster2); 
-
-if(strval($row_my_poster2['image_perm']) >= 1) {
-	print 'official-user-post ';
-  }
-
-print 'none " data-modal-types="add-entry add-post require-body preview-body" data-is-template="1">
-<header class="add-post-page-header">
-';
-print '<h1 class="page-title">Post to Activity Feed</h1>
-	</header>
-	'; 
-	print '<form method="post" action="/posts" id="posts-form">
-	    <input type="hidden" name="community_id" value="420">';
-    print '<div ';
-		 if(isset($_SESSION['pid'])) {
-	 if(strval($row_my_poster2['image_perm']) >= 1) {
-	  print 'style="position: absolute; left: 200px; top: 100px;" ';
-	 }
-	 }
-	 print 'class="add-post-page-content">
-	';
-    if(isset($_SESSION['signed_in'])) {
-	if($row_my_poster2['mii_hash']) {
-	print '<div class="feeling-selector expression">
-  <img src="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($row_my_poster2['mii_hash']).'_normal_face.png" class="icon">
-  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_normal_face.png" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_happy_face.png" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_like_face.png" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_surprised_face.png" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_frustrated_face.png" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="https://mii-secure.cdn.nintendo.net/'.htmlspecialchars($_SESSION['mii_hash']).'_puzzled_face.png" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>
-</div>';
-	}
-	if(isset($row_my_poster2['user_face'])) {
-	if($row_my_poster2['user_face']) {	
-	print '<div class="feeling-selector expression">
-  <img src="'.htmlspecialchars($row_my_poster2['user_face']).'" class="icon">
-  
-</div>';
-	}
-   }
-  }
-	print '<div class="textarea-container textarea-with-menu active-text">
-        
-          <menu class="textarea-menu">
-            <li><label class="textarea-menu-text checked">
-                <input type="radio" name="_post_type" value="body" checked="" data-sound="">
-            </label></li>
-            <li><label class="textarea-menu-memo">
-              <input type="radio" name="_post_type" value="painting" data-sound="">
-            </label></li>
-          </menu>
-        
-        <textarea name="body" class="textarea-text" value="" maxlength="1000" placeholder="Write a post here to people who are following you."></textarea>
-        <div class="textarea-memo trigger" data-sound=""><div class="textarea-memo-preview"></div><input type="hidden" name="painting"></div>
-      </div>';
-	 if(isset($_SESSION['pid'])) {
-	 if(strval($row_my_poster2['image_perm']) >= 1) {
-	 print '<input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">';
-	 }
-	 if(strval($row_my_poster2['image_perm']) >= 1) {
-	 print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
-	 }
-	}
-	
-	 
-	 print '<input type="button" class="olv-modal-close-button fixed-bottom-button left" value="Cancel" data-sound="SE_WAVE_CANCEL">
-	 <input type="submit" class="post-button fixed-bottom-button" value="Post" data-track-category="post" data-track-action="sendPost" data-track-label="default" data-community-id="6" data-title-id="1" data-post-content-type="text">
-</form>
-<label class="spoiler-button checkbox-button">
-        Spoilers
-        <input type="checkbox" name="is_spoiler" value="1">
-      </label>';
+if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_PJAX'])) {
 print '
+<header id="header">
+<h1 id="page-title">'.$pagetitle.'</h1>
+';
+require_once '../grplib-php/community-helper.php';
+require_once 'lib/htmCommunity.php';
+require_once 'lib/htmUser.php';
+require_once '../grplib-php/olv-url-enc.php';
+$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 
-</div>
+$search_relationships_real = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"');
 
+$search_relationships_by_post = $mysql->query('select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$mysql->real_escape_string($_GET['offset']) : ''));
+if($search_relationships_by_post->num_rows != 0) {
+$posts = array();
+while($row_relationship_posts = $search_relationships_by_post->fetch_assoc()) {
+$person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row_relationship_posts['target'].'"')->fetch_assoc();
+$get_latest_post = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$person['pid'].'" AND posts.hidden_resp != 1 OR posts.pid = "'.$person['pid'].'" AND posts.hidden_resp IS NULL ORDER BY posts.created_at DESC LIMIT 1');
+if($get_latest_post->num_rows != 0) {
+$posts[] = $get_latest_post->fetch_assoc(); }
+}
+} else {
+$posts = false; }
+
+if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
+# Activity Feed post button + form if the community exists
+$act_feed_community = $mysql->query('SELECT * FROM communities WHERE communities.type = 5 LIMIT 1');
+if($act_feed_community->num_rows != 0) {
+require_once 'lib/htmCommunity.php';
+print '  <a id="header-post-button" class="header-button" href="#" data-modal-open="#add-post-page">Post</a>';
+
+$act_feed = true;
+postForm('posts', $act_feed_community->fetch_assoc(), $user);
+
+}
+print '
 </header>';
 # Put my menu search here when implemented properly without collisions!
 
 # print '<span id="my-menu-search" class="scroll">Search Users<input name="query" class="scroll-focus user-search-query" minlength="1" maxlength="32" inputform="monospace" guidestring="Enter the ID or screen name of
 #the user you want to find." data-pjax="#body"></span>';
 
-if(mysqli_num_rows($result_feed_my_following2) == 0) {
-$has_the_act_tutorial = ' id="activity-feed-tutorial"'; 
-
+if($search_relationships_real->num_rows == 0) {
 print '
   <div class="tutorial-window" id="activity-feed-tutorial">
   <p class="tutorial-text">In your activity feed, you can view posts from your friends and from people you&#39;re following. To get started, why not follow some people whose posts interest you? You can also search for friends using Search Users in the upper right.<br />
 </p>
-    <h3>Latest Updates from Verified Users</h3>';
-
-$sql_act_getspecialuser = 'SELECT * FROM people WHERE people.official_user = "1" ORDER BY people.pid DESC LIMIT 1';
-$result_act_getspecialuser = $mysql->query($sql_act_getspecialuser);
-
-print '
+    <h3>Latest Updates from Verified Users</h3>
 	
     <ul class="list-content-with-icon-and-text arrow-list">';
-while($row_user_to_view = mysqli_fetch_assoc($result_act_getspecialuser)) {
-	include 'lib/userlist-li-template.php';
+$get_officials = $mysql->query('SELECT * FROM people WHERE people.official_user = "1" ORDER BY people.created_at ASC LIMIT 1');
+if($get_officials->num_rows != 0) {
+while($user = $get_officials->fetch_assoc()) {
+printf('<li><p>pid %d</p></li>', $user['pid']);
+userObject($user, false, true, null); 
+		}
 }
 print '    </ul>
   </div>';
+	}
 }
-else {
-$has_the_act_tutorial = ' id="activity-feed"'; }
-}
-if(!empty($_GET['offset'])) { $my_new_offset1 = 50 + $_GET['offset']; }
-print '<div class="body-content js-post-list post-list" id="activity-feed" data-next-page-url="'.(mysqli_num_rows($result_feed_my_following) > 60 ? '?offset='.$my_new_offset1.'' : '').'">';
+print '<div class="body-content js-post-list post-list" id="activity-feed" data-next-page-url="'.($posts && count($posts) > 49 ? '/activity?offset='.(empty($_GET['offset']) && is_numeric($_GET['offset']) ? 50 : 50 + count($posts)) : '').'">';
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 
-while($row_feed_my_following = mysqli_fetch_assoc($result_feed_my_following)) {
-$sql_act_followed_people = 'SELECT * FROM people WHERE people.pid = "'.$row_feed_my_following['target'].'"';
-$result_act_followed_people = $mysql->query($sql_act_followed_people);
-$row_act_followed_people = mysqli_fetch_assoc($result_act_followed_people);
-
-$sql_act_people_posts1 = 'SELECT * FROM posts WHERE posts.pid = "'.$row_act_followed_people['pid'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 1';
-$result_act_people_posts1 = $mysql->query($sql_act_people_posts1);
-
-if(mysqli_num_rows($result_act_people_posts) != 0) {
-printPost($result_act_people_posts1->fetch_assoc(), true, true, false); }
-
+if($posts) {
+foreach($posts as &$post_row) {
+printPost($post_row, true, true, false);
 }
 
-if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-# If no posts are shown
-
-$sql_feed_search_my_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$_SESSION['pid'].'" AND posts.is_hidden = "0" LIMIT 1';
-$result_feed_search_my_posts = $mysql->query($sql_feed_search_my_posts);
-
-if(mysqli_num_rows($result_feed_my_following2) == 0 && mysqli_num_rows($result_feed_search_my_posts) == 0) {
-print '
-    <div class="tutorial-window no-content js-no-content" id="activity-feed-tutorial">
+} else {
+# There are no posts to display
+print '    <div class="tutorial-window no-content js-no-content" id="activity-feed-tutorial">
       <p>There are no posts to display.</p>
     </div>
 ';
-} }
+}
+
 # End body-content js-post-list
 print '</div>'; 
 }
-(!isset($_SERVER['HTTP_X_AUTOPAGERIZE']) && !isset($_SERVER['HTTP_X_PJAX']) && !isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? printFooter() : '');
+(empty($_SERVER['HTTP_X_AUTOPAGERIZE']) && empty($_SERVER['HTTP_X_PJAX']) && empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? printFooter() : '');

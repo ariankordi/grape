@@ -21,9 +21,11 @@ print '<div class="headline">
   --><input type="submit" value="q" title="Search">
 </form>
 
-</div>';
+</div>
+';
 
-print '  <div id="js-main">
+print '
+  <div id="js-main">
     <div class="activity-feed content-loading-window">
       <div>
         <img src="/img/loading-image-green.gif" alt=""></img>
@@ -36,7 +38,8 @@ print '  <div id="js-main">
         <div class="buttons-content"><a href="/activity" class="button">Reload</a></div>
       </div>
     </div>
-  </div>';
+  </div>
+  ';
 }
 else {
 require_once '../grplib-php/community-helper.php';
