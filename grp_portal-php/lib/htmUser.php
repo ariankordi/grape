@@ -210,100 +210,91 @@ function userObject($user, $has_memo, $has_button, $type) {
 $user_id = htmlspecialchars($user['user_id']);
 $usermii = getMii($user, false);
 $get_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1')->fetch_assoc();
+$profile = $get_profile->fetch_assoc();
 
 if(isset($is_always_button_have)) {
 $has_follow_scroll = ' arrow-button';
 }
-else {
-$sql_userwho = 'SELECT * FROM people WHERE people.pid = "'.$row_user_to_view['pid'].'"';
-$result_userwho = $mysql->query($sql_userwho);
 
-if(isset($_SESSION['pid'])) {
-$sql_search_relationship = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$row_user_to_view['pid'].'"';
-$result_search_relationship = $mysql->query($sql_search_relationship); }
+if(!empty($_SESSION['pid'])) {
+$relationship_exists = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" LIMIT 1')->num_rows != 0; }
+else { $relationship_exists = false; }
 
-if(isset($_SESSION['pid']) && strval(mysqli_num_rows($result_search_relationship) == 0)) {
+if(!empty($_SESSION['pid']) && !$relationship_exists) {
 $has_follow_scroll = '';
 }
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_user_to_view['pid']) {
+if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) {
 $has_follow_scroll = ' arrow-button';
 }
 else {
 $has_follow_scroll = ' arrow-button'; }
 }
 
-print '<li class="scroll test-user-'.htmlspecialchars($row_user_to_view['user_id']).'">
-    <a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus icon-container'.($mii['official'] ? ' official-user' : '').'" data-pjax="#body"><img src="'.$mii['output'].'" class="icon"></a>
+print '<li class="scroll test-user-'.htmlspecialchars($user['user_id']).'">
+    <a href="/users/'.htmlspecialchars($user['user_id']).'" class="scroll-focus icon-container'.($mii['official'] ? ' official-user' : '').'" data-pjax="#body"><img src="'.$mii['output'].'" class="icon"></a>
     
 
 	
 	
 
 ';
-if(isset($is_user_search)) {
+if($type == 'search') {
 print '<div>
-    <a class="button" href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" data-pjax="#body">View Profile</a>
+    <a class="button" href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body">View Profile</a>
   </div>';
 }
 
 else {
 
-if(isset($is_friends_added_list)) {
+if($type == 'friends_added') {
 if($is_friends_added_list = true && isset($is_friends_pending_list)) {
-$search_frienduserlistli1 = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$row_user_to_view['pid'].'" AND friend_requests.finished = "0"');
+$search_frienduserlistli1 = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"');
 $search_frienduserlistli = mysqli_fetch_assoc($search_frienduserlistli1);
-print '<button type="button" class="button friend-requested-button relationship-button remove-button" data-modal-open="#sent-request-confirm-page" '.($row_user_to_view['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_user_to_view['user_id']).'" data-screen-name="'.htmlspecialchars($row_user_to_view['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-pid="'.$search_frienduserlistli['recipient'].'" data-body="'.htmlspecialchars($search_frienduserlistli['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($search_frienduserlistli['created_at'])).'">Request Pending</button>';
+print '<button type="button" class="button friend-requested-button relationship-button remove-button" data-modal-open="#sent-request-confirm-page" '.($user['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($user['user_id']).'" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-pid="'.$search_frienduserlistli['recipient'].'" data-body="'.htmlspecialchars($search_frienduserlistli['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($search_frienduserlistli['created_at'])).'">Request Pending</button>';
 } 
 
 else {
-print '<button type="button" class="button friend-button relationship-button remove-button" data-modal-open="#breakup-confirm-page" '.($row_user_to_view['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_user_to_view['user_id']).'" data-screen-name="'.htmlspecialchars($row_user_to_view['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-pid="'.htmlspecialchars($row_user_to_view['pid']).'">Friends</button>'; }
+print '<button type="button" class="button friend-button relationship-button remove-button" data-modal-open="#breakup-confirm-page" '.($user['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($user['user_id']).'" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-pid="'.htmlspecialchars($user['pid']).'">Friends</button>'; }
 }
 	
 else {
-if(isset($is_always_button_have)) {
-print '<a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus arrow-button" data-pjax="#body"></a>'; } else {
+if($has_button) {
+print '<a href="/users/'.htmlspecialchars($user['user_id']).'" class="scroll-focus arrow-button" data-pjax="#body"></a>'; } else {
 print '<div class="toggle-button">';
-if(isset($_SESSION['pid']) && $_SESSION['pid'] != $row_user_to_view['pid']) {
-if(isset($_SESSION['pid']) && strval(mysqli_num_rows($result_search_relationship) == 0)) {
-print '<a class="follow-button button add-button relationship-button" href="#" data-action="/users/'.htmlspecialchars($row_user_to_view['user_id']).'/follow" data-sound="SE_WAVE_FRIEND_ADD" data-track-label="user" data-track-action="follow" data-track-category="follow">Follow</a>
+if(!empty($_SESSION['pid']) && $_SESSION['pid'] != $user['pid']) {
+if(!empty($_SESSION['pid']) && !$relationship_exists) {
+print '<a class="follow-button button add-button relationship-button" href="#" data-action="/users/'.htmlspecialchars($user['user_id']).'/follow" data-sound="SE_WAVE_FRIEND_ADD" data-track-label="user" data-track-action="follow" data-track-category="follow">Follow</a>
       <button class="button follow-done-button relationship-button done-button none" disabled>Follow</button>';
 print '</div>
-  <a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus" data-pjax="#body"></a>
+  <a href="/users/'.htmlspecialchars($user['user_id']).'" class="scroll-focus" data-pjax="#body"></a>
 
 ';
 }
 else {
-print '<a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus arrow-button" data-pjax="#body"></a>'; }
+print '<a href="/users/'.htmlspecialchars($user['user_id']).'" class="scroll-focus arrow-button" data-pjax="#body"></a>'; }
 }
 else {
-print '<a href="/users/'.htmlspecialchars($row_user_to_view['user_id']).'" class="scroll-focus arrow-button" data-pjax="#body"></a>'; }
+print '<a href="/users/'.htmlspecialchars($user['user_id']).'" class="scroll-focus arrow-button" data-pjax="#body"></a>'; }
 }
 
 }
 
 
 }
-$sql_user_to_view_profile = 'SELECT * FROM profiles WHERE profiles.pid = "'.$row_user_to_view['pid'].'"';
-$result_user_to_view_profile = $mysql->query($sql_user_to_view_profile);
-$row_user_to_view_profile = mysqli_fetch_assoc($result_user_to_view_profile);
-
-if(empty($row_user_to_view_profile['comment'])) {
-$row_user_to_view_profile['comment'] = null; }
 
 print '
   <div class="body">
   ';
-  if(isset($is_mutual_list) && isset($row_user_to_view_profile['favorite_screenshot']) && strlen($row_user_to_view_profile['favorite_screenshot']) > 3) {
-$result_posts_getfavoritepost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($row_user_to_view_profile['favorite_screenshot']).'"');
-  print '<div class="user-profile-memo-content">
-      <img src="'.htmlspecialchars(mysqli_fetch_assoc($result_posts_getfavoritepost)['screenshot']).'" class="user-profile-memo">
+  if($has_memo && $get_profile->num_rows != 0 && !empty($profile['favorite_screenshot'])) {
+	  print '<div class="user-profile-memo-content">
+      <img src="'.htmlspecialchars($profile['favorite_screenshot']).'" class="user-profile-memo">
     </div>';	  
   }
   print '    <p class="title">
-      <span class="nick-name">'.htmlspecialchars($row_user_to_view['screen_name']).'</span>
-      <span class="id-name">'.htmlspecialchars($row_user_to_view['user_id']).'</span>
+      <span class="nick-name">'.htmlspecialchars($user['screen_name']).'</span>
+      <span class="id-name">'.htmlspecialchars($user['user_id']).'</span>
     </p>
-    <p class="text">'.htmlspecialchars($row_user_to_view_profile['comment']).'</p>
+    <p class="text">'.($get_profile->num_rows != 0 ? htmlspecialchars($profile['comment']) : '').'</p>
   </div>
 </li>';
 }
