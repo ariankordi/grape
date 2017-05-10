@@ -14,6 +14,39 @@ $mysql->query('SET time_zone = "-4:00"');
 date_default_timezone_set('America/New_York');
 return $mysql;
 }
+
+function localeSet($custom) {
+require_once '../l10n/langs.php';
+if(!empty($custom)) {
+$lang = $custom;
+		}
+elseif(!empty($_GET['locale_lang'])&&in_array($_GET['locale_lang'], ALLOWED_LANGS)) {
+$lang = $_GET['locale_lang'];
+		}
+elseif(!empty($_COOKIE['lang'])&&in_array($_COOKIE['lang'], ALLOWED_LANGS)) {
+$lang = $_COOKIE['lang'];
+		}
+else {
+$browser_lang = explode(",",($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''))[0];
+if(!empty($browser_lang)&&in_array($browser_lang, ALLOWED_LANGS)) {
+$lang = $browser_lang;
+	}	}
+if(!isset($lang)) {
+$lang = DEFAULT_LOCALE_LANG;
+		}
+if(empty($_COOKIE['lang']) || $_COOKIE['lang'] != $lang) {
+setcookie('lang', $lang, (time() + 664800), '/');
+	}
+// Set locale constant
+define('LOCALE', $lang);
+//
+   setlocale(LC_MESSAGES, str_replace(LOCALE, '-', '_').'UTF-8');
+   $domain = 'grape';
+   bindtextdomain($domain, '../l10n');
+   textdomain($domain);
+   bind_textdomain_codeset($domain, 'UTF-8');
+}
+
 function initAll() {
 $mysql = connectSQL(CONFIG_DB_SERVER, CONFIG_DB_USER, CONFIG_DB_PASS, CONFIG_DB_NAME);
 return $mysql;
@@ -41,6 +74,7 @@ $att_userfaceJSON = json_decode($user['user_face']);
 if($att_userfaceJSON) {
 if($feeling_id == '0' && !empty($att_userfaceJSON->normal)) {
 
+	}
 }
 
 */
@@ -105,6 +139,9 @@ if(session_status() == PHP_SESSION_NONE) {
 session_set_cookie_params(72000);
 ini_set('session.gc_maxlifetime', 72000);
 session_start();
+// Locale
+localeSet(null);
+// <Locale
 if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/logout' && $_SERVER['REQUEST_URI'] != '/guest_menu' && $_SERVER['REQUEST_URI'] != '/my_menu') {
 if(isset($grp_config_privkey) && isset($grp_config_pubkey)) {
 require_once 'crypto.php';
@@ -115,7 +152,8 @@ if($identity_auth) {
                         $_SESSION['user_id']    = $identity_auth['user_id'];
                         $_SESSION['password']    = $identity_auth['user_pass'];
 					    $_SESSION['device_id'] = $identity_auth['device_id'];
-					    $_SESSION['platform_id'] = $identity_auth['platform_id'];					
+					    $_SESSION['platform_id'] = $identity_auth['platform_id'];
+						
                    }
 }	}
 

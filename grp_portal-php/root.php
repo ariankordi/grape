@@ -104,7 +104,6 @@ print '
 $get_officials = $mysql->query('SELECT * FROM people WHERE people.official_user = "1" ORDER BY people.created_at ASC LIMIT 1');
 if($get_officials->num_rows != 0) {
 while($user = $get_officials->fetch_assoc()) {
-printf('<li><p>pid %d</p></li>', $user['pid']);
 userObject($user, false, true, null); 
 		}
 }
@@ -116,7 +115,7 @@ print '<div class="body-content js-post-list post-list" id="activity-feed" data-
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 
-if($posts) {
+if($posts && count($posts) >= 1) {
 foreach($posts as &$post_row) {
 printPost($post_row, true, true, false);
 }

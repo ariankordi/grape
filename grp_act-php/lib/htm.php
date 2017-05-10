@@ -11,8 +11,9 @@ function printHeader() { global $bodyStyle; ?>
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <style type="text/css">* {}</style></head>
-
+  <style type="text/css">* {}</style>   
+  <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></head>
   <body data-spy="scroll" data-target=".bs-docs-sidebar">
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="navbar-inner">
@@ -28,13 +29,13 @@ function printHeader() { global $bodyStyle; ?>
 	';
 }
 
-function printFooter() {?>
+function printFooter() { global $dev_server; ?>
     </div> <!-- /container -->
 
     <footer class="footer">
       <div class="container" style="text-align:center;">
       <hr>
-        grape<?php global $dev_server; echo ($dev_server == true ? '/'.VERSION : ''); ?>
+        grape<?=($dev_server == true ? '/'.VERSION : '')?>
       </div>
     </footer>
   
@@ -44,10 +45,17 @@ function printFooter() {?>
 }
 
 function printErr($code, $message, $back) {
-printHeader(); printf('    <h1>Error Code: %s-%s</h1>', substr($code,0,3), substr($code,4,3));
+printHeader(); printf('    <h1>Error Code: %s-%s</h1>', substr($code,0,3), substr($code,3,4));
 print '<br>
     
     <p>'.nl2br($message).'</p>
 <br>
 <a href="'.$back.'" class="btn btn-primary btn-primary">Back</a>  '; printFooter();
+}
+
+function defaultRedir($has_post) {
+// Please change with 'LOCATION' constant that contains something like: https://portal-t1.grp.app.ariankordi.net
+global $grp_config_default_redir_prot;
+if($has_post) { $location = $_POST['location']; } else { $location = $_GET['location']; }
+header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'].''.(!empty($location) ? htmlspecialchars($location) : '/'), true, 302);
 }

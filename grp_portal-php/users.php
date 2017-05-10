@@ -1,5 +1,8 @@
 <?php
 require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
+
+$search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.(empty($_GET['user_id']) ? 'a' : $mysql->real_escape_string($_GET['user_id'])).'"');
 
 if(isset($_GET['mode'])) {
 if($_GET['mode'] == 'posts') {
@@ -1669,247 +1672,36 @@ print "\n";
  
 }
 
-#else {
-#include_once '404.php'; }
-
-
-  
- else {
-# Display standard user page.
-$sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
-$result_userpage_user = $mysql->query($sql_userpage_user);
-$row_userpage_user = mysqli_fetch_assoc($result_userpage_user);
-
-if(isset($_SESSION['signed_in'])) {
-$sql_userpage_me = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
-$result_userpage_me = $mysql->query($sql_userpage_me);
-$row_userpage_me = mysqli_fetch_assoc($result_userpage_me); }
-
-// Who posesses the post?
-if($row_userpage_user['pid']) {
-if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true) {
-if($_SESSION['pid'] == $row_userpage_user['pid']) {
-$pagetitle = 'User Page';
-}
 else {
-$pagetitle = htmlspecialchars($row_userpage_user['screen_name']) . "'s Profile"; 
-}    } 
-else {
-$pagetitle = htmlspecialchars($row_userpage_user['screen_name']) . "'s Profile"; }
-}
-else {
-$pagetitle = 'Error'; }
-require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
-// DB error.
-if(!$result_userpage_user)
-{
-http_response_code(500);
-$pagetitle = ('Error');
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">'.$pagetitle.'</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="500">';
-$no_content_message = ( 'Server error.' );
-include 'lib/no-content-window.php';
-}
-else
-{
-	// User wasn't found.
-    if(mysqli_num_rows($result_userpage_user) == 0)
-    {
-(isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
-$pagetitle = ('Error');
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">'.$pagetitle.'</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="404">';
-$no_content_message = ( 'The user could not be found.' );
-include 'lib/no-content-window.php';
-    }
-    else
-    {
-$sql_userpage_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "'.$row_userpage_user['pid'].'"';
-$result_userpage_user_profile = $mysql->query($sql_userpage_user_profile);
-$row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile); 
-  
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-$mysql->query("INSERT INTO
-                    profiles(pid, platform_id)
-                VALUES('" . $mysql->real_escape_string($_SESSION['pid']) . "',
-                       '" . $row_userpage_user['platform_id'] . "')");
-     }
-else {
+if(!$search_user || $search_user->num_rows == 0) {
+generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
+$user = $search_user->fetch_assoc();
+$mii = getMii($user, false);
+$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
+if($search_profile->num_rows == 0) {
+$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
+$profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1')->fetch_assoc();
+} else {
+$profile = $search_profile->fetch_assoc(); }
+require_once 'lib/htmUser.php';
+
+$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
+
+printHeader(false); printMenu();
     print $GLOBALS['div_body_head'];
 	print '<header id="header">
   
   <h1 id="page-title">'.$pagetitle.'</h1>
 
-</header>';
-
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid']) {
-$is_user_me_page_visitor = ' is-visitor'; }
-else {
-$is_user_me_page_visitor = ''; }
-
-if($row_userpage_user['official_user'] == 1) {
-$is_user_info_official_user = ' official-user'; }
-else {
-$is_user_info_official_user = ''; }
-
-$sql_userpage_user_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$row_userpage_user['pid'].'" AND posts.is_hidden != "1"';
-$result_userpage_user_posts = $mysql->query($sql_userpage_user_posts);
-
-$sql_userpage_user_friends = 'SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_userpage_user['pid'].'" OR friend_relationships.source = "'.$row_userpage_user['pid'].'" ORDER BY friend_relationships.relationship_id LIMIT 100';
-$result_userpage_user_friends = $mysql->query($sql_userpage_user_friends);
-
-$sql_userpage_user_followers = 'SELECT * FROM relationships WHERE relationships.target = "'.$row_userpage_user['pid'].'" AND relationships.is_me2me = "0"';
-$result_userpage_user_followers = $mysql->query($sql_userpage_user_followers);
-
-$sql_userpage_user_following = 'SELECT * FROM relationships WHERE relationships.source = "'.$row_userpage_user['pid'].'" AND relationships.is_me2me = "0"';
-$result_userpage_user_following = $mysql->query($sql_userpage_user_following);
+</header>
+';
 
 #Begin body-content user-page
-print '<div class="body-content user-page'.$is_user_me_page_visitor.'">
+print '<div class="body-content user-page'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? ' is-visitor' : '').'">
 ';
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid']) {
-print '<a id="header-mymenu-button" href="/my_menu" data-pjax="#body">User Menu</a>
-'; }
 
-
-		if($row_userpage_user['mii_hash']) {
-$user_page_info_mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user['mii_hash'].'_normal_face.png'; }
-else {
-if($row_userpage_user['user_face']) {
-$user_page_info_mii_face_output = htmlspecialchars($row_userpage_user['user_face']); }
- else {
-$user_page_info_mii_face_output = '/img/mii/img_unknown_MiiIcon.png'; }
-}
-
-print '<div class="user-info info-content'.$is_user_info_official_user.'">'."\n".'';
-
-if(empty($row_userpage_user_profile['favorite_screenshot']) && strlen($row_userpage_user_profile['favorite_screenshot']) < 5) {
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user_profile['pid']) {
-print '<div class="user-profile-memo-container no-profile-memo">Your favorite post can be displayed here.</div>
-'; } else {
-print '<div class="user-profile-memo-container no-profile-memo"></div>'; }
-}
-else {
-$result_posts_getfavoritepost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($row_userpage_user_profile['favorite_screenshot']).'"');
-print '<a href="/posts/'.htmlspecialchars($row_userpage_user_profile['favorite_screenshot']).'" data-pjax="#body" class="user-profile-memo-container">
-    <img src="'.htmlspecialchars(mysqli_fetch_assoc($result_posts_getfavoritepost)['screenshot']).'" class="user-profile-memo">
-  </a>'; }
-
-print '    <span class="icon-container'.$is_user_info_official_user.'"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'"><img src="'.$user_page_info_mii_face_output.'" class="icon"></a></span>
-';
-if($row_userpage_user['official_user'] == 1) {
-print '<p class="user-organization">'.htmlspecialchars($row_userpage_user['organization']).'</p>'; }
-print '  <p class="title">
-    <span class="nick-name">'.htmlspecialchars($row_userpage_user['screen_name']).'</span>
-    <span class="id-name">'.htmlspecialchars($row_userpage_user['user_id']).'</span>
-  </p>
-  
-  ';
-
-if($row_userpage_user['official_user'] == 1) {
-$is_identified_user_value = ' data-is-identified="1"'; }
-else {
-$is_identified_user_value = ''; }
- 
-if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true && 2 >= $row_userpage_user['status']) {
-$if_user_follow_can = ''; }
-else {
-$if_user_follow_can = ' disabled'; }	
-
-if(isset($row_userpage_me)) {
-$sql_search_relationship = 'SELECT * FROM relationships WHERE relationships.source = "'.$row_userpage_me['pid'].'" AND relationships.target = "'.$row_userpage_user['pid'].'" AND relationships.is_me2me = "0"';
-$result_search_relationship = $mysql->query($sql_search_relationship);
-
-if(mysqli_num_rows($result_search_relationship) != 0) {
-$relationship_has_follow = ' none';
-$relationship_has_unfollow = '';     }
-else {
-$relationship_has_follow = '';
-$relationship_has_unfollow = ' none'; }
-} else {
-$relationship_has_follow = '';
-$relationship_has_unfollow = ' none'; }
-
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid']) {
-print '<a href="/settings/profile" data-pjax="#body" class="button edit-button">Profile Settings</a>'; }
-else {
-print '<div class="toggle-button">
-    <a class="follow-button button add-button'.$relationship_has_follow.' relationship-button'.$if_user_follow_can.'" href="#" data-action="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/follow" data-sound="SE_WAVE_FRIEND_ADD" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="follow" data-track-category="follow">Follow</a>
-    <a href="#" class="unfollow-button button remove-button'.$relationship_has_unfollow.' relationship-button" data-modal-open="#unfollow-confirm-page" data-user-id="'.htmlspecialchars($row_userpage_user['user_id']).'" data-screen-name="'.htmlspecialchars($row_userpage_user['screen_name']).'" data-mii-face-url="'.$user_page_info_mii_face_output.'" data-action="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/unfollow"'.$is_identified_user_value.'" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="openUnfollowModal" data-track-category="follow">Follow</a>
-</div>';	
-}
-// Make this better
-if(isset($row_userpage_user_profile['pid']) || !isset($_SESSION['pid'])) {
-$has_can_friend_request = true; } else {
-$has_can_friend_request = false; }
-
-if(isset($_SESSION['pid']) && $row_userpage_me['pid'] != $row_userpage_user['pid']) {
-if($has_can_friend_request = false) {
-print '
-<div class="button-with-option dropdown">
-            <a class="main-button friend-request-button disabled">Friend Request</a>
-        <div class="dropdown-menu">
-        </div>
-</div>'; }
-else {
-if($has_can_friend_request = true) {
-$sql_search_friend_request = 'SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$row_userpage_me['pid'].'" AND friend_requests.recipient = "'.$row_userpage_user['pid'].'" AND friend_requests.finished = "0"';
-$result_search_friend_request = $mysql->query($sql_search_friend_request);
-$row_pending_friend_request = mysqli_fetch_assoc($result_search_friend_request);
-$amt_rows_search_fr = mysqli_num_rows($result_search_friend_request);
-if($amt_rows_search_fr >= 1) {
-print '
-<div class="button-with-option dropdown">
-          <a href="#" class="main-button friend-requested-button dropdown-toggle main-option-button" data-toggle="dropdown" data-sound="SE_WAVE_BALLOON_OPEN">Request Pending</a>
-        <div class="dropdown-menu">
-            <a href="#" class="button cancel-request-button relationship-button" data-modal-open="#sent-request-confirm-page" '.($row_userpage_user['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_userpage_user['user_id']).'" data-screen-name="'.htmlspecialchars($row_userpage_user['screen_name']).'" data-mii-face-url="'.$user_page_info_mii_face_output.'" data-pid="'.$row_userpage_user['pid'].'" data-body="'.htmlspecialchars($row_pending_friend_request['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($row_pending_friend_request['created_at'])).'" data-sound="SE_WAVE_OK_SUB">Check Request</a>
-        </div>
-</div>
-';
-}
-$frcheck = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.recipient = "'.$_SESSION['pid'].'" AND friend_requests.sender = "'.$row_userpage_user['pid'].'"');
-if(mysqli_num_rows($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$row_userpage_me['pid'].'" AND friend_requests.recipient = "'.$row_userpage_user['pid'].'" AND friend_requests.finished = "0"')) == 0 && mysqli_num_rows($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$row_userpage_me['pid'].'" AND friend_relationships.target = "'.$row_userpage_user['pid'].'" OR friend_relationships.source = "'.$row_userpage_user['pid'].'" AND friend_relationships.target = "'.$row_userpage_me['pid'].'"')) == 0 && $frcheck->num_rows == 0) {
-print '
-<div class="button-with-option dropdown">
-            <a href="#" data-modal-open="#friend-request-post-page" class="main-button friend-request-button" data-sound="SE_WAVE_FRIEND_ADD">Friend Request</a>
-        <div class="dropdown-menu">
-        </div>
-      </div>';
-}
-if(mysqli_num_rows($result_search_friend_request) <= 0) {
-$sql_friend_relationship = 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$row_userpage_me['pid'].'" AND friend_relationships.target = "'.$row_userpage_user['pid'].'" OR friend_relationships.source = "'.$row_userpage_user['pid'].'" AND friend_relationships.target = "'.$row_userpage_me['pid'].'"';
-$result_friend_relationship = $mysql->query($sql_friend_relationship);
-if(mysqli_num_rows($result_friend_relationship) == 1) {
-$row_friend_relationship = mysqli_fetch_assoc($result_friend_relationship);
-print '
-<div class="button-with-option dropdown">
-          <a href="#" class="friend-button dropdown-toggle main-option-button" data-toggle="dropdown" data-sound="SE_WAVE_BALLOON_OPEN">Friends</a>
-        <div class="dropdown-menu">
-            <a href="#" class="button breakup-button relationship-button" data-modal-open="#breakup-confirm-page" '.($row_userpage_user['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_userpage_user['user_id']).'" data-screen-name="'.htmlspecialchars($row_userpage_user['screen_name']).'" data-mii-face-url="'.$user_page_info_mii_face_output.'" data-pid="'.$row_userpage_user['pid'].'" data-sound="SE_WAVE_OK_SUB">Remove Friend</a>
-        </div>
-      </div>';
-}	}
-if($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" OR friend_relationships.target = "'.$_SESSION['pid'].'"')->num_rows == 0 && $frcheck->num_rows >=1) {
-print '<div class="button-with-option dropdown">
-          <a href="#" class="main-button friend-request-button relationship-button" data-modal-open="#received-request-confirm-page" '.($row_userpage_user['official_user'] == 1 ? 'data-is-identified="1" ': '').'data-user-id="'.htmlspecialchars($row_userpage_user['user_id']).'" data-screen-name="'.htmlspecialchars($row_userpage_user['screen_name']).'" data-mii-face-url="'.$user_page_info_mii_face_output.'" data-pid="'.$row_userpage_user['pid'].'" data-body="'.htmlspecialchars($frcheck->fetch_assoc()['message']).'">View Friend Request</a>
-        <div class="dropdown-menu">
-        </div>
-      </div>';
-}
-	
-} } }
-
-# End user-info info-content
-print '</div>';
+userInfo($user, $profile, $mii, 'profile');
 
 print '<menu class="user-menu tab-header">
   <li class="test-user-posts-count tab-button-profile"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Posts</span><span class="number">'.mysqli_num_rows($result_userpage_user_posts).'</span></a></li>
@@ -2054,7 +1846,4 @@ include 'lib/user-page-footer.php';
 print '</div>';
 	print $GLOBALS['div_body_head_end'];	
 	printFooter();
-      }
 	}
-  }
-}

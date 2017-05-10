@@ -246,6 +246,7 @@ $mii = getMii($user, false);
 $search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
 if($search_profile->num_rows == 0) {
 $createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
+$profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1')->fetch_assoc();
 } else {
 $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
