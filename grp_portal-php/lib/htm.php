@@ -135,24 +135,24 @@ if(empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 	if(!empty($_SESSION['pid'])) {
 global $lookup_user;
 	print '<menu id="global-menu">
-      <li id="global-menu-mymenu"><a href="/users/'.htmlspecialchars($lookup_user['user_id']).'" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="'.getMii($lookup_user, false)['output'].'" alt="User Menu"></span><span>User Page</span></a></li>
-      <li id="global-menu-feed"><a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">Activity Feed</a></li>
-      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">Communities</a></li>
-      <li id="global-menu-message"><a href="/friend_messages" data-pjax="#body" data-sound="SE_WAVE_MENU">Messages<span class="badge" style="display: none;">0</span></a></li>
-      <li id="global-menu-news"><a href="/news/my_news" data-pjax="#body" data-sound="SE_WAVE_MENU">Notifications<span class="badge" style="display: none;">0</span></a></li>
-      <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">Close</a></li>
-      <li id="global-menu-back" class="none"><a href="#" role="button" class="accesskey-B" data-sound="SE_WAVE_BACK">Back</a></li>
+      <li id="global-menu-mymenu"><a href="/users/'.htmlspecialchars($lookup_user['user_id']).'" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="'.getMii($lookup_user, false)['output'].'" alt="'._('grp.portal.user_page').'"></span><span>'._('grp.portal.user_page').'</span></a></li>
+      <li id="global-menu-feed"><a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.activity').'</a></li>
+      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.communities').'</a></li>
+      <li id="global-menu-message"><a href="/friend_messages" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.message').'<span class="badge" style="display: none;">0</span></a></li>
+      <li id="global-menu-news"><a href="/news/my_news" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.news').'<span class="badge" style="display: none;">0</span></a></li>
+      <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">'._('grp.portal.exit').'</a></li>
+      <li id="global-menu-back" class="none"><a href="#" role="button" class="accesskey-B" data-sound="SE_WAVE_BACK">'._('grp.portal.back').'</a></li>
     </menu>
 '; } else {
 	print '
     <menu id="global-menu">
-      <li id="global-menu-mymenu"><a href="/guest_menu" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="/img/mii/img_unknown_MiiIcon.png" alt="Guest Menu"></span><span>Guest Menu</span></a></li>
+      <li id="global-menu-mymenu"><a href="/guest_menu" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="/img/mii/img_unknown_MiiIcon.png" alt="'._('grp.portal.user_menu_for_guest').'"></span><span>'._('grp.portal.user_menu_for_guest').'</span></a></li>
       <li id="global-menu-feed"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">Activity Feed</a></li>
-      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">Communities</a></li>
-      <li id="global-menu-message"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">Messages<span class="badge" style="display: none;">0</span></a></li>
-      <li id="global-menu-news"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">Notifications<span class="badge" style="display: none;">0</span></a></li>
-      <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">Close</a></li>
-      <li id="global-menu-back" class="none"><a href="#" role="button" class="accesskey-B" data-sound="SE_WAVE_BACK">Back</a></li>
+      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.communities').'</a></li>
+      <li id="global-menu-message"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.message').'<span class="badge" style="display: none;">0</span></a></li>
+      <li id="global-menu-news"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.news').'<span class="badge" style="display: none;">0</span></a></li>
+      <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">'._('grp.portal.exit').'</a></li>
+      <li id="global-menu-back" class="none"><a href="#" role="button" class="accesskey-B" data-sound="SE_WAVE_BACK">'._('grp.portal.back').'</a></li>
     </menu>
 ';
 	}

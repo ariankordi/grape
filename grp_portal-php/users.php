@@ -4,281 +4,35 @@ require_once 'lib/htm.php';
 
 $search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.(empty($_GET['user_id']) ? 'a' : $mysql->real_escape_string($_GET['user_id'])).'"');
 
-if(isset($_GET['mode'])) {
-if($_GET['mode'] == 'posts') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'posts') {
 # Display posts for user.
-# Display standard user page.
-$sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
-$result_userpage_user = $mysql->query($sql_userpage_user);
-$row_userpage_user = mysqli_fetch_assoc($result_userpage_user);
+if(!$search_user || $search_user->num_rows == 0) {
+generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
-if(isset($_SESSION['signed_in'])) {
-$sql_userpage_me = 'SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"';
-$result_userpage_me = $mysql->query($sql_userpage_me);
-$row_userpage_me = mysqli_fetch_assoc($result_userpage_me); }
+$user = $search_user->fetch_assoc();
+$mii = getMii($user, false);
 
-// Who posesses the post?
-if($row_userpage_user['pid']) {
-if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true) {
-if($_SESSION['pid'] == $row_userpage_user['pid']) {
-$pagetitle = 'User Page';
-}
-else {
-$pagetitle = htmlspecialchars($row_userpage_user['screen_name']) . "'s Profile"; 
-}    } 
-else {
-$pagetitle = htmlspecialchars($row_userpage_user['screen_name']) . "'s Profile"; }
-}
-else {
-$pagetitle = 'Error'; }
-require_once 'lib/htm.php';
-printHeader(false);
-printMenu();
-// DB error.
-if(!$result_userpage_user)
-{
-http_response_code(500);
-$pagetitle = ('Error');
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">'.$pagetitle.'</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="500">';
-$no_content_message = ( 'Server error.' );
-include 'lib/no-content-window.php';
-}
-else
-{
-	// User wasn't found.
-    if(mysqli_num_rows($result_userpage_user) == 0)
-    {
-(isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
-$pagetitle = ('Error');
-print $GLOBALS['div_body_head'];
-print '<header id="header">
-<h1 id="page-title" class="left">'.$pagetitle.'</h1>
-</header>';
-print '<div class="body-content track-error" data-track-error="404">';
-$no_content_message = ( 'The user could not be found.' );
-include 'lib/no-content-window.php';
-    }
-    else
-    {
-$sql_userpage_user_profile = 'SELECT * FROM profiles WHERE profiles.pid = "'.$row_userpage_user['pid'].'"';
-$result_userpage_user_profile = $mysql->query($sql_userpage_user_profile);
-$row_userpage_user_profile = mysqli_fetch_assoc($result_userpage_user_profile); 
-  
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] && mysqli_num_rows($result_userpage_user_profile) == 0) {
-$mysql->query("INSERT INTO
-                    profiles(pid, platform_id)
-                VALUES('" . $mysql->real_escape_string($_SESSION['pid']) . "',
-                       '" . $row_userpage_user['platform_id'] . "')");
-     }
-	if(isset($_GET['offset']) && is_numeric($_GET['offset']) && strlen($_GET['offset']) >= 1) {
-		
-		
-$sql_userpage_user_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$row_userpage_user['pid'].'" AND posts.is_hidden != "1"';
-$result_userpage_user_posts = $mysql->query($sql_userpage_user_posts);
+require_once 'lib/htmUser.php';
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
-$sql_userpage_user_empathies = 'SELECT * FROM empathies WHERE empathies.pid = "'.$row_userpage_user['pid'].'"';
-$result_userpage_user_empathies = $mysql->query($sql_userpage_user_empathies);
-
-$sql_userpage_user_posts_view = 'SELECT * FROM posts WHERE posts.pid = "'.$row_userpage_user['pid'].'" ORDER BY posts.created_at DESC LIMIT 50 OFFSET '.$mysql->real_escape_string($_GET['offset']).'';
-$result_userpage_user_posts_view = $mysql->query($sql_userpage_user_posts_view);	
-
-if(mysqli_num_rows($result_userpage_user_posts_view) > 49) {
-$what_is_my_new_offset1 = $_GET['offset'] + 50;
-$what_is_my_new_offset = '/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts?offset='.$what_is_my_new_offset1.'';
-}
-else {
-$what_is_my_new_offset= ''; }
-
-print '  <menu class="user-menu-activity tab-header">
-    <li id="tab-header-user-posts" class="tab-button selected"
-        ><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts" data-pjax=".tab-body" data-pjax-cache-container="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"
-        ><span class="label">Posts</span><span class="number">'.mysqli_num_rows($result_userpage_user_posts).'</span></a></li>
-    <li id="tab-header-user-empathies" class="tab-button"
-        ><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/empathies" data-pjax=".tab-body" data-pjax-cache-container="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"
-        ><span class="label">Yeahs</span><span class="number">'.mysqli_num_rows($result_userpage_user_empathies).'</span></a></li>
-  </menu>
-<div class="user-page-content js-post-list post-list" data-next-page-url="'.$what_is_my_new_offset.'">
-  <div id="user-page-no-content" class="none"></div>';
-
-		
-# display in offset here !
-while($row_userpage_user_posts_view = mysqli_fetch_assoc($result_userpage_user_posts_view)) {
-
-$sql_userpage_user_posts_view_user = 'SELECT * FROM people WHERE people.pid = "'.$row_userpage_user_posts_view['pid'].'"';
-$result_userpage_user_posts_view_user = $mysql->query($sql_userpage_user_posts_view_user);
-$row_userpage_user_posts_view_user = mysqli_fetch_assoc($result_userpage_user_posts_view_user); 
-
-$sql_userpage_user_posts_view_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "'.$row_userpage_user_posts_view['id'].'" AND replies.is_hidden != "1"';
-$result_userpage_user_posts_view_replies = $mysql->query($sql_userpage_user_posts_view_replies);
-
-$sql_userpage_user_posts_view_empathies = 'SELECT * FROM empathies WHERE empathies.id = "'.$row_userpage_user_posts_view['id'].'"';
-$result_userpage_user_posts_view_empathies = $mysql->query($sql_userpage_user_posts_view_empathies);
-
-$row_temp_current_post = $row_userpage_user_posts_view;
-$row_temp_current_post_user = $row_userpage_user_posts_view_user;
-$result_temp_current_post_replies = $result_userpage_user_posts_view_replies;
-$result_temp_current_post_empathies = $result_userpage_user_posts_view_empathies;
-
-include 'lib/userpage-post-template.php';
-
-}
-# End of js-post-list
-print '</div>';
-
-
-exit();
-}
-	
-
-if(isset($_SERVER['HTTP_X_PJAX_CONTAINER']) && $_SERVER['HTTP_X_PJAX_CONTAINER'] == '.tab-body') {
-
-$sql_userpage_user_posts_view = 'SELECT * FROM posts WHERE pid = "'.$row_userpage_user['pid'].'" AND hidden_resp = 0 OR hidden_resp IS NULL AND pid = "'.$row_userpage_user['pid'].'" ORDER BY posts.created_at DESC LIMIT 50';
-$result_userpage_user_posts_view = $mysql->query($sql_userpage_user_posts_view);
-$sql_userpage_user_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$row_userpage_user['pid'].'" AND posts.is_hidden != "1"';
-$result_userpage_user_posts = $mysql->query($sql_userpage_user_posts);
-
-$sql_userpage_user_empathies = 'SELECT * FROM empathies WHERE empathies.pid = "'.$row_userpage_user['pid'].'"';
-$result_userpage_user_empathies = $mysql->query($sql_userpage_user_empathies);
-
-if(mysqli_num_rows($result_userpage_user_posts) > 49) {
-$do_i_have_my_offset = '/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts?offset=50';
-}
-else {
-$do_i_have_my_offset = ''; }
-
-	print '<title>'.$pagetitle.'</title>';
-print '  <menu class="user-menu-activity tab-header">
-    <li id="tab-header-user-posts" class="tab-button selected"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts" data-pjax=".tab-body" data-pjax-cache-container="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Posts</span><span class="number">'.mysqli_num_rows($result_userpage_user_posts).'</span></a></li>
-    <li id="tab-header-user-empathies" class="tab-button"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/empathies" data-pjax=".tab-body" data-pjax-cache-container="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Yeahs</span><span class="number">'.mysqli_num_rows($result_userpage_user_empathies).'</span></a></li>
-  </menu>
-<div class="user-page-content js-post-list post-list" data-next-page-url="'.$do_i_have_my_offset.'">';
-if(mysqli_num_rows($result_userpage_user_posts_view) == 0) {
-print '  <div id="user-page-no-content" class="no-content-window js-no-content"><div class="window">
-    <p>No Miiverse posts have been made yet.</p>
-</div></div>'; }
-while($row_userpage_user_posts_view = mysqli_fetch_assoc($result_userpage_user_posts_view)) {
-
-$sql_userpage_user_posts_view_user = 'SELECT * FROM people WHERE people.pid = "'.$row_userpage_user_posts_view['pid'].'"';
-$result_userpage_user_posts_view_user = $mysql->query($sql_userpage_user_posts_view_user);
-$row_userpage_user_posts_view_user = mysqli_fetch_assoc($result_userpage_user_posts_view_user); 
-
-$sql_userpage_user_posts_view_replies = 'SELECT * FROM replies WHERE replies.reply_to_id = "'.$row_userpage_user_posts_view['id'].'" AND replies.is_hidden != "1"';
-$result_userpage_user_posts_view_replies = $mysql->query($sql_userpage_user_posts_view_replies);
-
-$sql_userpage_user_posts_view_empathies = 'SELECT * FROM empathies WHERE empathies.id = "'.$row_userpage_user_posts_view['id'].'"';
-$result_userpage_user_posts_view_empathies = $mysql->query($sql_userpage_user_posts_view_empathies);
-
-$row_temp_current_post = $row_userpage_user_posts_view;
-$row_temp_current_post_user = $row_userpage_user_posts_view_user;
-$result_temp_current_post_replies = $result_userpage_user_posts_view_replies;
-$result_temp_current_post_empathies = $result_userpage_user_posts_view_empathies;
-
-include 'lib/userpage-post-template.php';
-
-}
-# End of js-post-list
-print '</div>';
-}
-else {
-
+printHeader(false); printMenu();
     print $GLOBALS['div_body_head'];
 	print '<header id="header">
-  
-  <h1 id="page-title">'.$pagetitle.'</h1>
 
-</header>';
+	<h1 id="page-title">'.$pagetitle.'</h1>
 
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid']) {
-$is_user_me_page_visitor = ' is-visitor'; }
-else {
-$is_user_me_page_visitor = ''; }
-
-if($row_userpage_user['official_user'] == 1) {
-$is_user_info_official_user = ' official-user'; }
-else {
-$is_user_info_official_user = ''; }
-
-$sql_userpage_user_posts = 'SELECT * FROM posts WHERE posts.pid = "'.$row_userpage_user['pid'].'" AND posts.is_hidden != "1"';
-$result_userpage_user_posts = $mysql->query($sql_userpage_user_posts);
-
-$sql_userpage_user_empathies = 'SELECT * FROM empathies WHERE empathies.pid = "'.$row_userpage_user['pid'].'"';
-$result_userpage_user_empathies = $mysql->query($sql_userpage_user_empathies);
-
-$sql_userpage_user_friends = 'SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$row_userpage_user['pid'].'" OR friend_relationships.source = "'.$row_userpage_user['pid'].'" ORDER BY friend_relationships.relationship_id LIMIT 100';
-$result_userpage_user_friends = $mysql->query($sql_userpage_user_friends);
-
-$sql_userpage_user_followers = 'SELECT * FROM relationships WHERE relationships.target = "'.$row_userpage_user['pid'].'" AND relationships.is_me2me = "0"';
-$result_userpage_user_followers = $mysql->query($sql_userpage_user_followers);
-
-$sql_userpage_user_following = 'SELECT * FROM relationships WHERE relationships.source = "'.$row_userpage_user['pid'].'" AND relationships.is_me2me = "0"';
-$result_userpage_user_following = $mysql->query($sql_userpage_user_following);
+</header>
+';
 
 #Begin body-content user-page
-print '<div class="body-content user-page'.$is_user_me_page_visitor.'">
+print '<div class="body-content user-page'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? ' is-visitor' : '').'">
 ';
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid']) {
-print '<a id="header-mymenu-button" href="/my_menu" data-pjax="#body">User Menu</a>
-'; }
 
+userInfo($user, $profile, $mii, 'posts');
 
-		if($row_userpage_user['mii_hash']) {
-$user_page_info_mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$row_userpage_user['mii_hash'].'_normal_face.png'; }
-else {
-if($row_userpage_user['user_face']) {
-$user_page_info_mii_face_output = htmlspecialchars($row_userpage_user['user_face']); }
- else {
-$user_page_info_mii_face_output = '/img/mii/img_unknown_MiiIcon.png'; }
-}
-
-print '<div class="user-info info-content'.$is_user_info_official_user.'">'."\n".'';
-
-if(empty($row_userpage_user_profile['favorite_screenshot']) && strlen($row_userpage_user_profile['favorite_screenshot']) < 5) {
-if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user_profile['pid']) {
-print '<div class="user-profile-memo-container no-profile-memo">Your favorite post can be displayed here.</div>
-'; } else {
-print '<div class="user-profile-memo-container no-profile-memo"></div>'; }
-}
-else {
-$result_posts_getfavoritepost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($row_userpage_user_profile['favorite_screenshot']).'"');
-print '<a href="/posts/'.htmlspecialchars($row_userpage_user_profile['favorite_screenshot']).'" data-pjax="#body" class="user-profile-memo-container">
-    <img src="'.htmlspecialchars(mysqli_fetch_assoc($result_posts_getfavoritepost)['screenshot']).'" class="user-profile-memo">
-  </a>'; }
-
-print '    <span class="icon-container'.$is_user_info_official_user.'"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'"><img src="'.$user_page_info_mii_face_output.'" class="icon"></a></span>
-';
-if($row_userpage_user['official_user'] == 1) {
-print '<p class="user-organization">'.htmlspecialchars($row_userpage_user['organization']).'</p>'; }
-print '  <p class="title">
-    <span class="nick-name">'.htmlspecialchars($row_userpage_user['screen_name']).'</span>
-    <span class="id-name">'.htmlspecialchars($row_userpage_user['user_id']).'</span>
-  </p>
-  
-  ';
-
-if($row_userpage_user['official_user'] == 1) {
-$is_identified_user_value = ' data-is-identified="1"'; }
-else {
-$is_identified_user_value = ''; }
- 
-if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true && 2 >= $row_userpage_user['status']) {
-$if_user_follow_can = ''; }
-else {
-$if_user_follow_can = ' disabled'; }	
- 
-print '<a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'" data-pjax="#body" class="button profile-back-button">To Top</a>';
-# End user-info info-content
-print '</div>';
-
-print '<menu class="user-menu tab-header">
-  <li class="test-user-posts-count tab-button-profile selected"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Posts</span><span class="number">'.mysqli_num_rows($result_userpage_user_posts).'</span></a></li>
-  <li class="test-user-friends-count tab-button-activity"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/friends" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Friends</span><span class="number">'.mysqli_num_rows($result_userpage_user_friends).' / 100</span></a></li>
-  <li class="test-user-followings-count tab-button-activity"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/following" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Following</span><span class="number"><span class="js-following-count">'.mysqli_num_rows($result_userpage_user_following).'</span> / 1000</span></a></li>
-  <li class="test-user-followers-count tab-button-relationship"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/followers" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Followers</span><span class="number">'.mysqli_num_rows($result_userpage_user_followers).'</span></a></li>
-</menu>';
+userNavTab($user, 'posts');
+userPostNavTab($user, 'posts');
 
 $sql_userpage_user_posts_view = 'SELECT * FROM posts WHERE pid = "'.$row_userpage_user['pid'].'" AND hidden_resp = 0 OR hidden_resp IS NULL AND pid = "'.$row_userpage_user['pid'].'" ORDER BY posts.created_at DESC LIMIT 50';
 $result_userpage_user_posts_view = $mysql->query($sql_userpage_user_posts_view);
@@ -331,11 +85,9 @@ include 'lib/user-page-footer.php';
 print '</div>';
 	print $GLOBALS['div_body_head_end'];	
 	printFooter();
-	}
-	}
-	}
+grpfinish($mysql); exit();
   }
-if($_GET['mode'] == 'empathies') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'empathies') {
 # Display user's yeahed posts.
 # Display standard user page.
 $sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
@@ -736,8 +488,9 @@ print '</div>';
 }
 	}
   }	
+grpfinish($mysql); exit();
 }
-if($_GET['mode'] == 'following') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'following') {
 # Display standard user page.
 $sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
 $result_userpage_user = $mysql->query($sql_userpage_user);
@@ -957,8 +710,9 @@ print '</div>';
       }
 	}
   }
+grpfinish($mysql); exit();
 }
-if($_GET['mode'] == 'followers') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'followers') {
 # Display standard user page.
 $sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
 $result_userpage_user = $mysql->query($sql_userpage_user);
@@ -1176,8 +930,9 @@ print '</div>';
       }
 	}
   }
+grpfinish($mysql); exit();
 }
-if($_GET['mode'] == 'friends') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'friends') {
 # Display standard user page.
 $sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
 $result_userpage_user = $mysql->query($sql_userpage_user);
@@ -1422,8 +1177,9 @@ print '</div>';
       }
 	}
   }
+grpfinish($mysql); exit();
 }
-if($_GET['mode'] == 'favorites') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'favorites') {
 # Search for user first, then use template
 $sql_userpage_user = 'SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"';
 $result_userpage_user = $mysql->query($sql_userpage_user);
@@ -1468,8 +1224,9 @@ $no_content_message = ( 'The user could not be found.' );
 include 'lib/no-content-window.php';
     }
 }
+grpfinish($mysql); exit();
 }
-if($_GET['mode'] == 'follow') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'follow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
 include_once '404.php'; }
@@ -1579,8 +1336,9 @@ print "\n";
   }
 }
 }
+grpfinish($mysql); exit();
 }
-if($_GET['mode'] == 'unfollow') {
+if(isset($_GET['mode']) && $_GET['mode'] == 'unfollow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
 include_once '404.php'; }
@@ -1665,14 +1423,13 @@ print "\n";
    }
   }
 }
+grpfinish($mysql); exit();
 }
 
+if(isset($_GET['mode'])) { if($_GET['mode'] != 'posts' || $_GET['mode'] != 'empathies' || $_GET['mode'] != 'following' || $_GET['mode'] != 'followers' || $_GET['mode'] != 'favorites' || $_GET['mode'] != 'follow' || $_GET['mode'] != 'unfollow') { 
+# Display 404 if mode is undefined
+include_once '404.php'; grpfinish($mysql); exit(); } }
 
-# Define other modes here. 
- 
-}
-
-else {
 if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
@@ -1685,14 +1442,15 @@ $profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['
 } else {
 $profile = $search_profile->fetch_assoc(); }
 require_once 'lib/htmUser.php';
-
-$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 printHeader(false); printMenu();
     print $GLOBALS['div_body_head'];
 	print '<header id="header">
-  
-  <h1 id="page-title">'.$pagetitle.'</h1>
+';
+userDropdown($user, $mii)."\n";
+print '  <h1 id="page-title">'.$pagetitle.'</h1>
 
 </header>
 ';
@@ -1701,64 +1459,29 @@ printHeader(false); printMenu();
 print '<div class="body-content user-page'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? ' is-visitor' : '').'">
 ';
 
-userInfo($user, $profile, $mii, 'profile');
+userInfo($user, $profile, $mii, false);
 
-print '<menu class="user-menu tab-header">
-  <li class="test-user-posts-count tab-button-profile"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/posts" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Posts</span><span class="number">'.mysqli_num_rows($result_userpage_user_posts).'</span></a></li>
-  <li class="test-user-friends-count tab-button-activity"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/friends" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Friends</span><span class="number">'.mysqli_num_rows($result_userpage_user_friends).' / 100</span></a></li>
-  <li class="test-user-followings-count tab-button-activity"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/following" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Following</span><span class="number"><span class="js-following-count">'.mysqli_num_rows($result_userpage_user_following).'</span> / 1000</span></a></li>
-  <li class="test-user-followers-count tab-button-relationship"><a href="/users/'.htmlspecialchars($row_userpage_user['user_id']).'/followers" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Followers</span><span class="number">'.mysqli_num_rows($result_userpage_user_followers).'</span></a></li>
-</menu>';
+userNavTab($user, false);
 
-if(mysqli_num_rows($result_userpage_user_profile) == 0) {
-$userpage_profile_comment = '';
-$userpage_profile_country = 'Not Set'; }
-else {
-$userpage_profile_comment = $row_userpage_user_profile['comment']; 
-$userpage_profile_country = $row_userpage_user_profile['country'];
-}
+if(isset($profile['game_experience'])) {
+if($profile['game_experience'] == 0) { $pge_experience = 'beginner'; $pge_extext = 'Beginner'; }
+elseif($profile['game_experience'] == 1) { $pge_experience = 'intermediate'; $pge_extext = 'Intermediate'; }
+elseif($profile['game_experience'] == 2) { $pge_experience = 'expert'; $pge_extext = 'Expert'; }
+else { $pge_experience = 'beginner'; $pge_extext = 'Beginner'; }
+} else { $pge_experience = 'beginner'; $pge_extext = 'Beginner'; }
 
-if(empty($userpage_profile_country)) {
-$userpage_profile_country = 'Not Set'; }
+if(isset($profile['gender'])) {
+if($profile['gender'] == 1) { $pge_sex = 'Male'; }
+elseif($profile['gender'] == '2') { $pge_sex = 'Female'; }
+else { $pge_sex = 'Not Set'; }
+} else { $pge_sex = 'Not Set'; }
 
-if($row_userpage_user_profile['game_experience']) {
-if($row_userpage_user_profile['game_experience'] == "0") {
-$user_profile_experience_style_output = 'beginner';
-$user_profile_experience_text_output = 'Beginner      '; }
-if($row_userpage_user_profile['game_experience'] == "1") {
-$user_profile_experience_style_output = 'intermediate';
-$user_profile_experience_text_output = 'Intermediate      '; }
-if($row_userpage_user_profile['game_experience'] == "2") {
-$user_profile_experience_style_output = 'expert';
-$user_profile_experience_text_output = 'Expert      '; }
-}
-else {
-$user_profile_experience_style_output = 'beginner';
-$user_profile_experience_text_output = 'Beginner      '; }
-
-if($row_userpage_user_profile['gender']) {
-if($row_userpage_user_profile['gender'] == '1') {
-$user_profile_sex_text_output = 'Male      '; }
-if($row_userpage_user_profile['gender'] == '2') {
-$user_profile_sex_text_output = 'Female      '; }
-if($row_userpage_user_profile['gender'] == '3') {
-$user_profile_sex_text_output = 'N/A      '; }
-}
-else {
-$user_profile_sex_text_output = 'Not Set      '; }
-
-
-if($row_userpage_user_profile['platform_id']) {
-if($row_userpage_user_profile['platform_id'] == "0") {
-$user_profile_platform_style_output = '3ds';
-$user_profile_platform_text_output = 'System in the Nintendo 3DS Family'; }
-if($row_userpage_user_profile['platform_id'] == "1") {
-$user_profile_platform_style_output = 'wiiu';
-$user_profile_platform_text_output = 'Wii U'; }
-}
-else {
-$user_profile_platform_style_output = 'wiiu';
-$user_profile_platform_text_output = 'Wii U'; }
+if(isset($profile['platform_id'])) {
+if($profile['platform_id'] == 0) { $pge_platform = '3ds'; $pge_patext = 'Nintendo 3DS'; }
+elseif($profile['platform_id'] == 1) { $pge_platform = 'wiiu'; $pge_patext = 'Wii U'; }
+elseif($profile['platform_id'] == 2) { $pge_platform = 'wiiu'; $pge_patext = 'Off-Device'; }
+else { $pge_platform = 'wiiu'; $pge_patext = 'Off-Device'; }
+} else { $pge_platform = 'wiiu'; $pge_patext = 'Off-Device'; }
 
 print '<div class="tab-body">
 
@@ -1769,28 +1492,28 @@ print '<div class="tab-body">
 	
 	
 	';
-if(mb_strlen($userpage_profile_comment, 'utf-8') >= 1) {
-print '<p class="text">'.htmlspecialchars($userpage_profile_comment).'</p>'; }
+if(mb_strlen($profile['comment'], 'utf-8') >= 1) {
+print '<p class="text">'.htmlspecialchars($profile['comment']).'</p>'; }
  print '
   <div class="user-data"><table>
     <tbody><tr>
       <th><span>User Region</span></th>
-      <td><span>'.$userpage_profile_country.'</span></td>
+      <td><span>'.(empty($profile['country']) ? 'Not Set' : htmlspecialchars($profile['country'])).'</span></td>
 	  <th class="birthday">
 	  <span>Gender</span></th>
 	  <td>
-        <span>'.$user_profile_sex_text_output.'</span>
+        <span>'.$pge_sex.'</span>
       </td>
     </tr>
     <tr class="game-skill">
       <th><span>Game Experience</span></th>
       <td>
-        <span class="'.$user_profile_experience_style_output.'">'.$user_profile_experience_text_output.'</span></td>
+        <span class="'.$pge_experience.'">'.$pge_extext.'</span></td>
     </tr>
     <tr class="game">
 	';
 print '      <th><span>Systems Owned</span></th>
-      <td><span class="device-'.$user_profile_platform_style_output.'">'.$user_profile_platform_text_output.'</span>
+      <td><span class="device-'.$pge_platform.'">'.$pge_patext.'</span>
       </td>
     </tr>
   </tbody></table></div>
@@ -1801,28 +1524,18 @@ print '<div class="favorite-communities scroll">
   <h2 class="headline">Favorite Communities</h2>
   <ul class="list-content-with-icon arrow-list">
   ';
-$get_user_favorite_communities = mysqli_fetch_all($mysql->query('select a.*, bm.* from (select * from communities group by community_id) bm inner join favorites a on bm.community_id = a.community_id WHERE a.pid = "'.$row_userpage_user['pid'].'" ORDER BY a.created_at DESC'), MYSQLI_ASSOC);
-require_once 'lib/community-template.php';
-$empty_community = array(1 => 'dummy');
+require_once 'lib/htmCommunity.php';
+$favorite_communities_search = $mysql->query('select a.*, bm.* from (select * from communities group by community_id) bm inner join favorites a on bm.community_id = a.community_id WHERE a.pid = "'.$user['pid'].'" ORDER BY a.created_at DESC');
+while($favorite_communities = $favorite_communities_search->fetch_assoc()) {
+print favoriteWithIcon($favorite_communities, true);
+}
+for($x=$favorite_communities_search->num_rows; $x<8; $x++){
+print favoriteWithIcon([1], false);
+}
 
-	print favoriteWithIcon((isset($get_user_favorite_communities[0]) ? $get_user_favorite_communities[0] : $empty_community), (!empty($get_user_favorite_communities[0]['community_id']) ? true : false));
- 
-	print favoriteWithIcon((isset($get_user_favorite_communities[1]) ? $get_user_favorite_communities[1] : $empty_community), (!empty($get_user_favorite_communities[1]['community_id']) ? true : false));
-
-	print favoriteWithIcon((isset($get_user_favorite_communities[2]) ? $get_user_favorite_communities[2] : $empty_community), (!empty($get_user_favorite_communities[2]['community_id']) ? true : false));
-
-	print favoriteWithIcon((isset($get_user_favorite_communities[3]) ? $get_user_favorite_communities[3] : $empty_community), (!empty($get_user_favorite_communities[3]['community_id']) ? true : false));
-
-	print favoriteWithIcon((isset($get_user_favorite_communities[4]) ? $get_user_favorite_communities[4] : $empty_community), (!empty($get_user_favorite_communities[4]['community_id']) ? true : false));
-  
-	print favoriteWithIcon((isset($get_user_favorite_communities[5]) ? $get_user_favorite_communities[5] : $empty_community), (!empty($get_user_favorite_communities[5]['community_id']) ? true : false));
-
-	print favoriteWithIcon((isset($get_user_favorite_communities[6]) ? $get_user_favorite_communities[6] : $empty_community), (!empty($get_user_favorite_communities[6]['community_id']) ? true : false));
-
-	print favoriteWithIcon((isset($get_user_favorite_communities[7]) ? $get_user_favorite_communities[7] : $empty_community), (!empty($get_user_favorite_communities[7]['community_id']) ? true : false));
 	print '
     <li>
-      <a href="'.(isset($_SESSION['pid']) && !empty($_SESSION['pid']) && $_SESSION['pid'] == $row_userpage_user['pid'] ? '/communities/favorites' : '/users/'.htmlspecialchars($row_userpage_user['user_id']).'/favorites').'" data-pjax="#body" class="arrow-button"></a>
+      <a href="'.($own_page ? '/communities/favorites' : '/users/'.htmlspecialchars($user['user_id']).'/favorites').'" data-pjax="#body" class="arrow-button"></a>
     </li>
   </ul>
 </div>
@@ -1841,9 +1554,9 @@ $empty_community = array(1 => 'dummy');
  </div>
   ';
 
-include 'lib/user-page-footer.php';
+require_once 'lib/htmTemplates.php';
+userPageTemplate($user, $mii);
 # End body-content user-page
 print '</div>';
 	print $GLOBALS['div_body_head_end'];	
 	printFooter();
-	}

@@ -19,6 +19,11 @@ If you want to set up portal, make its root grp\_portal-php, and the same for of
 Make a database in MySQL, then make a new config.php from the template and connect to your DB.
 Run db\_create.sql in whatever you use as an interface to MySQL, and it'll work.
 
+# Requires #
+grape requires:
+* pecl-xml (dnf install php-pecl-xml)
+* curl (dnf install php-curl)
+* intl (dnf install php-intl)
 
 # Rewrites (nginx) #
 These are required, you cannot use the .php files directly or you might get a 404 and JS won't work.

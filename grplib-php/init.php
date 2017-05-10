@@ -40,11 +40,17 @@ setcookie('lang', $lang, (time() + 664800), '/');
 // Set locale constant
 define('LOCALE', $lang);
 //
-   setlocale(LC_MESSAGES, str_replace(LOCALE, '-', '_').'UTF-8');
-   $domain = 'grape';
-   bindtextdomain($domain, '../l10n');
+$lang_enc = str_replace('-', '_', LOCALE).'.UTF-8';
+   setlocale(LC_ALL, $lang_enc);
+// Change later to a default
+   $domain = 'accounts';
+   bindtextdomain($domain, '../l10n/');
    textdomain($domain);
-   bind_textdomain_codeset($domain, 'UTF-8');
+}
+
+function setTextDomain($domain) {
+   bindtextdomain($domain, '../l10n/');
+   textdomain($domain);
 }
 
 function initAll() {
