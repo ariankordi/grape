@@ -9,6 +9,16 @@ return array(
 );
 }
 
+function getProfile($user) {
+global $mysql;
+$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
+if($search_profile->num_rows == 0) {
+$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
+return $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1')->fetch_assoc();
+} else {
+return $search_profile->fetch_assoc(); }
+}
+
 function userIDtoPID($user_id) {
 global $mysql;
 $query = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$user_id.'" LIMIT 1');

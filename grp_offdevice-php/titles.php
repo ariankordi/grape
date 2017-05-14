@@ -2,9 +2,15 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
+$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id'] ?? 'a').'" AND titles.hidden != 1');
+
+if(!$search_title) {
+$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_title->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); 
+}
+
 if(isset($_GET['community_id'])) {
 # Display community
-$search_community = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" AND communities.olive_community_id = "'.$mysql->real_escape_string($_GET['community_id']).'" AND communities.type != "5"');
+$search_community = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" AND communities.olive_community_id = "'.$mysql->real_escape_string($_GET['community_id']).'" AND communities.type != 5');
 if(!$search_community) {
 $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_community->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); 
 }
@@ -13,7 +19,7 @@ require_once 'lib/htmCommunity.php';
 require '../grplib-php/community-helper.php';
 # Community has been found
 $community = $search_community->fetch_assoc();
-$title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($community['olive_title_id']).'"')->fetch_assoc();
+$title = $search_title->fetch_assoc();
 if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = htmlspecialchars($title['name']);
 $mnselect = 'community';
@@ -36,6 +42,13 @@ print '  <span class="title">'.htmlspecialchars($community['name']).'</span>
 if(!empty($_SESSION['pid'])) {
 $find_community_favorite = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" AND favorites.community_id = "'.$community['community_id'].'"');
 print '	<button type="button" class="symbol button favorite-button'.($find_community_favorite->num_rows != 0 ? ' checked' : '').'" data-action-favorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/unfavorite.json"><span class="favorite-button-text">Favorite</span></button>'; }
+
+if(!empty($_SESSION['pid'])) {
+$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
+} else {
+$pref_id = 0;
+	}
 
 print '
 	</div>
@@ -97,14 +110,9 @@ printFooter('old');
 elseif(isset($_GET['title_id'])) {
 require_once 'lib/htmCommunity.php';
 # Display title	
-$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'"');
-if(!$search_title) {
-$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_title->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); 
-}
-else {
 # Succ(ess)
 $row_title = $search_title->fetch_assoc();
-$get_communities = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$row_title['olive_title_id'].'" AND communities.type != "5" ORDER BY created_at');
+$get_communities = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$row_title['olive_title_id'].'" AND communities.type != 5 ORDER BY created_at');
 $pagetitle = htmlspecialchars($row_title['name']);
 $mnselect = 'community';
 print printHeader('old');
@@ -131,10 +139,8 @@ print '
       </div>
 ';
 print printFooter('old');
-} 
 
 
 }
 
 else { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); }
-

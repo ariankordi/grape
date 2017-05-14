@@ -5,7 +5,7 @@ $lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSI
 function printHeader($is_act) {
 global $pagetitle;
 global $has_header_js;
-if($is_act == true && $is_act === true) { $pagetitle = 'Grape::Account'; } elseif($is_act == 'err' && empty($pagetitle)) { $pagetitle = 'Error'; }
+if($is_act == true && $is_act === true) { $pagetitle = 'Grape::Account'; } elseif($is_act == 'err' && empty($pagetitle)) { $pagetitle = _('grp.portal.error'); }
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
 	print '<title>'.(isset($pagetitle) ? $pagetitle : 'grp.portal.page_title').'</title>
 	';
@@ -132,12 +132,13 @@ return (mb_strlen($text, 'utf-8') >= $chars + 1 ? $truncate_post_bodyp1.'...' : 
 
 function printMenu() {
 if(empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+
 	if(!empty($_SESSION['pid'])) {
 global $lookup_user;
 	print '<menu id="global-menu">
-      <li id="global-menu-mymenu"><a href="/users/'.htmlspecialchars($lookup_user['user_id']).'" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="'.getMii($lookup_user, false)['output'].'" alt="'._('grp.portal.user_page').'"></span><span>'._('grp.portal.user_page').'</span></a></li>
+      <li id="global-menu-mymenu"><a href="/users/'.htmlspecialchars($lookup_user['user_id']).'" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="'.getMii($lookup_user, false)['output'].'" alt="'._('grp.portal.my_page').'"></span><span>'._('grp.portal.my_page').'</span></a></li>
       <li id="global-menu-feed"><a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.activity').'</a></li>
-      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.communities').'</a></li>
+      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.community').'</a></li>
       <li id="global-menu-message"><a href="/friend_messages" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.message').'<span class="badge" style="display: none;">0</span></a></li>
       <li id="global-menu-news"><a href="/news/my_news" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.news').'<span class="badge" style="display: none;">0</span></a></li>
       <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">'._('grp.portal.exit').'</a></li>
@@ -146,9 +147,9 @@ global $lookup_user;
 '; } else {
 	print '
     <menu id="global-menu">
-      <li id="global-menu-mymenu"><a href="/guest_menu" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="/img/mii/img_unknown_MiiIcon.png" alt="'._('grp.portal.user_menu_for_guest').'"></span><span>'._('grp.portal.user_menu_for_guest').'</span></a></li>
+      <li id="global-menu-mymenu"><a href="/guest_menu" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="/img/mii/img_unknown_MiiIcon.png" alt="'._('grp.portal.my_menu_for_guest').'"></span><span>'._('grp.portal.my_menu_for_guest').'</span></a></li>
       <li id="global-menu-feed"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">Activity Feed</a></li>
-      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.communities').'</a></li>
+      <li id="global-menu-community"><a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.community').'</a></li>
       <li id="global-menu-message"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.message').'<span class="badge" style="display: none;">0</span></a></li>
       <li id="global-menu-news"><a href="javascript:alert(\'An account is required to use this feature. Create one in Guest Menu.\');" data-pjax="#body" data-sound="SE_WAVE_MENU">'._('grp.portal.news').'<span class="badge" style="display: none;">0</span></a></li>
       <li id="global-menu-exit"><a href="#" role="button" data-sound="SE_WAVE_EXIT">'._('grp.portal.exit').'</a></li>
@@ -195,7 +196,7 @@ function generalError($code, $message) {
 (empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? http_response_code($code) : null);
 global $pagetitle;
 if(empty($pagetitle)) {
-$pagetitle = 'Error';
+$pagetitle = _('grp.portal.error');
 }
 printHeader('err');
 printMenu();
@@ -203,17 +204,8 @@ print $GLOBALS['div_body_head']; print "\n".'<header id="header">
 <h1 id="page-title" class="left">'.$pagetitle.'</h1>
 </header>';
 print '<div class="body-content track-error" data-track-error="'.$code.'">';
-noContentWindow((!empty($message) ? $message : 'The screen could not be displayed.')); print $GLOBALS['div_body_head_end']; printFooter();
+noContentWindow((!empty($message) ? $message : _('grp.portal.error_general'))); print $GLOBALS['div_body_head_end']; printFooter();
 }
-	  
-function actError($error, $subheader, $location) {
-actTemplate($subheader, $location, '<div class="num3">
-  <h2>Errors</h2>
-  <p>Error Code: '.substr($error['code'],0,3).'-'.substr($error['code'],3,4).'</p><p>'.$error['message'].'</p>
-</div>');
-}
-
-
 
 function notLoggedIn() {
 if(isset($_SERVER['HTTP_X_PJAX'])) {

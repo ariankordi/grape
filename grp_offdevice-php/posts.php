@@ -368,27 +368,35 @@ $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print no
 $post = $search_post->fetch_assoc();
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
 $community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$post['community_id'].'" LIMIT 1')->fetch_assoc();
+$title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
 $pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
+$admin_del = $post['is_hidden'] == '1' && $post['hidden_resp'] == 0;
+require_once '../grplib-php/olv-url-enc.php';
 if($post['is_hidden'] == '1') {
-printHeader('old'); printMenu('old');
-if($post['hidden_resp'] == 0) {
-require '../grplib-php/olv-url-enc.php';
+if($post['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] != $post['pid'])) {
 notFound('Deleted by adminsistrator.</p>
-<p>Post ID: '.getPostID($post['id']), true);  }
+<p>Post ID: '.getPostID($post['id']), true); printFooter('old'); grpfinish($mysql); exit(); }
 if($post['hidden_resp'] == '1') {
-notFound ('Deleted by poster.', true); }
+printHeader('old'); printMenu('old'); 
+notFound('Deleted by poster.', true); printFooter('old'); grpfinish($mysql); exit(); }
 # Other deleted messages
-printFooter('old'); grpfinish($mysql); exit();
 }
 # Success
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmPost.php';
-require_once '../grplib-php/olv-url-enc.php';
 $bodyID = 'post-permlink';
 $pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post');
 $mii = getMii($user, $post['feeling_id']);
 printHeader('old'); printMenu('old');
+
+if(!empty($_SESSION['pid'])) {
+$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
+} else {
+$pref_id = 0;
+	}
+	
 print '<div id="main-body">
 <div id="page-title">'.htmlspecialchars($mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc()['name']).'</div>
 <div id="post-content" class="post '.($user['official_user'] == 1 ? 'official-user' : '').'">
@@ -412,6 +420,13 @@ print '<p class="user-organization">'.htmlspecialchars($user['organization']).'<
     
 
 ';
+if($admin_del) {
+print '
+<p class="deleted-message">
+        Deleted by administrator.<br>
+        Post ID: '.getPostID($post['id']).'
+      </p>';
+	}
 if($post['_post_type'] == 'artwork') {
 print '<p class="post-content-memo"><img src="'.htmlspecialchars($post['body']).'" class="post-memo"></p>'; 
 } else {
@@ -440,18 +455,21 @@ $my_empathy_added = ($mysql->query('SELECT * FROM empathies WHERE empathies.id =
 
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"');
 $replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$post['id'].'" ORDER BY replies.created_at');
+if(!$admin_del) {
 print '
     <div class="post-meta">
       <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.($mii['feeling'] ? $mii['feeling'] : 'normal').'" data-action="/posts/'.$post['id'].'/empathies"><span class="empathy-button-text">'.(isset($my_empathy_added) && $my_empathy_added == true ? 'Unyeah' : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
       <div class="empathy symbol"><span class="symbol-label">Yeahs</span><span class="empathy-count">'.$empathies->num_rows.'</span></div>
       <div class="reply symbol"><span class="symbol-label">Comments</span><span class="reply-count">'.$replies->num_rows.'</span></div>
     </div>
-  </div>
+	';
+}
+print '  </div>
 </div>
 
 ';
 
-
+if(!$admin_del) {
 # Empathy content
 print '<div id="empathy-content'.($empathies->num_rows == 0 ? '" class="none"' : '"').'>
 ';
@@ -467,7 +485,7 @@ $i++;
 }
 print '</div>
 ';
-
+}
 # Buttons content
 print '<div class="buttons-content">
 <div class="social-buttons-content">
@@ -486,7 +504,7 @@ print '<div class="edit-buttons-content">
 }
 print '
 </div>';
-
+if(!$admin_del) {
 # Reply content
 print '<div id="reply-content">
   <h2 class="label">Comment</h2>
@@ -552,7 +570,7 @@ print '
 }
 # </form>
 
-
+}
 print reportTemplate('posts');
 print editTemplate('posts', $post);
 print '

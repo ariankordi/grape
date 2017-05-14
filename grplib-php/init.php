@@ -2,7 +2,7 @@
 require_once '../config.php';
 $dev_server = $grp_config_server_type == 'dev';
 
-define('VERSION', '0.7.4');
+define('VERSION', '0.8.0');
 
 function connectSQL($server, $user, $pw, $name) {
 $mysql = new mysqli($server, $user, $pw, $name);
@@ -43,7 +43,7 @@ define('LOCALE', $lang);
 $lang_enc = str_replace('-', '_', LOCALE).'.UTF-8';
    setlocale(LC_ALL, $lang_enc);
 // Change later to a default
-   $domain = 'accounts';
+   $domain = 'default';
    bindtextdomain($domain, '../l10n/');
    textdomain($domain);
 }
@@ -134,6 +134,19 @@ return array(
 );
      }
 
+function json500() {
+global $mysql;
+http_response_code(500);
+header('Content-Type: application/json; charset=utf-8');
+print json_encode(array(
+'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
+}
+
+function jsonSuccess() {
+header('Content-Type: application/json; charset=utf-8'); print 
+json_encode(array('success' => 1));
+}
+	 
 function grpfinish($mysql) {
 $mysql->close();
 }

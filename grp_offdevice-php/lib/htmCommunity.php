@@ -103,12 +103,27 @@ if(strlen($row['_post_type']) > 10) { $reply = true; } else { $reply = false; }
 
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row['pid'].'" LIMIT 1')->fetch_assoc();
 if($reply == false) {
-$community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$row['community_id'].'" LIMIT 1')->fetch_assoc(); } else {
+$community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$row['community_id'].'" LIMIT 1')->fetch_assoc();
+$title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc(); } else {
 $ogpost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$row['_post_type'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
+$community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$ogpost['community_id'].'" LIMIT 1')->fetch_assoc();
+$title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user_mii = getMii($ogpost_user, $ogpost['feeling_id']);
 }
 $usermii = getMii($user, $row['feeling_id']);
+
+$admin_del = $row['is_hidden'] == '1' && $row['hidden_resp'] == 0;
+$my_post = !empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'];
+
+if(!isset($pref_id)) {
+	if(!empty($_SESSION['pid'])) { 
+	$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+	$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
+	} else {
+$pref_id = 0;
+	} 	}
+$show_spoiler = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid']) || $pref_id == 1;
 
 if($reply == false) {
 if(!empty($row['url']) && strpos($row['url'], 'www.youtube.com/watch?v=') !== false) {
@@ -116,7 +131,7 @@ if(substr($row['url'], 0, 4) == "http" || substr($row['url'], 0, 5) == "https") 
 $videopost = substr($row['url'], (substr($row['url'], 0, 5) == "https" ? 32 : 31), 11);
 } } }
 
-print '<div id="post-'.$row['id'].'" data-href'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? null : ($row['is_spoiler'] == 1 ? '-hidden' : null)).'="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="post trigger'.(!empty($row['screenshot']) || isset($videopost) ? ' with-image' : '').($row['is_spoiler'] == 1 ? (isset($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? '' : ' hidden') : '').'" tabindex="0">
+print '<div id="post-'.$row['id'].'" data-href'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? null : ($row['is_spoiler'] == 1 ? '-hidden' : null)).'="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="post trigger'.(!empty($row['screenshot']) || isset($videopost) ? ' with-image' : '').($row['is_spoiler'] == 1 ? ($show_spoiler ? '' : ' hidden') : '').'" tabindex="0">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="icon-container'.($usermii['official'] ? ' official-user' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
     <p class="timestamp-container">
 	';
@@ -137,7 +152,7 @@ print '<p class="user-name"><a href="/users/'.htmlspecialchars($user['user_id'])
 print '
   <div class="body">
   ';
-    if($row['is_hidden'] == '1' && $row['hidden_resp'] == '0') {
+    if($admin_del && !$my_post) {
 print '<div class="post-content">
       <p class="deleted-message">
         Deleted by administrator.<br>
@@ -148,6 +163,12 @@ print '    <div class="post-content">
 
 
 ';
+if($admin_del) {
+print '<p class="deleted-message">
+        Deleted by administrator.<br>
+        Post ID: '.getPostID($row['id']).'
+      </p>';
+	}
 if(isset($videopost)) {
 print '<a href="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="screenshot-container video"><img height="48" src="https://i.ytimg.com/vi/'.$videopost.'/default.jpg"></a>'; }
 
@@ -155,8 +176,9 @@ if($row['_post_type'] == 'artwork') {
 print '<p class="post-content-memo"><img src="'.htmlspecialchars($row['body']).'" class="post-memo"></p>'; } else {
 $truncate_post_body = (mb_strlen($row['body'], 'utf-8') >= 204 ? mb_substr($row['body'], 0, 200, 'utf-8').'...' : $row['body']);
 print '      <p class="post-content-text">'.preg_replace("/[\r\n]+/", "\n", $truncate_post_body).'</p>
-	  '; } 
-if($row['is_spoiler'] == 1) { if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row['pid']) {} else { print '<div class="hidden-content"><p>This '.($reply == true ? 'comment' : 'post').' contains spoilers.
+	  '; }
+	 if(!empty($row['is_spoiler']) && $row['is_spoiler'] == '1') {
+if(!$show_spoiler) { print '<div class="hidden-content"><p>This '.($reply == true ? 'comment' : 'post').' contains spoilers.
             <button type="button" class="hidden-content-button">View '.($reply == true ? 'Comment' : 'Post').'</button>
       </p></div>'; } }
 	  print '
@@ -182,7 +204,7 @@ print '      </div>
 </div>
 	  ';
 	  
-if($reply == false || !isset($actFeed) || !isset($identified)) {
+if($reply == false || !$admin_del || !isset($actFeed) || !isset($identified)) {
 $get_recent_repliesall = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'" AND replies.is_hidden != "1" ORDER BY replies.created_at DESC');
 $get_recent_replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'" AND replies.is_hidden != "1" AND replies.pid != "'.$row['pid'].'" AND replies.is_spoiler != "1" ORDER BY replies.created_at DESC');
 	if($get_recent_replies->num_rows >=1 && time() - strtotime($row['created_at']) <= 432000) {
@@ -231,6 +253,5 @@ print '
 </div>  
 
 '.(!isset($actFeed) && isset($row_recent_replies_user) ? '</div>' : '');
-} }
-
-
+	}
+}

@@ -1,4 +1,5 @@
 <?php
+setTextDomain('accounts');
 
 function printHeader() { global $bodyStyle; ?>
 <html lang="en"><head>
@@ -20,9 +21,31 @@ function printHeader() { global $bodyStyle; ?>
         <div class="container-fluid">
           
           <a class="navbar-brand" href="/act/">Grape::Account</a>
-          
-        </div>
-      </div>
+		  
+			<div class="navbar-collapse">
+
+                
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Language <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+                            
+                            <li><a href="?locale.lang=en-US" class="language" rel="en-US">English
+</a></li>
+<li><a href="?locale.lang=de-DE" class="language" rel="de-DE">Deutsch
+</a></li>
+<li><a href="?locale.lang=fr-FR" class="language" rel="fr-FR">Français
+</a></li>
+<li><a href="?locale.lang=ja-JP" class="language" rel="ja-JP">日本語
+</a></li>
+									</ul>
+								</li>
+							</ul>
+
+						</div>          
+					</div>
+				</div>
     </nav>
 
     <div class="container"<?php echo (isset($bodyStyle) ? ' style="'.$bodyStyle.'"' : '').'>

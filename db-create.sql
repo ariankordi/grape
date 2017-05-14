@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 19, 2017 at 11:34 PM
--- Server version: 5.7.17-0ubuntu0.16.04.1
+-- Generation Time: May 14, 2017 at 05:45 PM
+-- Server version: 5.7.18-0ubuntu0.16.04.1
 -- PHP Version: 7.0.15-0ubuntu0.16.04.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -17,6 +17,11 @@ SET time_zone = "+00:00";
 --
 
 -- --------------------------------------------------------
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 CREATE TABLE `bans` (
   `operator` int(12) NOT NULL,
@@ -200,6 +205,14 @@ CREATE TABLE `reports` (
   `finished` int(8) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+CREATE TABLE `settings_title` (
+  `settings_id` bigint(20) NOT NULL,
+  `pid` int(12) NOT NULL,
+  `olive_title_id` varchar(20) CHARACTER SET latin1 NOT NULL,
+  `value` int(1) NOT NULL DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
 CREATE TABLE `settings_tutorial` (
   `pid` int(12) NOT NULL,
   `tutorial_id` bigint(20) NOT NULL,
@@ -293,6 +306,11 @@ ALTER TABLE `reports`
   ADD PRIMARY KEY (`report_id`),
   ADD KEY `rpid1` (`source`);
 
+ALTER TABLE `settings_title`
+  ADD PRIMARY KEY (`settings_id`),
+  ADD KEY `o2td1` (`olive_title_id`),
+  ADD KEY `o2td2` (`pid`);
+
 ALTER TABLE `settings_tutorial`
   ADD PRIMARY KEY (`tutorial_id`),
   ADD KEY `pids` (`pid`);
@@ -306,25 +324,27 @@ ALTER TABLE `bans`
 ALTER TABLE `communities`
   MODIFY `community_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=421;
 ALTER TABLE `conversations`
-  MODIFY `conversation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `conversation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 ALTER TABLE `empathies`
-  MODIFY `empathy_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=939;
+  MODIFY `empathy_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1042;
 ALTER TABLE `favorites`
-  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 ALTER TABLE `friend_relationships`
   MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 ALTER TABLE `friend_requests`
-  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 ALTER TABLE `news`
-  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=806;
+  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=917;
 ALTER TABLE `people`
-  MODIFY `pid` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1800000001;
+  MODIFY `pid` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1800000000;
 ALTER TABLE `relationships`
-  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=489;
+  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=496;
 ALTER TABLE `reports`
-  MODIFY `report_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `report_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+ALTER TABLE `settings_title`
+  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 ALTER TABLE `settings_tutorial`
-  MODIFY `tutorial_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `tutorial_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 ALTER TABLE `bans`
   ADD CONSTRAINT `bpid1` FOREIGN KEY (`operator`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -376,6 +396,10 @@ ALTER TABLE `replies`
 
 ALTER TABLE `reports`
   ADD CONSTRAINT `rpid1` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `settings_title`
+  ADD CONSTRAINT `o2td1` FOREIGN KEY (`olive_title_id`) REFERENCES `titles` (`olive_title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `o2td2` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`);
 
 ALTER TABLE `settings_tutorial`
   ADD CONSTRAINT `pids` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;

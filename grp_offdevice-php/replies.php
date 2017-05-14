@@ -195,24 +195,25 @@ $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print no
 $reply = $search_post->fetch_assoc();
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].'" LIMIT 1')->fetch_assoc();
 $ogpost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$reply['reply_to_id'].'" LIMIT 1')->fetch_assoc();
+$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? 'Your Comment' : htmlspecialchars($user['screen_name']).'\'s Comment');
+require_once '../grplib-php/olv-url-enc.php';
+$admin_del = $reply['is_hidden'] == '1' && $reply['hidden_resp'] == 0;
 if($reply['is_hidden'] == '1') {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old');
-if($reply['hidden_resp'] == 0) {
-require '../grplib-php/olv-url-enc.php';
+if($reply['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] != $reply['pid'])) {
+printHeader('old'); printMenu('old'); 
 notFound('Deleted by adminsistrator.</p>
-<p>Comment ID: '.getPostID($reply['id']), true);  }
+<p>Comment ID: '.getPostID($reply['id']), true); 
+grpfinish($mysql); exit(); }
 if($reply['hidden_resp'] == '1') {
-notFound ('Deleted by the author of the comment.', true); }
-# Other deleted messages
-printFooter('old'); grpfinish($mysql); exit();
+printHeader('old'); printMenu('old'); 
+notFound('Deleted by the author of the comment.', true); 
+grpfinish($mysql); exit(); }
 }
 
 # Success
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmPost.php';
-require_once '../grplib-php/olv-url-enc.php';
-$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? 'Your Comment' : htmlspecialchars($user['screen_name']).'\'s Comment');
 $mii = getMii($user, $reply['feeling_id']);
 printHeader('old'); printMenu('old');
 print '<div id="main-body">
@@ -245,6 +246,13 @@ print '<p class="user-name"><a href="/users/'.htmlspecialchars($user['user_id'])
 
 print '<div class="body">
 ';
+if($admin_del) {
+print '
+	  <p class="deleted-message">
+        Deleted by administrator.<br>
+        Comment ID: '.getPostID($reply['id']).'
+      </p>';
+}
 # drawing or body?
 print '
         <p class="reply-content-text">'.htmlspecialchars($reply['body']).'</p>
@@ -263,7 +271,9 @@ print '
       <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.($mii['feeling'] ? $mii['feeling'] : 'normal').'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($my_empathy_added) && $my_empathy_added == true ? 'Unyeah' : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
       <div class="empathy symbol"><span class="symbol-label">Yeahs</span><span class="empathy-count">'.$empathies->num_rows.'</span></div>
     </div>
-    <div id="empathy-content'.($empathies->num_rows == 0 ? '" class="none"' : '"').'>
+	';
+	if(!$admin_del) {
+	print '    <div id="empathy-content'.($empathies->num_rows == 0 ? '" class="none"' : '"').'>
 ';
 $empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 8');
 	  if(!empty($_SESSION['pid'])) {
@@ -277,8 +287,9 @@ $i++;
 }
 print '
     </div>
-
-    <div class="post-meta">
+';
+	}
+print '    <div class="post-meta">
 	';
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']) {
 print '<button type="button" class="symbol button edit-button edit-reply-button" data-modal-open="#edit-post-page"><span class="symbol-label">Edit</span></button>';

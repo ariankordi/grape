@@ -11,19 +11,19 @@ msgstr ""
 "Language: ja_JP\n"
 "X-Generator: Poedit 2.0.1\n"
 
-msgid "grp.portal.user_menu"
+msgid "grp.portal.my_menu"
 msgstr "マイメニュー"
 
-msgid "grp.portal.user_menu_for_guest"
+msgid "grp.portal.my_menu_for_guest"
 msgstr "ゲストメニュー"
 
-msgid "grp.portal.user_page"
+msgid "grp.portal.my_page"
 msgstr "マイページ"
 
 msgid "grp.portal.activity"
 msgstr "みんなの活動"
 
-msgid "grp.portal.communities"
+msgid "grp.portal.community"
 msgstr "コミュニティ"
 
 msgid "grp.portal.message"
@@ -37,3 +37,9 @@ msgstr "もどる"
 
 msgid "grp.portal.exit"
 msgstr "おわる"
+
+msgid "grp.portal.error"
+msgstr "エラー"
+
+msgid "grp.portal.error_general"
+msgstr "画面を表示できませんでした。"

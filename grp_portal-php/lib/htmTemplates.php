@@ -148,3 +148,71 @@ friendRequestConfirm();
 friendRequestPost($user, $mii);
 sentRequestConfirm();
 }
+
+function titleSettingsPages($title, $id) {
+switch($id) {
+case 0:
+$text = 'Hide Spoilers';
+break;
+case 1:
+$text = 'Show All';
+break;
+case 2:
+$text = 'Hide All Posts';
+break;
+}
+print '
+<div id="title-settings-page" class="window-page none" data-modal-types="title-settings">
+  <div class="window">
+    <h1 class="window-title">Community Post Display Setting</h1>
+    <div class="window-body"><div class="window-body-inner">
+      <div class="title-container">
+        <img src="'.getIcon($title).'" class="title-icon">
+        <p class="title-name">'.htmlspecialchars($title['name']).'</p>
+      </div>
+      <ul class="settings-list">
+<li data-name="viewable_post" class="scroll">
+  <p class="settings-label">Which posts do you want to see for this community?</p>
+  <a class="settings-button scroll-focus"
+     href="#" data-modal-open=".settings-page[data-name=\'viewable_post\']"
+     >'.$text.'
+  </a>
+  
+</li>
+
+      </ul>
+    </div></div>
+    <div class="window-bottom-buttons single-button">
+      <input type="button" class="button close-button" value="Close">
+    </div>
+  </div>
+</div>
+
+<div class="settings-page window-page none"
+     
+     data-modal-types="select-settings"
+     data-action="/settings/titles/'.$title['olive_title_id'].'"
+     data-name="viewable_post">
+  <div class="window">
+    <h1 class="window-title">Community Post Display Setting</h1>
+    <div class="window-body"><div class="window-body-inner message">
+        Which posts do you want to see for this community?
+    </div></div>
+    <div class="window-bottom-buttons scroll">
+      <button class="checkbox-button post-button scroll-focus'.($id == 1 ? ' selected' : '').'"
+              value="1" data-sound="SE_WAVE_TOGGLE_CHECK"
+              >Show All</button>
+      <button class="checkbox-button post-button scroll-focus'.($id == 0 ? ' selected' : '').'"
+              value="0" data-sound="SE_WAVE_TOGGLE_CHECK"
+              >Hide Spoilers</button>
+      <button class="checkbox-button post-button scroll-focus'.($id == 2 ? ' selected' : '').'"
+              value="2" data-sound="SE_WAVE_TOGGLE_CHECK"
+              >Hide All Posts</button>
+    </div>
+  </div>
+</div>
+
+
+
+';
+}

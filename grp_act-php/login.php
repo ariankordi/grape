@@ -26,7 +26,7 @@ defaultRedir(true);
        }
 grpfinish($mysql); exit();
 }
-print printHeader();
+printHeader();
 print '<div class="page-header">
         <h3>Authenticate</h3>
     </div>
@@ -50,4 +50,4 @@ print '	<button class="btn btn-primary btn-block" name="Submit" value="Log In" t
 		</div>			
 		</form></div>
 ';
-print printFooter();
+printFooter();

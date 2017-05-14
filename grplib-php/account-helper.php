@@ -27,5 +27,23 @@ if($login == true) {
       $_SESSION['signed_in'] = false;       
 	  $_SESSION['pid'] = null;
       $_SESSION['user_id'] = null;
+	}
 }
+
+function check_reCAPTCHA($secret) {
+if(empty($_POST['g-recaptcha-response'])) {
+return false;
+	}
+            $ch = curl_init();
+			curl_setopt_array($ch, [CURLOPT_URL=>'https://www.google.com/recaptcha/api/siteverify', CURLOPT_POST=>true, CURLOPT_HEADER=>true, 
+			CURLOPT_HTTPHEADER=>['Content-Type: application/x-www-form-urlencoded'], 
+			CURLOPT_POSTFIELDS=>'secret='.$secret.'&response='.urlencode($_POST['g-recaptcha-response']).'&remoteip='.urlencode($_SERVER['REMOTE_ADDR']), 
+			CURLOPT_RETURNTRANSFER=>true]);
+            $response = curl_exec($ch);
+            $body = substr($response, curl_getinfo($ch, CURLINFO_HEADER_SIZE));
+            curl_close($ch);
+            if(json_decode($body, true)['success'] != true) {
+			return false;
+			}
+return true;
 }

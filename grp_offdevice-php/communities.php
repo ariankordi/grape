@@ -58,7 +58,7 @@ print '
 
     <ul class="list community-list community-title-list">
 ';
-$titles_show1 = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NOT NULL ORDER BY titles.created_at DESC LIMIT 20');
+$titles_show1 = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NOT NULL AND titles.hidden != 1 ORDER BY titles.created_at DESC LIMIT 20');
 while($titles_show = $titles_show1->fetch_assoc()) {
 print printTitle($titles_show, ($mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$titles_show['olive_title_id'].'" AND communities.type != "4" LIMIT 2')->num_rows == 2 ? true : false));
 }
@@ -73,7 +73,7 @@ print '
   <ul class="list community-list community-title-list">
 
 ';
-$titles_show2 = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NULL ORDER BY titles.created_at DESC LIMIT 20');
+$titles_show2 = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NULL AND titles.hidden != 1 ORDER BY titles.created_at DESC LIMIT 20');
 while($titles_show3 = $titles_show2->fetch_assoc()) {
 print printTitle($titles_show3, ($mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$titles_show['olive_title_id'].'" AND communities.type != "4" LIMIT 2')->num_rows == 2 ? true : false));
 }

@@ -203,15 +203,18 @@ $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].
 
 $ogpost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$reply['reply_to_id'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
-$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
+$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? 'Your Comment' : htmlspecialchars($user['screen_name']).'\'s Comment';
+$admin_del = $reply['is_hidden'] == '1' && $reply['hidden_resp'] == 0;
+require_once '../grplib-php/olv-url-enc.php';
 if($reply['is_hidden'] == '1') {
-if($reply['hidden_resp'] == 0) {
-require '../grplib-php/olv-url-enc.php';
+if($reply['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] != $reply['pid'])) {
 generalError(404, 'Deleted by adminsistrator.</p>
-<p>Comment ID: '.getPostID($reply['id']));  }
-if($reply['hidden_resp'] == '1') {
-generalError(404, 'Deleted by the author of the comment.'); }
+<p>Comment ID: '.getPostID($reply['id']));  
 grpfinish($mysql); exit();
+}
+if($reply['hidden_resp'] == '1') {
+generalError(404, 'Deleted by the author of the comment.'); 
+grpfinish($mysql); exit(); }
 }
 # Success
 require_once 'lib/htmPost.php';
@@ -219,7 +222,6 @@ require_once '../grplib-php/community-helper.php';
 require_once '../grplib-php/post-helper.php';
 $mii = getMii($user, $reply['feeling_id']);
 $ogpost_mii = getMii($user, $reply['feeling_id']);
-$pagetitle = htmlspecialchars($user['screen_name']).'\'s Comment';
 printHeader(false); printMenu();
 
     print $GLOBALS['div_body_head'];
@@ -251,8 +253,12 @@ print '
           <span class="timestamp">'.humanTiming(strtotime($reply['created_at'])).'</span>
 		  <span class="spoiler-status'.($reply['is_spoiler'] == 1 ? ' spoiler' : null).'">Spoilers</span>
 	    	  </header>
-
-
+';
+if($admin_del) {
+print '        <p class="deleted-message">Deleted by administrator.</p>
+        <p class="deleted-message">Comment ID: '.getPostID($reply['id']).'</p>';
+}
+print '
 
             <p class="reply-content-text">'.htmlspecialchars($reply['body']).'</p>';
 	 if(!empty($reply['screenshot'])) {
@@ -268,7 +274,6 @@ $canmiitoo = miitooCan($_SESSION['pid'], $reply['id'], 'replies');
 $my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
 }
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"');
-require '../grplib-php/olv-url-enc.php';
 
 	 print '<div class="reply-meta">
         
@@ -299,7 +304,9 @@ print '<a disabled role="button" class="report-button disabled">Report Violation
 }
 
 	  print '</div>
-	  <div class="post-permalink-feeling">
+';
+if(!$admin_del) {
+print '	  <div class="post-permalink-feeling">
       <p class="post-permalink-feeling-text"></p>
 	  <div class="post-permalink-feeling-icon-container">
 	  ';
@@ -315,6 +322,7 @@ $i++;
 }
 print '
       </div>';
+}
 	# End ul
 	print '</ul>
   </li>';

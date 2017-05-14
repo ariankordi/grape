@@ -15,15 +15,24 @@ global $mysql;
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].'" LIMIT 1')->fetch_assoc();
 $mii = getMii($user, $reply['feeling_id']);
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"');
-print '		   <li id="reply-'.$reply['id'].'" class="test-fresh-reply scroll'.($ogpost['pid'] == $reply['pid'] ? ' my' : ' other').''.($reply['is_spoiler'] == 1 ? (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? '' : ' hidden') : '').'">
+
+global $pref_id;
+if(!isset($pref_id)) { 
+$pref_id = 0; 
+	}
+$show_spoiler = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']) || $pref_id == 1;
+print '		   <li id="reply-'.$reply['id'].'" class="test-fresh-reply scroll'.($ogpost['pid'] == $reply['pid'] ? ' my' : ' other').''.($reply['is_spoiler'] == 1 ? ($show_spoiler ? '' : ' hidden') : '').''.($mii['official'] == true ? ' official-user' : null).''.(!empty($reply['screenshot']) ? ' with-image' : '').'">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.($mii['official'] == true ? ' official-user' : null).'"><img src="'.$mii['output'].'" class="user-icon"></a>
   ';
 if($reply['is_hidden'] == 1 && $reply['hidden_resp'] == 0) {
 	print '<div class="reply-content">
         <p class="deleted-message">Deleted by administrator.</p>
         <p class="deleted-message">Comment ID: '.getPostID($reply['id']).'</p>
-
-
+';
+if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']) {
+print '<p class="reply-content-text">'.htmlspecialchars($reply['body']).'</p>';
+}
+print '
       </div>
 	  </li>';	} else { 
 print '
@@ -44,7 +53,7 @@ print '    </header>
 	 if(!empty($reply['screenshot'])) {
 	print '<a href="#" role="button" class="title-capture-container capture-container" data-modal-open="#capture-page" data-large-capture-url="'.htmlspecialchars($reply['screenshot']).'"><img src="'.htmlspecialchars($reply['screenshot']).'" class="title-capture"></a>'; }
 if($reply['is_spoiler'] == 1) {
-if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']) { } else {
+if(!$show_spoiler) {
 print '<div class="hidden-content">
         <p>This comment contains spoilers.</p>
         <div><a href="#" class="hidden-content-button">View Post</a></div>

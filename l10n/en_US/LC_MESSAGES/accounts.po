@@ -13,3 +13,21 @@ msgstr ""
 
 msgid "grp.act.authenticate"
 msgstr "Authenticate"
+
+msgid "grp.act.login"
+msgstr "Login"
+
+msgid "grp.act.login.id"
+msgstr "Login ID"
+
+msgid "grp.act.login.passwd"
+msgstr "Password"
+
+msgid "grp.act.err.code"
+msgstr "Error Code: %d-%d"
+
+msgid "grp.act.back"
+msgstr "Back"
+
+msgid "grp.act.lang"
+msgstr "Language"

@@ -234,6 +234,7 @@ if($type == 'friends') {
 print '
 <button type="button" class="button friend-button relationship-button remove-button" data-modal-open="#breakup-confirm-page"'.($usermii['official'] ? ' data-is-identified="1"': '').' data-user-id="'.htmlspecialchars($user['user_id']).'" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$usermii['output'].'" data-pid="'.$user['pid'].'">Friends</button>
 ';
+$has_arrow = false;
 }
 elseif($type == 'friend_request') {
 // friend request
@@ -241,6 +242,7 @@ $friend_request = $mysql->query('SELECT * FROM friend_requests WHERE friend_requ
 print '
 <button type="button" class="button friend-requested-button relationship-button remove-button" data-modal-open="#sent-request-confirm-page"'.($usermii['official'] ? ' data-is-identified="1"': '').' data-user-id="'.htmlspecialchars($user['user_id']).'" data-is-identified="1" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$usermii['output'].'" data-pid="'.$user['pid'].'" data-body="'.htmlspecialchars($friend_request['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($friend_request['created_at'])).'">Request Pending</button>
 ';
+$has_arrow = false;
 }
 
 else {
@@ -256,6 +258,9 @@ print '<a class="follow-button button add-button relationship-button" href="#" d
       <button class="button follow-done-button relationship-button done-button none" disabled="">Follow</button>';
 $has_arrow = false;
 	  }
+else {
+$has_arrow = true;
+		}
 print '
 </div>';
 	}
@@ -270,10 +275,12 @@ print '
   <div class="body">
   ';
   if($has_memo && $get_profile->num_rows != 0 && !empty($profile['favorite_screenshot'])) {
+$fav_scrnsht_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($profile['favorite_screenshot']).'" AND posts.is_hidden = "0" LIMIT 1');
+if($fav_scrnsht_post && $fav_scrnsht_post->num_rows != 0) {
 	  print '<div class="user-profile-memo-content">
-      <img src="'.htmlspecialchars($profile['favorite_screenshot']).'" class="user-profile-memo">
+      <img src="'.htmlspecialchars($fav_scrnsht_post->fetch_assoc()['screenshot']).'" class="user-profile-memo">
     </div>';	  
-  }
+}  }
   print '    <p class="title">
       <span class="nick-name">'.htmlspecialchars($user['screen_name']).'</span>
       <span class="id-name">'.htmlspecialchars($user['user_id']).'</span>

@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
-$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" LIMIT 1');
+$search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id'] ?? 'a').'" AND titles.hidden != 1 LIMIT 1');
 
 if(!$search_title) {
 include '404.php'; grpfinish($mysql); exit(); }
@@ -68,8 +68,11 @@ print '<span class="platform-tag platform-tag-'.($title['platform_id'] == 1 ? 'w
 }
 
 if(!empty($_SESSION['pid'])) {
+print '
+  <a href="#" data-modal-open="#title-settings-page" class="button setting-button" data-sound="SE_WAVE_OK_SUB"></a>
+';
 $community_favorite_rows = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" AND favorites.community_id = "'.$community['community_id'].'"')->num_rows;
-print '<a href="#" class="favorite-button favorite-button-mini button'.($community_favorite_rows != 0 ? ' checked' : '').'" data-action-favorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/unfavorite.json" data-sound="SE_WAVE_CHECKBOX_'.($community_favorite_rows != 0 ? 'UN' : '').'CHECK" data-community-id="'.$community['olive_community_id'].'" data-url-id="" data-track-label="community" data-title-id="'.$community['olive_title_id'].'" data-track-action="cancelFavorite" data-track-category="favorite"></a>';
+print '  <a href="#" class="favorite-button favorite-button-mini button'.($community_favorite_rows != 0 ? ' checked' : '').'" data-action-favorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/unfavorite.json" data-sound="SE_WAVE_CHECKBOX_'.($community_favorite_rows != 0 ? 'UN' : '').'CHECK" data-community-id="'.$community['olive_community_id'].'" data-url-id="" data-track-label="community" data-title-id="'.$community['olive_title_id'].'" data-track-action="cancelFavorite" data-track-category="favorite"></a>';
 }
   if($community['type'] >= 1) {
   print '<span class="news-community-badge">'.($community['type'] == 2 ? 'Announcement Community' : 'Main Community').'</span>'; }
@@ -91,7 +94,17 @@ print '<menu class="tab-header">
 <li id="tab-header-hot-post" class="tab-button disabled"><a class="disabled"><span>Popular posts</span></a></li>
     
   </menu>';
+// Title settings
 
+if(!empty($_SESSION['pid'])) {
+$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+require_once 'lib/htmTemplates.php';
+$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
+titleSettingsPages($title, $pref_id);
+} else {
+$pref_id = 0;
+	}
+	
 # This is where community tab body and post list is. 2 div conc.
 print '<div id="community-tab-body" class="tab-body">
 ';

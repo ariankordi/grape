@@ -13,3 +13,21 @@ msgstr ""
 
 msgid "grp.act.authenticate"
 msgstr "認証する"
+
+msgid "grp.act.login"
+msgstr "ログイン"
+
+msgid "grp.act.login.id"
+msgstr "ログインID"
+
+msgid "grp.act.login.passwd"
+msgstr "パスワード"
+
+msgid "grp.act.err.code"
+msgstr "エラーコード: %d - %d"
+
+msgid "grp.act.back"
+msgstr "もどる"
+
+msgid "grp.act.lang"
+msgstr "言語"

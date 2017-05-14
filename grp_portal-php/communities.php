@@ -51,7 +51,7 @@ printFooter(); grpfinish($mysql); exit(); }
 
 require_once 'lib/htmCommunity.php';
 
-$get_platformtitles = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NOT NULL ORDER BY titles.created_at DESC');
+$get_platformtitles = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NOT NULL AND titles.hidden != 1 ORDER BY titles.created_at DESC');
 print '<div class="community-list">
 ';
 # Official user banner
@@ -75,8 +75,7 @@ printTitle($platformtitles);
         }
 	print '
 	</ul>';
-$get_specialtitles = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NULL ORDER BY titles.created_at DESC LIMIT 6');
-if($get_specialtitles->num_rows != 0) {
+$get_specialtitles = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NULL AND titles.hidden != 1 ORDER BY titles.created_at DESC LIMIT 6');
 print '<h2 class="headline headline-special">Special</h2>
 <ul class="list-content-with-icon-column" id="community-top-content">
 ';
@@ -93,6 +92,5 @@ print '
 			 </div>';
 	
 	print $GLOBALS['div_body_head_end'];
-    }
 (empty($_SERVER['HTTP_X_PJAX']) ? printFooter() : '');
 grpfinish($mysql);

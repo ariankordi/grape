@@ -104,25 +104,42 @@ return '<li class="favorite-community">
 
 function printPost($row, $is_user, $is_activity, $is_official) {
 global $mysql;
-if(!isset($row['id'])) { return null; } elseif($row['is_hidden'] == 1 && $row['hidden_resp'] == '1') { return null; } else {
+if(empty($row['id'])) { return null; } elseif($row['is_hidden'] == 1 && $row['hidden_resp'] == '1') { return null; } else {
 if(strlen($row['_post_type']) > 10) { $reply = true; } else { $reply = false; }
 
+global $pref_id;
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row['pid'].'" LIMIT 1')->fetch_assoc();
 if($reply != true) {
-$community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$row['community_id'].'" LIMIT 1')->fetch_assoc(); } else {
+$community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$row['community_id'].'" LIMIT 1')->fetch_assoc();
+$title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
+} else {
 $ogpost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$row['_post_type'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user_mii = getMii($ogpost_user, $ogpost['feeling_id']);
+$community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$ogpost['community_id'].'" LIMIT 1')->fetch_assoc();
+$title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
 }
 $usermii = getMii($user, $row['feeling_id']);
+
+$admin_del = $row['is_hidden'] == '1' && $row['hidden_resp'] == 0;
+$my_post = !empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'];
 
 if($reply == false) {
 if(!empty($row['url']) && strpos($row['url'], 'www.youtube.com/watch?v=') !== false) {
 if(substr($row['url'], 0, 4) == "http" || substr($row['url'], 0, 5) == "https") {
 $videopost = substr($row['url'], (substr($row['url'], 0, 5) == "https" ? 32 : 31), 11);
 } } }	
-	
-print '<div id="post-'.$row['id'].'" class="post scroll post-subtype-default'.($row['is_spoiler'] == 1 ? (isset($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'] ? null : ' hidden') : null).''.(isset($videopost) ? ' with-video-image' : null).''.(!empty($row['screenshot']) ? ' with-image' : null).'" data-post-permalink-url="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'">
+
+if(!isset($pref_id)) {
+	if(!empty($_SESSION['pid'])) { 
+	$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+	$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
+	} else {
+$pref_id = 0; 
+} }
+$show_spoiler = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid']) || $pref_id == 1;
+
+print '<div id="post-'.$row['id'].'" class="post scroll post-subtype-default'.($row['is_spoiler'] == 1 ? ($show_spoiler ? null : ' hidden') : null).''.(!empty($videopost) ? ' with-video-image' : null).''.(!empty($row['screenshot']) ? ' with-image' : null).'" data-post-permalink-url="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="user-icon-container scroll-focus'.($usermii['official'] ? ' official-user' : null).'" data-pjax="#body"><img src="'.$usermii['output'].'" class="user-icon"></a>
   ';
 if(!$is_official) {
@@ -156,7 +173,7 @@ print '        <a'.($community['type'] != '5' ? ' href="/titles/'.$community['ol
           <span class="title-icon-container'.($reply == true ? ' user-icon-container' : null).'" data-pjax="#body"><img src="'.getIcon($community).'" class="title-icon"></span>
 <span class="community-name">'.htmlspecialchars($community['name']).'</span></a>';
 } }
-if($row['is_hidden'] != 1 && $row['hidden_resp'] != '0') {
+if(!($admin_del && !$my_post)) {
 	  if(!empty($videopost)) {
 
 print '<div class="title-capture-container video-container">
@@ -170,7 +187,7 @@ print '
       <div class="post-content">
 
 ';
-if($row['is_hidden'] == 1 && $row['hidden_resp'] == 0) {
+if($admin_del && !$my_post) {
 require_once '../grplib-php/olv-url-enc.php';
 print '
         <p class="deleted-message">Deleted by administrator.</p>
@@ -179,6 +196,13 @@ print '
 </div>
 </div>'; }
 else {
+if($admin_del) {
+require_once '../grplib-php/olv-url-enc.php';
+print '
+        <p class="deleted-message">Deleted by administrator.</p>
+        <p class="deleted-message">Post ID: '.getPostID($row['id']).'</p>
+		';
+}
 $truncate_post_body = (mb_strlen($row['body'], 'utf-8') >= 204 ? mb_substr($row['body'], 0, 200, 'utf-8').'...' : $row['body']);
 
 if($row['_post_type'] == 'artwork') {
@@ -191,13 +215,11 @@ print '
 	  
 	  
 '; }
-	 if(isset($row['is_spoiler']) && $row['is_spoiler'] == '1') {
-
-if($row['is_spoiler'] == 1) { if(isset($_SESSION['pid']) && $_SESSION['pid'] == $row['pid']) { } else {  print '	<div class="hidden-content">
+	if($row['is_spoiler'] == 1) {
+if(!$show_spoiler) {  print '	<div class="hidden-content">
         <p>This post contains spoilers.</p>
         <div><a href="#" class="hidden-content-button">View Post</a></div>
 </div>'; } }
-	  }
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$row['id'].'"')->num_rows;
 $replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'"')->num_rows;
 if($is_official) {
@@ -239,7 +261,7 @@ if(!$is_official) {
 </div>'; }
   
 if($is_official) {
-if(isset($_SESSION['pid'])) {
+if(!empty($_SESSION['pid'])) {
 $sql_relationship_identified_user_post = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'"';
 $result_relationship_identified_user_post = $mysql->query($sql_relationship_identified_user_post);
 if(mysqli_num_rows($result_relationship_identified_user_post) != 0 || $_SESSION['pid'] == $user['pid']) {
@@ -258,7 +280,7 @@ print '<div class="toggle-button">
 </div>'; }
 }
  
-if(!$is_activity && !$is_official && time() - strtotime($row['created_at']) <= 432000) {
+if(!$is_activity && !$is_official && !$admin_del && time() - strtotime($row['created_at']) <= 432000) {
 $get_recent_repliesall = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'" AND replies.is_hidden != "1" ORDER BY replies.created_at DESC');
 $get_recent_replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'" AND replies.is_hidden != "1" AND replies.pid != "'.$row['pid'].'" AND replies.is_spoiler != "1" ORDER BY replies.created_at DESC');
 
@@ -311,7 +333,7 @@ print '</div><a href="/posts/'.$row['id'].'" class="button read-more-button to-p
 } }
 print '</div>';
 }
-}
+	}
 
 function postForm($type, $community, $user) {
 global $act_feed;

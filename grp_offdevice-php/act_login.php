@@ -1,1 +1,0 @@
-<?php require('../grp_act-php/login.php');

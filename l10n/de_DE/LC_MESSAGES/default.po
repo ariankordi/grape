@@ -11,19 +11,19 @@ msgstr ""
 "Language: fr_FR\n"
 "X-Generator: Poedit 2.0.1\n"
 
-msgid "grp.portal.user_menu"
+msgid "grp.portal.my_menu"
 msgstr "Nutzermenü"
 
-msgid "grp.portal.user_menu_for_guest"
+msgid "grp.portal.my_menu_for_guest"
 msgstr "Gastmenü"
 
-msgid "grp.portal.user_page"
+msgid "grp.portal.my_page"
 msgstr "Nutzerseite"
 
 msgid "grp.portal.activity"
 msgstr "Übersicht"
 
-msgid "grp.portal.communities"
+msgid "grp.portal.community"
 msgstr "Communitys"
 
 msgid "grp.portal.message"
@@ -37,3 +37,9 @@ msgstr "Zurück"
 
 msgid "grp.portal.exit"
 msgstr "Schließen"
+
+msgid "grp.portal.error"
+msgstr "Fehler"
+
+msgid "grp.portal.error_general"
+msgstr "Der Bildschirm konnte nicht angezeigt werden."

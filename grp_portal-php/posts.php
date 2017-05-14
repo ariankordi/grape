@@ -352,29 +352,37 @@ $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'
 $community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$post['community_id'].'" LIMIT 1')->fetch_assoc();
 $title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
 $pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $post['pid'] ? 'Your Post' : htmlspecialchars($user['screen_name']).'\'s Post';
+$admin_del = $post['is_hidden'] == '1' && $post['hidden_resp'] == 0;
+require_once '../grplib-php/olv-url-enc.php';
 if($post['is_hidden'] == '1') {
-if($post['hidden_resp'] == 0) {
-require '../grplib-php/olv-url-enc.php';
+if($post['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] != $post['pid'])) {
 generalError(404, 'Deleted by adminsistrator.</p>
-<p>Post ID: '.getPostID($post['id']));  }
+<p>Post ID: '.getPostID($post['id'])); grpfinish($mysql); exit(); }
 if($post['hidden_resp'] == '1') {
-generalError(404, 'Deleted by poster.'); }
-grpfinish($mysql); exit();
+generalError(404, 'Deleted by poster.'); grpfinish($mysql); exit(); }
 }
 # Success
 require_once 'lib/htmCommunity.php';
 require_once 'lib/htmPost.php';
 require_once '../grplib-php/community-helper.php';
-require_once '../grplib-php/olv-url-enc.php';
 $mii = getMii($user, $post['feeling_id']);
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"');
 printHeader(false); printMenu();
 $replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$post['id'].'" ORDER BY created_at');
 print $GLOBALS['div_body_head'];
 
+if(!empty($_SESSION['pid'])) {
+$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
+} else {
+$pref_id = 0;
+	}
+
 $canReply = !empty($_SESSION['pid']);
-	print '<header id="header">
-  <a id="header-reply-button"'.($canReply == false ? ' disabled' : null).' class="header-button reply-button'.($canReply == false ? ' disabled' : null).'"'.($canReply == true ? 'href="#"' : '').' data-modal-open="#add-reply-page">Comment</a>
+	print '<header id="header">';
+if(!$admin_del) {
+print '  <a id="header-reply-button"'.($canReply == false ? ' disabled' : null).' class="header-button reply-button'.($canReply == false ? ' disabled' : null).'"'.($canReply == true ? 'href="#"' : '').' data-modal-open="#add-reply-page">Comment</a>
+'; } print '
   
   <h1 id="page-title">'.$pagetitle.'</h1>
 
@@ -404,7 +412,12 @@ if($user['official_user'] == 1) {
 	 print '<p class="user-name">'.htmlspecialchars($user['screen_name']).'<span class="user-id">'.htmlspecialchars($user['user_id']).'</span></p><p class="timestamp">'.humanTiming(strtotime($post['created_at'])).'
 	 <span class="spoiler-status'.($post['is_spoiler'] == 1 ? ' spoiler' : null).'">Spoilers</span></p>
 	 
-	 <div class="post-content'.($post['_post_type'] == 'artwork' ? ' memo' : null).'">';
+	 <div class="post-content'.($post['_post_type'] == 'artwork' ? ' memo' : null).'">
+	 ';
+	 if($admin_del) {
+	print '<p class="deleted-message">Deleted by administrator.</p>
+	<p class="deleted-message">Post ID: '.getPostID($post['id']).'</p>';
+	 }
 if(!empty($post['screenshot'])) {
 	print '
 	<div class="capture-container">
@@ -430,7 +443,7 @@ print '<div id="post-video">
       </div>';
 } }
 	
-
+if(!$admin_del) {
         // Has the user given this post an empathy?
 if(!empty($_SESSION['pid'])) {
 $canmiitoo = miitooCan($_SESSION['pid'], $post['id'], 'posts'); 
@@ -508,6 +521,8 @@ print '
 </ul>
 
   </div>
+  ';
+} print '
        </div>';
 	# Add reply page
 if(!empty($_SESSION['pid'])) {
