@@ -1,5 +1,4 @@
 <?php
-
 $grpmode = 1; require_once '../grplib-php/init.php';
 require_once '../grp_act-php/lib/htm.php'; $bodyClass = 'min-height:400px';
 
@@ -8,13 +7,24 @@ require_once '../grplib-php/account-helper.php';
 // act create
 
 // reCAPTCHA
-$recaptcha_success = check_reCAPTCHA('6LcYNyEUAAAAADNt6cYaiMG3bUTWojMADlj2uS1H');
+	if(!empty($grp_config_recaptcha_pkey)) {
+	$recaptcha = true;
+	$recaptcha_success = check_reCAPTCHA($grp_config_recaptcha_pkey);
+	} else {
+	$recaptcha = false;
+	}
 
-print $recaptcha_success ? 'ok' : 'FUCK YOU NIGGER';
+$check_form = actformCheck(false);
+if($check_form != true) {
+printErr($check_form[0], $check_form[1], '/act/create');  grpfinish($mysql); exit();
+	}
+// Checks finished
+
+
 grpfinish($mysql); exit();
 }
 
-print printHeader();
+printHeader();
 print '<div class="page-header">
         <h3>Create Account</h3>
     </div>
@@ -91,7 +101,8 @@ print '
 <!-- Button and reCAPTCHA -->
 <div class="form-group">
   
-  <div class="col-md-4">
+  <div class="col-md-4">';
+  if(!empty($grp_config_recaptcha_pkey)) { print '
 <!-- Hopefully this works -->
      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
      <script>
@@ -99,11 +110,14 @@ print '
          document.getElementById("act-create").submit();
        }
      </script>
-<button class="g-recaptcha btn btn-primary" data-sitekey="6LcYNyEUAAAAAFhQ9dFkEftlpBB7BO_YZZTR7sSl" data-callback="onSubmit">Submit
-</button>
+<button class="g-recaptcha btn btn-primary" data-sitekey="'.$grp_config_recaptcha_pubkey.'" data-callback="onSubmit">Submit
+</button>';
+  } else {
+  print '<button type="submit" value="submit" class="btn btn-primary">Submit</button>';
+  }  print '
   </div>
 </div>
 
 </fieldset>
 </form>';
-print printFooter();
+printFooter();

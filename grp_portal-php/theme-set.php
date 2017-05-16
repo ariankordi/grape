@@ -1,5 +1,5 @@
 <?php
-if(isset($_GET['theme'])) {
+if(!empty($_GET['theme'])) {
 
 if($_GET['theme'] == 'blueberry' || $_GET['theme'] == 'grape' || $_GET['theme'] == 'cherry' || $_GET['theme'] == 'orange') {
 # Set cookie theme to 'grape'

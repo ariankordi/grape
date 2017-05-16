@@ -167,7 +167,8 @@ CREATE TABLE `profiles` (
   `country` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `gender` varchar(2) COLLATE utf8mb4_bin DEFAULT NULL,
   `game_experience` varchar(8) COLLATE utf8mb4_bin DEFAULT NULL,
-  `favorite_screenshot` varchar(25) COLLATE utf8mb4_bin DEFAULT NULL
+  `favorite_screenshot` varchar(25) COLLATE utf8mb4_bin DEFAULT NULL,
+  `empathy_optout` INT(1) NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 CREATE TABLE `relationships` (

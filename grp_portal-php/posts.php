@@ -41,36 +41,15 @@ json_encode(array('success' => 1));
         $empathycreate = $mysql->query('INSERT INTO empathies(id, pid, created_from)
                 VALUES ("'.$post['id'].'", "'.$_SESSION['pid'].'", "'.$_SERVER['REMOTE_ADDR'].'")');
 	
-        $getposter = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
-
-	// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
-    if($check_fastnews->num_rows == 0) {
-    $check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.id = "'.$post['id'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
-	$check_mergedusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$getposter['pid'].'" AND news.news_context = "2" AND news.id = "'.$post['id'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
- if($check_mergedusernews->num_rows != 0) {
-	$result_update_mergedusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$check_mergedusernews['merged'].'"');	
-	} elseif($check_ownusernews->num_rows != 0) {
-	$result_update_ownusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$check_ownusernews->fetch_assoc()['news_id'].'"'); }
-else {
-$result_update_newsmergesearch = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$getposter['pid'].'" AND news.id = "'.$post['id'].'" AND news.created_at > NOW() - 7200 AND news.news_context = "2" ORDER BY news.created_at DESC');	
-if($result_update_newsmergesearch->num_rows != 0) {
-$row_update_newsmergesearch = $result_update_newsmergesearch->fetch_assoc();
-$result_newscreatemerge = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, id, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$getposter['pid'].'", "'.$post['id'].'", "'.$row_update_newsmergesearch['news_id'].'", "2", "0")');
-
-$result_update_newsformerge = $mysql->query('UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
-		}
-else {
-        $result_newscreate = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$getposter['pid'].'", "'.$post['id'].'", "2", "0")'); 	
-	} }
+require_once '../grplib-php/user-helper.php';
+sendNews($_SESSION['pid'], $post['pid'], 2, $post['id']);
 	
         if(!$empathycreate)
         { json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
 header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => '1')); }	
-   }
-  } grpfinish($mysql);
+json_encode(array('success' => 1)); }	
+   } grpfinish($mysql);
 exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'replies') {
@@ -144,6 +123,7 @@ print displayReply($ogpost, $search_post_created);
 
 		if($_SESSION['pid'] == $get_empathy_poster['pid']) {
 		# send notifications to all commenters	
+		# CHANGE SOON
 		$sql_news_getcomments = 'SELECT replies.pid FROM replies WHERE replies.reply_to_id = "'.$ogpost['id'].'" AND replies.pid != "'.$get_empathy_poster['pid'].'" AND replies.is_hidden = "0" GROUP BY replies.pid';
 		$result_news_getcomments = $mysql->query($sql_news_getcomments);
 		while($row_news_getcomments = mysqli_fetch_assoc($result_news_getcomments)) {

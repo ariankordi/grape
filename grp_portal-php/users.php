@@ -3,6 +3,7 @@ require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
 $search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.(empty($_GET['user_id']) ? 'a' : $mysql->real_escape_string($_GET['user_id'])).'"');
+require_once '../grplib-php/user-helper.php';
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'posts') {
 # Display posts for user.
@@ -10,8 +11,10 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
+
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -77,8 +80,10 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
+
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -145,8 +150,10 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
+
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -168,12 +175,18 @@ print '<div class="body-content user-page'.($own_page ? ' is-visitor' : '').'">
 ';
 userInfo($user, $profile, $mii, 'following');
 userNavTab($user, 'following');
+$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
 
+if($can_view) {
 $search_relationships = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me = "0" ORDER BY relationships.relationship_id DESC LIMIT 20'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+}
 
 print '<div class="tab-body">
 ';
 }
+if(!$can_view) {
+noContentWindow('This information is private and cannot be viewed.');
+	} else {
 print '<div class="user-page-content friend-list following">
 ';
 if(!$search_relationships || $search_relationships->num_rows == 0) {
@@ -195,6 +208,7 @@ print '
 }
 print '  </div>
 ';
+}
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '  </div>';
 
@@ -216,8 +230,10 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
+
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -239,12 +255,18 @@ print '<div class="body-content user-page'.($own_page ? ' is-visitor' : '').'">
 ';
 userInfo($user, $profile, $mii, 'followers');
 userNavTab($user, 'followers');
+$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
 
+if($can_view) {
 $search_relationships = $mysql->query('SELECT * FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0" ORDER BY relationships.relationship_id DESC LIMIT 20'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+}
 
 print '<div class="tab-body">
 ';
 }
+if(!$can_view) {
+noContentWindow('This information is private and cannot be viewed.');
+	} else {
 print '<div class="user-page-content friend-list followers">
 ';
 if(!$search_relationships || $search_relationships->num_rows == 0) {
@@ -262,9 +284,10 @@ userObject($relationship_user, true, true, null);
 print '
   </ul>
 ';
-}
+	}
 print '  </div>
 ';
+}
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '  </div>';
 
@@ -286,8 +309,10 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
+
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -309,8 +334,11 @@ print '<div class="body-content user-page'.($own_page ? ' is-visitor' : '').'">
 ';
 userInfo($user, $profile, $mii, 'friends');
 userNavTab($user, 'friends');
+$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
 
+if($can_view) {
 $search_relationships = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" ORDER BY friend_relationships.relationship_id DESC LIMIT 100'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+
 if($search_relationships && $search_relationships->num_rows != 0) {
 while($relationship = $search_relationships->fetch_assoc()) {
 $relationship = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($relationship['target'] == $user['pid'] ? $relationship['source'] : $relationship['target']).'" LIMIT 1')->fetch_assoc();
@@ -326,11 +354,16 @@ $friends[] = $get_user;
 	} }
 } else {
 $friends = false;
+	}
+
 }
 
 print '<div class="tab-body">
 ';
 }
+if(!$can_view) {
+noContentWindow('This information is private and cannot be viewed.');
+	} else {
 print '<div class="user-page-content friend-list friends">
 ';
 if(!$friends) {
@@ -353,6 +386,7 @@ print '
 }
 print '  </div>
 ';
+}
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '  </div>';
 
@@ -374,7 +408,8 @@ if(isset($_GET['mode']) && $_GET['mode'] == 'favorites') {
 if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
-$is_fav_own = $search_user->fetch_assoc()['pid'];
+$user = $search_user->fetch_assoc();
+$is_fav_own = $user['pid'];
 include_once 'communities-showfavorites.php';
 
 grpfinish($mysql); exit();
@@ -391,6 +426,8 @@ http_response_code(403); header('Content-Type: application/json; charset=utf-8')
 json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 
 if($_SESSION['pid'] == $user['pid']) {
 http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
@@ -407,29 +444,8 @@ json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($my
 
 // User checks over. Is eligible to follow.
         $create_relationship = $mysql->query('INSERT INTO grape.relationships(source, target) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'")');
-			// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$result_check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM grape.news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$user['pid'].'" AND news.news_context = "6" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
-    if($result_check_fastnews->num_rows == 0) {
-    $result_check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$user['pid'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
-$row_check_ownusernews = $result_check_ownusernews->fetch_assoc();
-	$result_check_mergedusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$user['pid'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
- if($result_check_mergedusernews->num_rows != 0) {
-	$result_update_mergedusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$result_check_mergedusernews->fetch_assoc()['merged'].'"');	
-	}
-	elseif($result_check_ownusernews->num_rows != 0) {
-	$result_update_ownusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$row_check_ownusernews['news_id'].'"');
-	}
-else {
-	$result_update_newsmergesearch = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$user['pid'].'" AND news.news_context = "6" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
-	if($result_update_newsmergesearch->num_rows != 0) {
-$row_update_newsmergesearch = $result_update_newsmergesearch->fetch_assoc();
-	$result_newscreatemerge = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "'.$row_update_newsmergesearch['news_id'].'", "6", "0")');
-$result_update_newsformerge = $mysql->query('UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
-		}
-else {
-        $result_newscreate = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "6", "0")'); 	
-	} }	
-	}
+
+sendNews($_SESSION['pid'], $user['pid'], 6, null);
         if(!$create_relationship) {
 http_response_code(500);
 header('Content-Type: application/json; charset=utf-8'); print 
@@ -488,8 +504,10 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
+blockDie(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
+
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';

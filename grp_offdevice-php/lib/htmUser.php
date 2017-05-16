@@ -135,7 +135,7 @@ print '    <div class="nick-name">'.htmlspecialchars($user['screen_name']).'<spa
     ';
 	if($type == 'profile' && !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) {
 	print '<div id="user-menu">
-      <div id="my-menu"><a href="/act/logout" class="button symbol">Log Out</a></div>
+      <div id="my-menu"><a href="/my_menu" class="button symbol">User Menu</a></div>
       <div id="edit-profile-settings"><a class="button symbol" href="/settings/profile">Profile Settings</a></div>
     </div>'; } elseif($type == 'profile') {
 print '<div class="user-action-content">
@@ -165,21 +165,24 @@ $num_posts = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$user['pid'
 $num_friends = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$user['pid'].'" OR friend_relationships.target = "'.$user['pid'].'"')->num_rows;
 $num_following = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me = 0')->num_rows;
 $num_followers = $mysql->query('SELECT * FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = 0')->num_rows;
+global $profile;
+$can_view = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+
 print '<div id="nav-menu" class="nav-4">
     <a href="/users/'.$userid.'/posts" class="'.($mode == 'posts' ? 'selected' : '').'">
       <span class="number">'.$num_posts.'</span>
       <span class="name">Posts</span>
     </a>
     <a href="/users/'.$userid.'/friends" class="'.($mode == 'friends' ? 'selected' : '').'">
-      <span class="number">'.$num_friends.' / 100</span>
+      <span class="number">'.($can_view ? $num_friends : '-').' / 100</span>
       <span class="name">Friends</span>
     </a>
     <a href="/users/'.$userid.'/following" class="'.($mode == 'following' ? 'selected' : '').'">
-      <span class="number">'.$num_following.' / 1000</span>
+      <span class="number">'.($can_view ? $num_following : '-').' / 1000</span>
       <span class="name">Following</span>
     </a>
     <a href="/users/'.$userid.'/followers" class="'.($mode == 'followers' ? 'selected' : '').'">
-      <span class="number">'.$num_followers.'</span>
+      <span class="number">'.($can_view ? $num_followers : '-').'</span>
       <span class="name">Followers</span>
     </a>
   </div>';

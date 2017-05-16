@@ -11,16 +11,16 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 
 $user = $search_user->fetch_assoc();
 $mii = getMii($user, false);
-$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-if($search_profile->num_rows == 0) {
-$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
-} else {
-$profile = $search_profile->fetch_assoc(); }
+require_once '../grplib-php/user-helper.php';
+$profile = getProfile($user);
+
+require_once 'lib/htmUser.php';
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 require_once 'lib/htmUser.php';
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-$pagetitle = htmlspecialchars($user['screen_name']).'\'s Profile';
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
 <div id="main-body">
@@ -68,16 +68,16 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 
 $user = $search_user->fetch_assoc();
 $mii = getMii($user, false);
-$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-if($search_profile->num_rows == 0) {
-$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
-} else {
-$profile = $search_profile->fetch_assoc(); }
+require_once '../grplib-php/user-helper.php';
+$profile = getProfile($user);
+
+require_once 'lib/htmUser.php';
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 require_once 'lib/htmUser.php';
 require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 if(!isset($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-$pagetitle = htmlspecialchars($user['screen_name']).'\'s Profile';
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
 <div id="main-body">
@@ -127,14 +127,14 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 
 $user = $search_user->fetch_assoc();
 $mii = getMii($user, false);
-$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-if($search_profile->num_rows == 0) {
-$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
-} else {
-$profile = $search_profile->fetch_assoc(); }
+require_once '../grplib-php/user-helper.php';
+$profile = getProfile($user);
+
 require_once 'lib/htmUser.php';
+require_once '../grplib-php/user-helper.php';
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
@@ -145,16 +145,25 @@ print '<div class="user-page">
 ';
 userContent($user, $mii, 'posts', (isset($profile)) ? (!empty($profile['favorite_screenshot']) ? $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$profile['favorite_screenshot'].'" LIMIT 1')->fetch_assoc() : false) : false);
 userNavMenu($user, 'friends');
+$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+
 print '
 </div>
 ';
 # End of user-page
 
 }
+if($can_view) {
 $search_user_friends = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$user['pid'].'" OR friend_relationships.target = "'.$user['pid'].'" ORDER BY friend_relationships.relationship_id DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+}
 print '<div class="list follow-list friends">
 ';
-if($search_user_friends->num_rows == 0) {
+if(!$can_view) {
+print '<div id="user-page-no-content" class="no-content"><div>
+    <p>This information is private and cannot be viewed.</p>
+</div></div>';
+}
+elseif($search_user_friends->num_rows == 0) {
 print '<div id="user-page-no-content" class="no-content"><div>
     <p>No friends to display.</p>
 </div></div>'; } else { 
@@ -185,14 +194,13 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 
 $user = $search_user->fetch_assoc();
 $mii = getMii($user, false);
-$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-if($search_profile->num_rows == 0) {
-$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
-} else {
-$profile = $search_profile->fetch_assoc(); }
+require_once '../grplib-php/user-helper.php';
+$profile = getProfile($user);
+
 require_once 'lib/htmUser.php';
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
@@ -203,16 +211,25 @@ print '<div class="user-page">
 ';
 userContent($user, $mii, 'posts', (isset($profile)) ? (!empty($profile['favorite_screenshot']) ? $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$profile['favorite_screenshot'].'" LIMIT 1')->fetch_assoc() : false) : false);
 userNavMenu($user, 'following');
+$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+
 print '
 </div>
 ';
 # End of user-page
 
 }
+if($can_view) {
 $search_user_following = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me != "1" ORDER BY relationships.relationship_id DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+}
 print '<div class="list follow-list following">
 ';
-if($search_user_following->num_rows == 0) {
+if(!$can_view) {
+print '<div id="user-page-no-content" class="no-content"><div>
+    <p>This information is private and cannot be viewed.</p>
+</div></div>';
+}
+elseif($search_user_following->num_rows == 0) {
 print '<div id="user-page-no-content" class="no-content"><div>
     <p>'; if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { print 'No followed users.<br>
 	To follow someone, select Follow from his or her profile screen.'; } else { print 'No followed users.'; } print '</p>
@@ -243,15 +260,13 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 
 $user = $search_user->fetch_assoc();
 $mii = getMii($user, false);
-$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-if($search_profile->num_rows == 0) {
-$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
-$profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1')->fetch_assoc();
-} else {
-$profile = $search_profile->fetch_assoc(); }
+require_once '../grplib-php/user-helper.php';
+$profile = getProfile($user);
+
 require_once 'lib/htmUser.php';
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
-$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
@@ -262,16 +277,25 @@ print '<div class="user-page">
 ';
 userContent($user, $mii, 'posts', (isset($profile)) ? (!empty($profile['favorite_screenshot']) ? $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$profile['favorite_screenshot'].'" LIMIT 1')->fetch_assoc() : false) : false);
 userNavMenu($user, 'followers');
+$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+
 print '
 </div>
 ';
 # End of user-page
 
 }
+if($can_view) {
 $search_user_following = $mysql->query('SELECT * FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me != "1" ORDER BY relationships.relationship_id DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+}
 print '<div class="list follow-list followers">
 ';
-if($search_user_following->num_rows == 0) {
+if(!$can_view) {
+print '<div id="user-page-no-content" class="no-content"><div>
+    <p>This information is private and cannot be viewed.</p>
+</div></div>';
+}
+elseif($search_user_following->num_rows == 0) {
 print '<div id="user-page-no-content" class="no-content"><div>
     <p>'; if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { print 'You have no followers.'; } else { print 'This user has no followers.'; } print '</p>
 </div></div>'; } else {
@@ -323,29 +347,8 @@ json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($my
 
 // User checks over. Is eligible to follow.
         $create_relationship = $mysql->query('INSERT INTO grape.relationships(source, target) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'")');
-			// If the user gave the same type of notification 8 seconds ago, then don't send this.
-	$result_check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM grape.news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$user['pid'].'" AND news.news_context = "6" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
-    if($result_check_fastnews->num_rows == 0) {
-    $result_check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$user['pid'].'" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
-$row_check_ownusernews = $result_check_ownusernews->fetch_assoc();
-	$result_check_mergedusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$_SESSION['pid'].'" AND news.to_pid = "'.$user['pid'].'" AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
- if($result_check_mergedusernews->num_rows != 0) {
-	$result_update_mergedusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$result_check_mergedusernews->fetch_assoc()['merged'].'"');	
-	}
-	elseif($result_check_ownusernews->num_rows != 0) {
-	$result_update_ownusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$row_check_ownusernews['news_id'].'"');
-	}
-else {
-	$result_update_newsmergesearch = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$user['pid'].'" AND news.news_context = "6" AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
-	if($result_update_newsmergesearch->num_rows != 0) {
-$row_update_newsmergesearch = $result_update_newsmergesearch->fetch_assoc();
-	$result_newscreatemerge = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "'.$row_update_newsmergesearch['news_id'].'", "6", "0")');
-$result_update_newsformerge = $mysql->query('UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
-		}
-else {
-        $result_newscreate = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "6", "0")'); 	
-	} }	
-	}
+require_once '../grplib-php/user-helper.php';
+sendNews($_SESSION['pid'], $user['pid'], 6, null);
         if(!$create_relationship) {
 http_response_code(500);
 header('Content-Type: application/json; charset=utf-8'); print 
@@ -406,13 +409,12 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 
 $user = $search_user->fetch_assoc();
 $mii = getMii($user, false);
-$search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-if($search_profile->num_rows == 0) {
-$createprofile = $mysql->query('INSERT INTO profiles(pid, platform_id) VALUES("'.$user['pid'].'", "'.$user['platform_id'].'")');
-} else {
-$profile = $search_profile->fetch_assoc(); }
+require_once '../grplib-php/user-helper.php';
+$profile = getProfile($user);
+
 require_once 'lib/htmUser.php';
-$pagetitle = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
+$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) { $mnselect = 'users'; }
 printHeader('old'); printMenu('old'); print '
 <div id="main-body">

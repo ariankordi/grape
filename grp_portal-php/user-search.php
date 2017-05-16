@@ -14,31 +14,21 @@ print '<header id="header">'."\n".'
 print '<div class="body-content" id="user-search-list-page">'."\n".'';
 
 # Search for user here
-if(empty($_GET['query']) || !isset($_GET['query'])) {
-$_GET['query'] = 'empty-grp-0000069420'; }
 
-$sql_usersearch = "SELECT * FROM people WHERE CONCAT_WS('', user_id, screen_name) LIKE '".$mysql->real_escape_string($_GET['query'])."%' ORDER BY people.pid DESC";
-$result_usersearch = $mysql->query($sql_usersearch);
+$search_user = $mysql->query("SELECT * FROM people WHERE CONCAT_WS('', user_id, screen_name) LIKE '".$mysql->real_escape_string($_GET['query'])."%' ORDER BY people.pid DESC");
 
-if(mysqli_num_rows($result_usersearch) == 0 || $_GET['query'] == '' || $_GET['query'] == '0') {
-if($_GET['query'] == 'empty-grp-0000069420') {
-$no_content_message = '"" could not be found.<br>
-Select Retry Search if you want to try again.';
-} else {
-$no_content_message = '"'.htmlspecialchars($_GET['query']).'" could not be found.<br>
-Select Retry Search if you want to try again.';	}
-include 'lib/no-content-window.php';
+if($search_user->num_rows == 0 || empty($_GET['query'])) {
+noContentWindow('"'.htmlspecialchars($_GET['query'] ?? '').'" could not be found.<br>
+Select Retry Search if you want to try again.');
 }
 
 else {	
 print '<div class="user-search-content">
     <p class="user-found user-found-message">Found: '.htmlspecialchars($_GET['query']).'    </p>
     <ul class="list-content-with-icon-and-text user-list" data-next-page-url="">';
-
-while($row_usersearch = mysqli_fetch_assoc($result_usersearch)) {
-$row_user_to_view = $row_usersearch;
-$is_user_search = true;
-include 'lib/userlist-li-template.php';
+require_once 'lib/htmUser.php';
+while($users = $search_user->fetch_assoc()) {
+userObject($users, false, true, 'search');
    }
 
 print '
@@ -55,4 +45,3 @@ the user you want to find." data-pjax="#body"></span>';
 print '</div>'."\n".'';
 print $GLOBALS['div_body_head_end'];
 printFooter();
-

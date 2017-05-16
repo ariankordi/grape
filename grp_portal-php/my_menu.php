@@ -20,6 +20,7 @@ print '
 
 <div class="body-content" id="my-menu">
   <div>
+    <a href="/settings/account" id="my-menu-miiverse-config" class="scroll big-button">Account Settings</a>
     <a href="/act/edit" id="my-menu-miiverse-config" class="scroll big-button">Edit Account</a>
 	<a href="/act/logout" id="my-menu-miiverse-config" class="scroll big-button">Log Out</a>
   </div>

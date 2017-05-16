@@ -2,7 +2,7 @@
 require_once '../config.php';
 $dev_server = $grp_config_server_type == 'dev';
 
-define('VERSION', '0.8.0');
+define('VERSION', '0.8.2');
 
 function connectSQL($server, $user, $pw, $name) {
 $mysql = new mysqli($server, $user, $pw, $name);

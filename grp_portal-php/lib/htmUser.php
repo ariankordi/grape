@@ -368,12 +368,19 @@ elseif($friend_req_search_other->num_rows != 0) { $friend_case = 2; }
 elseif($friend_relation_search->num_rows != 0) { $friend_case = 3; }
 else { $friend_case = 0; }
 if($friend_case == 0) {
+	if($profile['allow_request'] == 0) {
+print '
+            <a class="main-button friend-request-button disabled">Friend Request</a>
+        <div class="dropdown-menu">
+        </div>
+		';
+} else {
 print '
             <a href="#" data-modal-open="#friend-request-post-page" class="main-button friend-request-button" data-sound="SE_WAVE_FRIEND_ADD">Friend Request</a>
         <div class="dropdown-menu">
         </div>
 		';
-		}
+}	}
 elseif($friend_case == 1) {
 $request = $friend_req_search_me->fetch_assoc();
 print '
@@ -419,12 +426,15 @@ $num_posts = $mysql->query('SELECT COUNT(id) FROM posts WHERE posts.pid = "'.$us
 $num_friends = $mysql->query('SELECT COUNT(relationship_id) FROM friend_relationships WHERE friend_relationships.source = "'.$user['pid'].'" OR friend_relationships.target = "'.$user['pid'].'"')->fetch_assoc()['COUNT(relationship_id)'];
 $num_following = $mysql->query('SELECT COUNT(relationship_id) FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me != "1"')->fetch_assoc()['COUNT(relationship_id)'];
 $num_followers = $mysql->query('SELECT COUNT(relationship_id) FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me != "1"')->fetch_assoc()['COUNT(relationship_id)'];
+global $profile;
+$can_view = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+
 print '
 <menu class="user-menu tab-header">
   <li class="test-user-posts-count tab-button-profile'.($page == 'posts' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/posts" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Posts</span><span class="number">'.$num_posts.'</span></a></li>
-  <li class="test-user-friends-count tab-button-activity'.($page == 'friends' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/friends" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Friends</span><span class="number">'.$num_friends.' / 100</span></a></li>
-  <li class="test-user-followings-count tab-button-activity'.($page == 'following' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/following" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Following</span><span class="number"><span class="js-following-count">'.$num_following.'</span> / 1000</span></a></li>
-  <li class="test-user-followers-count tab-button-relationship'.($page == 'followers' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/followers" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Followers</span><span class="number">'.$num_followers.'</span></a></li>
+  <li class="test-user-friends-count tab-button-activity'.($page == 'friends' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/friends" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Friends</span><span class="number">'.($can_view ? $num_friends : '-').' / 100</span></a></li>
+  <li class="test-user-followings-count tab-button-activity'.($page == 'following' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/following" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Following</span><span class="number"><span class="js-following-count">'.($can_view ? $num_following : '-').'</span> / 1000</span></a></li>
+  <li class="test-user-followers-count tab-button-relationship'.($page == 'followers' ? ' selected' : '').'"><a href="/users/'.htmlspecialchars($user['user_id']).'/followers" data-pjax="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="label">Followers</span><span class="number">'.($can_view ? $num_followers : '-').'</span></a></li>
 </menu>
 ';
 }

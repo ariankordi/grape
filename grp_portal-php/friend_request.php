@@ -42,6 +42,10 @@ grpfinish($mysql); exit();
 }
 
 if(isset($_GET['create']) && substr($_SERVER['QUERY_STRING'], 0, 6) == 'create') {
+require_once '../grplib-php/user-helper.php';
+if(!checkFriendOK($user)) {
+http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit();
+}
 if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"')->num_rows != 0 || ($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'"')->num_rows != 0)) {
 			$error_message[] = 'You have either already sent a friend request to this user\n or are already friends with them.';
 			$error_code[] = 1512013; }

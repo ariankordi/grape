@@ -47,3 +47,81 @@ return false;
 			}
 return true;
 }
+
+function getNNASmii($user_id) {
+        $ch = curl_init();
+	curl_setopt_array($ch, array(
+        CURLOPT_URL => 'https://3ds-us.olv.nintendo.net/users/'.$user_id.'/blacklist.confirm',
+        CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSLCERT => $grp_config_olvkey, CURLOPT_SSLCERTPASSWD => $grp_config_olvkey_pass,
+		CURLOPT_HEADER => true,
+        CURLOPT_HTTPHEADER => ['X-Nintendo-ParamPack: XFxc'],
+		CURLOPT_RETURNTRANSFER => true));
+	$response = curl_exec($ch);
+	$body = substr($response, curl_getinfo($ch, CURLINFO_HEADER_SIZE));
+$dom = new DOMDocument;
+$dom->loadHTML($body);
+$xpath = new DOMXPath($dom);
+$results = $xpath->query("//*[@class='id-name']");
+
+if ($results->length > 0) {
+    $user_id = $results->item(0)->nodeValue;
+	$screen_name = $xpath->query("//*[@class='nick-name']")->item(0)->nodeValue;
+	$mii_image = $xpath->query("//*[@class='user-icon']")->item(0)->getAttribute('src');
+} else {
+	return false;
+	}
+
+return array(
+'user_id'=>$user_id,
+'screen_name'=>$screen_name,
+'mii_image'=>str_replace('_normal_face.png','',str_replace('http://mii-images.cdn.nintendo.net/',$mii_image))
+	);
+}
+
+function actformCheck($nss) {
+global $mysql;
+	if(empty($_POST['user_id'])) {
+		$error_message[] = "You did not enter a login ID.";
+		$error_code[] = 1022543;
+	}
+	if(empty($_POST['password'])) {
+		$error_message[] = "The password field cannot be blank.";
+		$error_code[] = 1022616;
+	}
+	elseif(!preg_match('/^[A-Za-z0-9-._]{6,20}$/', $_POST['user_id'])) {
+		$error_message[] = "Your login ID is too short, too long, or contains characters that cannot be used.";
+		$error_code[] = 1022543;
+	}
+	elseif(empty($_POST['screen_name'])) {
+		$error_message[] = "You did not enter a screen name.";
+		$error_code[] = 1022543; 
+	}
+	elseif(strlen($_POST['screen_name']) < 6 || strlen($_POST['screen_name']) < 6) {
+		$error_message[] = "Your screen name is either too long or too short.";
+		$error_code[] = 1022543; 
+	}
+	elseif(empty($_POST['password2']) || $_POST['password'] != $_POST['password2']) {
+        $error_message[] = "The passwords you have entered do not match.";
+		$error_code[] = 1022616;
+	}
+	if($nss == 0) {
+	$get_nss_keys = in_array(($_POST[''] ?? null), $grp_config_server_nss_keys);
+	    if(!$get_nss_keys) {
+		$error_message[] = "The device ID you have entered is not registered on the server.";
+		$error_code[] = 1022452;
+		}
+	}
+	elseif($nss == 1) {
+	/* Get an invite key */
+	}
+	$search_ouser = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['user_id']).'" LIMIT 1');
+	if(!$search_ouser || $search_ouser->num_rows != 0) {
+		$error_message[] = "The login ID you have entered already exists.";
+		$error_code[] = 1022587;	
+	}
+if(!empty($error_code)) {
+return array($error_code[0], $error_message[0]);
+	} else {
+return true;
+	}
+}
