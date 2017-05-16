@@ -1,5 +1,12 @@
 # grape changelog - starting from 0.8.0 #
 
+# 0.8.2 (WIP) #
+* Even more minor fixes in offdevice.
+* User Menu is in offdevice like it should be now.
+* Account Settings. It also displays server traits.
+* You can prevent people from sending you friend requests.
+* You can also opt out of getting Yeah notifications.
+
 # 0.8.0 #
 * Fixes in offdevice.
 * Users can now see their own posts if they've been deleted.
