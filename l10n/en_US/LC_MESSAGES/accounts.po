@@ -17,11 +17,20 @@ msgstr "Authenticate"
 msgid "grp.act.login"
 msgstr "Login"
 
+msgid "grp.act.submit"
+msgstr "Submit"
+
 msgid "grp.act.login.id"
 msgstr "Login ID"
 
+msgid "grp.act.user.id"
+msgstr "User ID"
+
 msgid "grp.act.login.passwd"
 msgstr "Password"
+
+msgid "grp.act.login.passwd_confirm"
+msgstr "Confirm Password"
 
 msgid "grp.act.err.code"
 msgstr "Error Code: %d-%d"
@@ -31,3 +40,33 @@ msgstr "Back"
 
 msgid "grp.act.lang"
 msgstr "Language"
+
+msgid "grp.act.create"
+msgstr "Create Account"
+
+msgid "grp.act.userid_help"
+msgstr "This ID will be used to log in and access your profile"
+
+msgid "grp.act.email_addr"
+msgstr "E-mail Address"
+
+msgid "grp.act.email"
+msgstr "E-mail"
+
+msgid "grp.act.email_help"
+msgstr "Will be used for confirmation"
+
+msgid "grp.act.nnid"
+msgstr "Nintendo Network ID"
+
+msgid "grp.act.nnid_help"
+msgstr "Used for grabbing Mii and other info from"
+
+msgid "grp.act.screenname"
+msgstr "Screen name"
+
+msgid "grp.act.screenmii_name"
+msgstr "Screen name/Mii name"
+
+msgid "grp.act.screenname_help"
+msgstr "Name you will appear as; Will be NNID's Mii name if blank"
