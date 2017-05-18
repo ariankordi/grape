@@ -17,11 +17,20 @@ msgstr "認証する"
 msgid "grp.act.login"
 msgstr "ログイン"
 
+msgid "grp.act.submit"
+msgstr "提出する"
+
 msgid "grp.act.login.id"
 msgstr "ログインID"
 
 msgid "grp.act.login.passwd"
 msgstr "パスワード"
+
+msgid "grp.act.login.passwd_confirm"
+msgstr "パスワードを認証する"
+
+msgid "grp.act.user.id"
+msgstr "ユーザーID"
 
 msgid "grp.act.err.code"
 msgstr "エラーコード: %d - %d"
@@ -31,3 +40,33 @@ msgstr "もどる"
 
 msgid "grp.act.lang"
 msgstr "言語"
+
+msgid "grp.act.create"
+msgstr "アカウントを作成する"
+
+msgid "grp.act.userid_help"
+msgstr "This ID will be used to log in and access your profile"
+
+msgid "grp.act.email_addr"
+msgstr "電子メールアドレス"
+
+msgid "grp.act.email"
+msgstr "Eメール"
+
+msgid "grp.act.email_help"
+msgstr "Will be used for confirmation"
+
+msgid "grp.act.nnid"
+msgstr "ニンテンドーネットワークID"
+
+msgid "grp.act.nnid_help"
+msgstr "Used for grabbing Mii and other info from"
+
+msgid "grp.act.screenname"
+msgstr "ハンドルネーム"
+
+msgid "grp.act.screenmii_name"
+msgstr "ハンドルネーム/Mii name"
+
+msgid "grp.act.screenname_help"
+msgstr "Name you will appear as; Will be NNID's Mii name if blank"
