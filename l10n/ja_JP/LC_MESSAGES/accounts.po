@@ -45,7 +45,7 @@ msgid "grp.act.create"
 msgstr "アカウントを作成する"
 
 msgid "grp.act.userid_help"
-msgstr "This ID will be used to log in and access your profile"
+msgstr "ログインに使用"
 
 msgid "grp.act.email_addr"
 msgstr "電子メールアドレス"
@@ -54,19 +54,19 @@ msgid "grp.act.email"
 msgstr "Eメール"
 
 msgid "grp.act.email_help"
-msgstr "Will be used for confirmation"
+msgstr "確認に使用"
 
 msgid "grp.act.nnid"
 msgstr "ニンテンドーネットワークID"
 
 msgid "grp.act.nnid_help"
-msgstr "Used for grabbing Mii and other info from"
+msgstr "Miiやその他のメタデータを取得するために使用されます"
 
 msgid "grp.act.screenname"
 msgstr "ハンドルネーム"
 
 msgid "grp.act.screenmii_name"
-msgstr "ハンドルネーム/Mii name"
+msgstr "ハンドルネーム/Mii名"
 
 msgid "grp.act.screenname_help"
-msgstr "Name you will appear as; Will be NNID's Mii name if blank"
+msgstr "表示される名前"
