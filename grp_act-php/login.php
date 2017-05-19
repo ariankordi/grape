@@ -28,16 +28,16 @@ grpfinish($mysql); exit();
 }
 printHeader();
 print '<div class="page-header">
-        <h3>Authenticate</h3>
+        <h3>'._('grp.act.authenticate').'</h3>
     </div>
     <div class="col-sm-6">
     <form action="/act/login" method="post" class="form-horizontal">       
 		    
 			  <br>
 			         <div class="row">
-			  <input type="text" class="form-control" name="user_id" placeholder="Login ID" required autofocus>
+			  <input type="text" class="form-control" name="user_id" placeholder="'._('grp.act.login.id').'" required autofocus>
                      </div><div class="row">
-			  <input type="password" class="form-control" name="password" placeholder="Password" required>  
+			  <input type="password" class="form-control" name="password" placeholder="'._('grp.act.passwd').'" required>  
                      </div><div class="row">   		  
 			 <div class="form-actions">
 			<span><br>
@@ -45,7 +45,7 @@ print '<div class="page-header">
 	if(!empty($_GET['location'])) {
 print '			  <input type="hidden" name="location" value="'.htmlspecialchars($_GET['location']).'">  ';
 	}
-print '	<button class="btn btn-primary btn-block" name="Submit" value="Log In" type="Submit">Login</button>  
+print '	<button class="btn btn-primary btn-block" name="Submit" value="Log In" type="Submit">'._('grp.act.login').'</button>  
 </span></div>
 		</div>			
 		</form></div>
