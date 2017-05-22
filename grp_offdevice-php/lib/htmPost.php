@@ -14,6 +14,10 @@ global $mysql;
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].'" LIMIT 1')->fetch_assoc();
 $mii = getMii($user, $reply['feeling_id']);
 global $pref_id;
+
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $reply['pid'])) {
+return null; }
+
 if(!isset($pref_id)) { 
 $pref_id = 0; 
 	}

@@ -16,6 +16,9 @@ $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].
 $mii = getMii($user, $reply['feeling_id']);
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"');
 
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $reply['pid'])) {
+return null; }
+
 global $pref_id;
 if(!isset($pref_id)) { 
 $pref_id = 0; 

@@ -55,12 +55,12 @@ Portal:
 	rewrite ^/friend_messages$ /messages.php last;
 	rewrite ^/news/my_news$ /news.php last;
 	rewrite ^/news/friend_requests$ /friendrequests.php last;
-	rewrite ^/users/friend_request.accept.json$ /friend_request.php last;
-	rewrite ^/users/friend_request.cancel.json$ /friend_request.php?cancel last;
-	rewrite ^/users/friend_request.delete.json$ /friend_request.php?delete last;
-	rewrite ^/users/breakup.json$ /friend_request.php?breakup last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php?cancel last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php?delete last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php?breakup last;
 	rewrite ^/users$ /user-search.php last;
-	rewrite ^/users/show$ /user-show.php last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/user-show.php last;
 	rewrite ^/warning/deleted_account$ /content/warnings/act_deleted.php last;
 	rewrite ^/warning/readonly$ /content/warnings/readonly.php last;
 	rewrite ^/communities$ /communities.php last;
@@ -75,22 +75,25 @@ Portal:
 	rewrite ^/posts$ /post-create.php last;
 	rewrite ^/help_and_guide$ /help_and_guide.php last;
 	rewrite ^/special/redesign_announcement$ /content/special/redesign.php last;
-	rewrite ^/users/@me$ /profile-me.php last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/profile-me.php last;
 
 	rewrite ^/posts/([A-Za-z0-9-_]+)$ /posts.php?id=$1 last;
+	rewrite ^/posts/([A-Za-z0-9-_]+)/empathies.delete$ /posts.php?id=$1&mode=empathies_delete last;
 	rewrite ^/posts/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 last;
 	rewrite ^/posts/([A-Za-z0-9-_]+).([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 last;
 	rewrite ^/posts/([A-Za-z0-9-_]+)/screenshot.set_profile_post$ /posts.php?id=$1&mode=screenshot.set_profile_post last;
 	rewrite ^/replies/([A-Za-z0-9-_]+)$ /replies.php?id=$1 last;
+	rewrite ^/replies/([A-Za-z0-9-_]+)/empathies.delete$ /replies.php?id=$1&mode=empathies_delete last;
 	rewrite ^/replies/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ /replies.php?id=$1&mode=$2 last;
 	rewrite ^/replies/([A-Za-z0-9-_]+).([A-Za-z0-9-_]+)$ /replies.php?id=$1&mode=$2 last;
 	rewrite ^/replies/([A-Za-z0-9-_]+)/empathies.delete$ /replies.php?id=$1&mode=empathies last;
-	rewrite ^/users/([^/'"]+)$ /users.php?user_id=$1 last;
-	rewrite ^/users/([^/'"]+).follow.json$ /users.php?user_id=$1&mode=follow last;
-	rewrite ^/users/([^/'"]+).unfollow.json$ /users.php?user_id=$1&mode=unfollow last;
-	rewrite ^/users/([^/'"]+)/friend_request.create.json$ /friend_request.php?create&user_id=$1 last;
-	rewrite ^/users/([^/'"]+)/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
-	rewrite ^/friend_messages/([^/'"]+)$ /messages.php?user_id=$1 last;
+	rewrite ^/users/([^/'"]+)/check_can_post.json$ /generate_success.json last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1 last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=follow last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=unfollow last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/friend_request.create.json$ /friend_request.php?create&user_id=$1 last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/'"]+)/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
+	rewrite ^/friend_messages/([0-9a-zA-Z\\-_.]+)$ /messages.php?user_id=$1 last;
 	
 Offdevice:
 
@@ -107,7 +110,7 @@ Offdevice:
 	rewrite ^/$ /communities.php last;
 	rewrite ^/communities/favorites$ /communities-showfavorites.php last;
 	rewrite ^/posts$ /post-create.php last;
-	rewrite ^/users/@me$ /profile-me.php last;
+	rewrite ^/users/[0-9a-zA-Z\-_.]+/profile-me.php last;
 	rewrite ^/users$ /user-search.php last;
 	rewrite ^/check_update.json$ /check_update.php last;
 	rewrite ^/news/my_news$ /news.php last;
@@ -119,20 +122,21 @@ Offdevice:
 	rewrite ^/settings/account /account_settings.php last;
 	
 	rewrite ^/posts/([A-Za-z0-9-_]+)$ /posts.php?id=$1 last;
+	rewrite ^/posts/([A-Za-z0-9-_]+)/empathies.delete$ /posts.php?id=$1&mode=empathies_delete last;
 	rewrite ^/posts/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 last;
 	rewrite ^/posts/([A-Za-z0-9-_]+).([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 last;
 	rewrite ^/posts/([A-Za-z0-9-_]+)/screenshot.set_profile_post$ /posts.php?id=$1&mode=screenshot.set_profile_post last;
-	rewrite ^/posts/([A-Za-z0-9_-]+)/empathies.delete$ /posts.php?id=$1&mode=empathies last;
 	rewrite ^/replies/([A-Za-z0-9-_]+)$ /replies.php?id=$1 last;
 	rewrite ^/replies/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ /replies.php?id=$1&mode=$2 last;
 	rewrite ^/replies/([A-Za-z0-9-_]+).([A-Za-z0-9-_]+)$ /replies.php?id=$1&mode=$2 last;
-	rewrite ^/replies/([A-Za-z0-9-_]+)/empathies.delete$ /replies.php?id=$1&mode=empathies last;
-	rewrite ^/users/([^/'"]+)$ /users.php?user_id=$1 last;
-	rewrite ^/users/([^/'"]+)/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
-	rewrite ^/users/([^/'"]+).follow.json$ /users.php?user_id=$1&mode=follow last;
-	rewrite ^/users/([^/'"]+).unfollow.json$ /users.php?user_id=$1&mode=unfollow last;
+	rewrite ^/replies/([A-Za-z0-9-_]+)/empathies.delete$ /replies.php?id=$1&mode=empathies_delete last;
+	rewrite ^/users/([^/'"]+)/check_can_post.json$ /generate_success.json last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1 last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=follow last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=unfollow last;
 	
-	rewrite ^/act/([A-Za-z0-9_-]+)$ /act.php?pg=$1 last;
+	rewrite ^/act/([0-9a-zA-Z\\-_.]+)$ /act.php?pg=$1 last;
 	rewrite ^/act/$ /act.php?pg=index last;
 
 	

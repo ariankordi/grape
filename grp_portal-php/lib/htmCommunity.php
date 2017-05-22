@@ -107,6 +107,10 @@ global $mysql;
 if(empty($row['id'])) { return null; } elseif($row['is_hidden'] == 1 && $row['hidden_resp'] == '1') { return null; } else {
 if(strlen($row['_post_type']) > 10) { $reply = true; } else { $reply = false; }
 
+require_once '../grplib-php/user-helper.php';
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $row['pid'])) {
+return null; }
+
 global $pref_id;
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row['pid'].'" LIMIT 1')->fetch_assoc();
 if($reply != true) {
@@ -149,8 +153,8 @@ print '    <div class="post-body">
         <span class="user-name">'.htmlspecialchars($user['screen_name']).'</span>
 		';
 		if($is_official) {
-$get_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
-print '<p class="text">'.($get_profile->num_rows != 0 ? htmlspecialchars($get_profile->fetch_assoc()['comment']) : null).'</p>';
+require_once '../grplib-php/user-helper.php';
+print '<p class="text">'.getProfileComment($user, false).'</p>';
 		} else {
 print '        <span class="timestamp">'.humanTiming(strtotime($row['created_at'])).'</span>
  ';    

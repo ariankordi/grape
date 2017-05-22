@@ -6,53 +6,22 @@ $search_post = $mysql->query('SELECT * FROM replies WHERE replies.id = "'.(isset
 if(isset($_GET['mode']) && $_GET['mode'] == 'empathies') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # Display 404 if method isn't POST
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Method is POST.
-require_once '../grplib-php/community-helper.php';
-
-		$search_post_for_empathy = $mysql->query('SELECT * FROM replies WHERE replies.id = "'.(isset($_GET['id']) ? $mysql->real_escape_string($_GET['id']) : 'a').'" AND replies.is_hidden != "1" LIMIT 1');
-		if($search_post_for_empathy->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8');
-		json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
-
-		if(empty($_SESSION['pid'])) {
-		http_response_code(403); header('Content-Type: application/json; charset=utf-8');
-		json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
-
-$post = $search_post->fetch_assoc();
-if(!empty($_SESSION['pid'])) {		
-if(!miitooCan($_SESSION['pid'], $post['id'], 'replies')) {
- 		http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); } }
-$searchmyempathy = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'"');
-if($searchmyempathy->num_rows != 0) {
-# Remove empathy
-$removemyempathy = $mysql->query('DELETE FROM empathies WHERE empathies.id = "'.$post['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'"');
-if(!$removemyempathy) {
-http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array(
-'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
-} else {
-header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 1));
-}   }  else {
-        $empathycreate = $mysql->query('INSERT INTO empathies(id, pid, created_from)
-                VALUES ("'.$post['id'].'", "'.$_SESSION['pid'].'", "'.$_SERVER['REMOTE_ADDR'].'")');
-	
-require_once '../grplib-php/user-helper.php';
-sendNews($_SESSION['pid'], $post['pid'], 3, $post['id']);
-	
-        if(!$empathycreate)
-        { json_encode(array(
-'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 1)); }	
-   } grpfinish($mysql);
-exit();
+require_once '../grplib-php/miitoo.php';
+miitooAdd('replies'); exit();
+}
+if(isset($_GET['mode']) && $_GET['mode'] == 'empathies_delete') {
+if($_SERVER['REQUEST_METHOD'] != 'POST') {
+# Display 404 if method isn't POST
+include_once '404.php'; }
+# Method is POST.
+require_once '../grplib-php/miitoo.php';
+miitooDelete('replies'); exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'set_spoiler') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
 http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
@@ -88,7 +57,7 @@ grpfinish($mysql); exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'delete') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
 http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
@@ -134,7 +103,7 @@ grpfinish($mysql); exit();
 if(isset($_GET['mode']) && $_GET['mode'] == 'violations') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Method is POST.
 
 		if(empty($_SESSION['pid'])) { $error_code[] = 403; }
@@ -164,9 +133,9 @@ header('Content-Type: application/json; charset=utf-8'); print
 json_encode(array('success' => 1)); }
 		} grpfinish($mysql); 	exit(); }
 
-if(isset($_GET['mode'])) { if($_GET['mode'] != 'empathies' || $_GET['mode'] != 'replies' || $_GET['mode'] != 'violations' || $_GET['mode'] != 'set_spoiler' || $_GET['mode'] != 'screenshot_set_profile_post' || $_GET['mode'] != 'delete') { 
+if(isset($_GET['mode'])) { if($_GET['mode'] != 'empathies' || $_GET['mode'] != 'replies' || $_GET['mode'] != 'violations' || $_GET['mode'] != 'set_spoiler' || $_GET['mode'] != 'screenshot_set_profile_post' || $_GET['mode'] != 'delete' || $_GET['mode'] != 'empathies_delete') { 
 # Display 404 if mode is undefined
-include_once '404alli.php'; } }
+include_once '404.php'; } }
 
 if(!$search_post) {
 $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_post->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('posts', false); printFooter('old'); grpfinish($mysql); exit(); 

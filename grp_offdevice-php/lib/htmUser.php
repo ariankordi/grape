@@ -201,6 +201,11 @@ print '<div class="tab2 user-menu-activity">
 
 function userObject($user, $has_memo, $has_button) {
 global $mysql;
+require_once '../grplib-php/user-helper.php';
+
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+return null; }
+
 $user_id = htmlspecialchars($user['user_id']);
 $usermii = getMii($user, false);
 $get_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1')->fetch_assoc();
@@ -224,9 +229,9 @@ print '<div class="toggle-button">
       <span class="nick-name"><a href="/users/'.$user_id.'">'.htmlspecialchars($user['screen_name']).'</a></span>
       <span class="id-name">'.$user_id.'</span>
     </p>
-    <p class="text">'.(!empty($get_profile['comment']) ? htmlspecialchars($get_profile['comment']) : '').'</p>';
+    <p class="text">'.(!empty($get_profile['comment']) ? getProfileComment($user, $get_profile) : '').'</p>';
 	if(!empty($get_profile['favorite_screenshot'])) {
-$get_fav_screenshot_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$get_profile['favorite_screenshot'].'" LIMIT 1')->fetch_assoc();
+$get_fav_screenshot_post = $mysql->query('SELECT screenshot FROM posts WHERE posts.id = "'.$get_profile['favorite_screenshot'].'" LIMIT 1')->fetch_assoc();
 print '      <div class="user-profile-memo-content">
         <img src="'.htmlspecialchars($get_fav_screenshot_post['screenshot']).'" class="user-profile-memo">
 	</div>'; } print '

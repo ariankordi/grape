@@ -53,10 +53,10 @@ plainErr(500, '500 Internal Server Error'); }
 $conversation_id = $create_conversation->fetch_assoc()['conversation_id'];
 } }
 
-        $stmt_message = $mysql->prepare('INSERT INTO messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read)
-                VALUES(?, ?, ?, ?, "1", ?, ?, ?, "0")');
+        $stmt_message = $mysql->prepare('INSERT INTO messages(conversation_id, id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, has_read, created_from)
+                VALUES(?, ?, ?, ?, "1", ?, ?, ?, "0", ?)');
 		$scrnst = (empty($_POST['screenshot']) ? '' : $_POST['screenshot']); $isspr = (empty($_POST['is_spoiler']) ? 0 : $_POST['is_spoiler']);
-		$stmt_message->bind_param('isiissi', $conversation_id, $gen_olive_url, $_SESSION['pid'], $_POST['feeling_id'], $_POST['body'], $scrnst, $isspr); $exec_msg_stmt = $stmt_message->execute();
+		$stmt_message->bind_param('isiissis', $conversation_id, $gen_olive_url, $_SESSION['pid'], $_POST['feeling_id'], $_POST['body'], $scrnst, $isspr, $_SERVER['REMOTE_ADDR']); $exec_msg_stmt = $stmt_message->execute();
 
 if(!$exec_msg_stmt) {
 http_response_code(500);

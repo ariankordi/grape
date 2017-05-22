@@ -11,6 +11,10 @@ include_once '404.php'; grpfinish($mysql); exit(); }
 
 # Community listing.
 if(isset($_GET['community_id']) && isset($_GET['title_id'])) {
+
+if(!empty($_GET['mode']) && $_GET['mode'] != 'hot') {
+include '404.php'; grpfinish($mysql); exit(); }
+
 $search_community = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" AND communities.olive_community_id = "'.$mysql->real_escape_string($_GET['community_id']).'" LIMIT 1');
 
 function noCommErr() {
@@ -34,7 +38,12 @@ $title = $search_title->fetch_assoc();
 # Success, show community.
 require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmCommunity.php';
+// Does ?date match a regex?
+if((!empty($_GET['mode']) && $_GET['mode'] == 'hot' && !empty($_GET['date'])) && !preg_match('/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/', $_GET['date'])) {
+include '404.php'; grpfinish($mysql); exit(); }
+
 $not_offset = !((!empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) || (!empty($_SERVER['HTTP_X_PJAX_CONTAINER']) && $_SERVER['HTTP_X_PJAX_CONTAINER'] == '#community-tab-body'));
+$title_href = '/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'];
 if($not_offset) {
 $pagetitle = htmlspecialchars($title['name']);
 printHeader(false); printMenu();
@@ -87,11 +96,15 @@ print '
 # Place title settings RIGHT HERE when implemented.
 
 # This is the hot/new posts selector.
+
+// Add disabled to hot-post if announcement community:
+// <li id="tab-header-hot-post" class="tab-button disabled"><a class="disabled"><span>Popular posts</span></a></li>
+// ()
 print '<menu class="tab-header">
-    <li id="tab-header-post" class="tab-button selected" data-show-post-button="1">
-        <a href="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/new" data-pjax-replace="1" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="new-post">All Posts</span></a>
+    <li id="tab-header-post" class="tab-button'.(!empty($_GET['mode']) && $_GET['mode'] == 'hot' ? '' : ' selected').'" data-show-post-button="1">
+        <a href="'.$title_href.'/new" data-pjax-replace="1" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="new-post">All Posts</span></a>
     </li>
-<li id="tab-header-hot-post" class="tab-button disabled"><a class="disabled"><span>Popular posts</span></a></li>
+<li id="tab-header-hot-post" class="tab-button'.(!empty($_GET['mode']) && $_GET['mode'] == 'hot' ? ' selected' : '').'"><a href="'.$title_href.'/hot" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"><span>Popular posts</span></a></li>
     
   </menu>';
 // Title settings
@@ -109,13 +122,55 @@ $pref_id = 0;
 print '<div id="community-tab-body" class="tab-body">
 ';
 }
-# Post list.
+if(!empty($_GET['mode']) && $_GET['mode'] == 'hot') {
+$search_posts = searchPopular($community, $_GET['date'] ?? date('Y-m-d'), 50, $_GET['offset'] ?? 0, true);
+# Popular Posts! Do special function which is a passthrough to mysqli::result.
+if(!empty($_GET['date'])) {
+$str_date = strtotime($_GET['date']);
+}
+print '
+  <div class="pager-button date-pager">
+  ';
+    #$back_query = searchPopular($community, 'n', 1, 0, false);
+	$back_query = $mysql->query('SELECT created_at FROM posts WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at BETWEEN "'.date('Y-m-d', 0).'" AND "'.date('Y-m-d', $str_date ?? time()).'" ORDER BY posts.created_at DESC LIMIT 1');
+	if($back_query->num_rows != 0) {
+	// back
+	print '<a href="'.$title_href.'/hot?date='.date('Y-m-d', strtotime($back_query->fetch_assoc()['created_at'])).'" class="button back-button" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-pjax-replace="1"><span class="symbol-label">←</span></a>';
+	}
+  print '
+    <a href="'.$title_href.'/hot?date='.htmlspecialchars($_GET['date'] ?? date('Y-m-d')).'" class="button selected" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-pjax-replace="1">'.date('m/d/Y', $str_date ?? time() - 86400).'</a>
+	';
+	#$next_query = searchPopular($community, 'a', 1, 0, false);
+	$next_query = $mysql->query('SELECT created_at FROM posts WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at BETWEEN "'.date('Y-m-d', $str_date ?? time()).'" AND "'.date('Y-m-d', 7258118400).'" ORDER BY posts.created_at DESC LIMIT 1');
+	if($next_query->num_rows != 0) {
+	// next
+	print '<a href="'.$title_href.'/hot?date='.date('Y-m-d', strtotime($next_query->fetch_assoc()['created_at'])).'" class="button next-button" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-pjax-replace="1"><span class="symbol-label">→</span></a>';
+	}
+	print '
+  </div>
+';
+    if(!$search_posts || $search_posts->num_rows == 0) {
+	print '<div class="js-post-list post-list">';
+noContentWindow('There are no popular posts.');
+print '</div>'; } else {
+print '<div class="js-post-list post-list" data-next-page-url="'.($search_posts->num_rows > 49 ? ''.$title_href.'?offset='.(!empty($_GET['offset']) ? (!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $_GET['offset'] + 50 : '') : 50) : '').'">';
+while($post = $search_posts->fetch_assoc()) {
+printPost($post, false, false, false);
+}
+print '</div>
+ </div>
+  </div>
+  ';	
+        }
+}
+else {
+# Post list
 $get_posts = $mysql->query('SELECT * FROM posts WHERE posts.community_id = "'.$community['community_id'].'" AND posts.is_hidden != "1" ORDER BY posts.created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$mysql->real_escape_string($_GET['offset']) : null));			
     if(!$get_posts || $get_posts->num_rows == 0) {
 	print '<div class="js-post-list post-list">';
 noContentWindow('This community doesn\'t have any posts yet.');
 print '</div>'; } else {
-print '<div class="js-post-list post-list" data-next-page-url="'.($get_posts->num_rows > 49 ? '/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'?offset='.(!empty($_GET['offset']) ? (!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $_GET['offset'] + 50 : '') : 50) : '').'">';
+print '<div class="js-post-list post-list" data-next-page-url="'.($get_posts->num_rows > 49 ? ''.$title_href.'?offset='.(!empty($_GET['offset']) ? (!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $_GET['offset'] + 50 : '') : 50) : '').'">';
 while($post = $get_posts->fetch_assoc()) {
 printPost($post, false, false, false);
 }
@@ -123,8 +178,9 @@ print '</div>
  </div>
   </div>
   ';	
-        }	
-if($not_offset) {
+        }
+}
+if($not_offset && (empty($_GET['mode']) || $_GET['mode'] != 'hot')) {
 # Post form
 if(!empty($_SESSION['pid'])) {
 postForm('posts', $community, $user); }

@@ -1,7 +1,7 @@
 <?php
 
 function postValid($user, $screenshot_type) {
-if(mb_strlen($_POST['body'], 'utf-8') <= 0) { return 'blank'; }
+if(empty($_POST['body']) || mb_strlen($_POST['body'], 'utf-8') <= 0) { return 'blank'; }
 elseif(preg_replace('/[\x{200B}-\x{200D}]/u', '', $_POST['body']) == '') { return 'blank'; }
 elseif(ctype_space(preg_replace('/[\x{200B}-\x{200D}]/u', '', $_POST['body']))) { return 'blank'; }
 elseif(strval($user['privilege']) <= 3 && mb_strlen($_POST['body'], 'utf-8') > 1000) { return 'max'; }
@@ -24,6 +24,16 @@ if(substr($bufferimg,0,5) != 'image' || $bufferimg == 'image/gif') { return 'inv
 }
 # End checks
 else { return 'ok'; }
+}
+
+
+function commentCan($pid, $post) {
+global $mysql;
+$search_restrictions = $mysql->query('SELECT operation FROM restrictions WHERE restrictions.id = "'.$post.'" AND operation = 1 AND (restrictions.recipients LIKE "%'.$pid.'%" OR restrictions.recipients IS NULL) LIMIT 1');
+if($search_restrictions->num_rows != 0) {
+return false;
+	}
+return true;
 }
 
 function privatePostValid($user) {

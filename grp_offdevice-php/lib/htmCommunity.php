@@ -102,6 +102,11 @@ global $mysql; global $actFeed; global $identified;
 if(strlen($row['_post_type']) > 10) { $reply = true; } else { $reply = false; }
 
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row['pid'].'" LIMIT 1')->fetch_assoc();
+
+require_once '../grplib-php/user-helper.php';
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $row['pid'])) {
+return null; }
+
 if($reply == false) {
 $community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$row['community_id'].'" LIMIT 1')->fetch_assoc();
 $title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc(); } else {
@@ -139,9 +144,9 @@ print '<div id="post-'.$row['id'].'" data-href'.(!empty($_SESSION['pid']) && $_S
 	print '    <span class="spoiler">Spoilers</span>
     ·'; }
 if(isset($identified)) {
-$get_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$row['pid'].'" LIMIT 1');
+require_once '../grplib-php/user-helper.php';
 print '<p class="user-name"><a href="/users/'.htmlspecialchars($user['user_id']).'">'.htmlspecialchars($user['screen_name']).'</a></p>
-       <p class="text">'.($get_profile->num_rows != 0 ? htmlspecialchars($get_profile->fetch_assoc()['comment']) : '').'</p>';
+       <p class="text">'.getProfileComment($user, false).'</p>';
 	} else {
 	print '
       <a class="timestamp" '.($row['is_spoiler'] == 1 ? 'data-href-hidden' : 'href').'="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'">'.humanTiming(strtotime($row['created_at'])).'</a>

@@ -4,55 +4,28 @@ require_once 'lib/htm.php';
 
 if(empty($_GET['id'])) { include_once '404.php'; exit(); }
 $search_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.(isset($_GET['id']) ? $mysql->real_escape_string($_GET['id']) : 'a').'"');
+require_once '../grplib-php/user-helper.php';
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'empathies') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # Display 404 if method isn't POST
 include_once '404.php'; }
 # Method is POST.
-require_once '../grplib-php/community-helper.php';
-
-		$search_post_for_empathy = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.(isset($_GET['id']) ? $mysql->real_escape_string($_GET['id']) : 'a').'" AND posts.is_hidden != "1" LIMIT 1');
-		if($search_post_for_empathy->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print
-		json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
-
-		if(empty($_SESSION['pid'])) {
-		http_response_code(403); header('Content-Type: application/json; charset=utf-8');
-		print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
-
-$post = $search_post->fetch_assoc();
-if(!empty($_SESSION['pid'])) {		
-if(!miitooCan($_SESSION['pid'], $post['id'], 'posts')) {
- 		http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); } }
-$searchmyempathy = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'"');
-if($searchmyempathy->num_rows != 0) {
-# Remove empathy
-$removemyempathy = $mysql->query('DELETE FROM empathies WHERE empathies.id = "'.$post['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'"');
-if(!$removemyempathy) {
-http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array(
-'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
-} else {
-header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 1));
-}   }  else {
-        $empathycreate = $mysql->query('INSERT INTO empathies(id, pid, created_from)
-                VALUES ("'.$post['id'].'", "'.$_SESSION['pid'].'", "'.$_SERVER['REMOTE_ADDR'].'")');
-	
-require_once '../grplib-php/user-helper.php';
-sendNews($_SESSION['pid'], $post['pid'], 2, $post['id']);
-	
-        if(!$empathycreate)
-        { json_encode(array(
-'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 1)); }	
-   } grpfinish($mysql);
-exit();
+require_once '../grplib-php/miitoo.php';
+miitooAdd('posts'); exit();
+}
+if(isset($_GET['mode']) && $_GET['mode'] == 'empathies_delete') {
+if($_SERVER['REQUEST_METHOD'] != 'POST') {
+# Display 404 if method isn't POST
+include_once '404.php'; }
+# Method is POST.
+require_once '../grplib-php/miitoo.php';
+miitooDelete('posts'); exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'replies') {
+if($_SERVER['REQUEST_METHOD'] != 'POST') {
+# Display 404 if method isn't POST
+include_once '404.php'; }
 require_once '../grplib-php/post-helper.php';
 if(empty($_SESSION['pid'])) {
 http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
@@ -65,8 +38,14 @@ json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($my
 }
 
 $ogpost = $ogpost_result->fetch_assoc();
-
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $ogpost['pid'])) {
+require '404.php'; exit(); }
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+
+if(!commentCan($_SESSION['pid'], $ogpost['id'])) {
+ 		http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print 
+json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+
 $is_post_valid = postValid($user, 'url');
 $fastpost = ($mysql->query('SELECT replies.pid, replies.created_at FROM replies WHERE replies.pid = "'.$user['pid'].'" AND replies.created_at > NOW() - '.(isset($grp_config_max_postbuffertime) ? $grp_config_max_postbuffertime : '10').' ORDER BY replies.created_at DESC LIMIT 5')->num_rows != 0 ? true : false);
 if($is_post_valid != 'ok' || $fastpost == true) {
@@ -94,7 +73,7 @@ $gen_olive_url = genURL();
 
 if(empty($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; }
 
-$createpost = $mysql->query('INSERT INTO replies(id, reply_to_id, pid, feeling_id, platform_id, body, screenshot, is_spoiler) VALUES (
+$createpost = $mysql->query('INSERT INTO replies(id, reply_to_id, pid, feeling_id, platform_id, body, screenshot, is_spoiler, created_from) VALUES (
 "'.$gen_olive_url.'", 
 "'.$ogpost['id'].'",
 "'.$_SESSION['pid'].'",
@@ -102,7 +81,8 @@ $createpost = $mysql->query('INSERT INTO replies(id, reply_to_id, pid, feeling_i
 "2",
 "'.$mysql->real_escape_string($_POST['body']).'",
 "'.(!empty($_POST['screenshot']) ? $mysql->real_escape_string($_POST['screenshot']) : null).'",
-"'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'"
+"'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'",
+"'.$mysql->real_escape_string($_SERVER['REMOTE_ADDR']).'"
 )');
 
 if(!$createpost) {
@@ -172,7 +152,7 @@ grpfinish($mysql); exit();
 if(isset($_GET['mode']) && $_GET['mode'] == 'screenshot.set_profile_post') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Put checks + update user's favorite post here.
 if(empty($_SESSION['pid'])) {
 http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
@@ -205,7 +185,7 @@ grpfinish($mysql); exit();
 if(isset($_GET['mode']) && $_GET['mode'] == 'violations') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display 404.
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Method is POST.
 
 		if(empty($_SESSION['pid'])) { $error_code[] = 403; }
@@ -236,7 +216,7 @@ json_encode(array('success' => 1)); }
 		} grpfinish($mysql); 	exit(); }
 if(isset($_GET['mode']) && $_GET['mode'] == 'set_spoiler') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
 http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
@@ -320,7 +300,7 @@ grpfinish($mysql); exit();
 }
 
 
-if(isset($_GET['mode'])) { if($_GET['mode'] != 'empathies' || $_GET['mode'] != 'replies' || $_GET['mode'] != 'violations' || $_GET['mode'] != 'set_spoiler' || $_GET['mode'] != 'screenshot_set_profile_post' || $_GET['mode'] != 'delete') { 
+if(isset($_GET['mode'])) { if($_GET['mode'] != 'empathies' || $_GET['mode'] != 'replies' || $_GET['mode'] != 'violations' || $_GET['mode'] != 'set_spoiler' || $_GET['mode'] != 'screenshot_set_profile_post' || $_GET['mode'] != 'delete' || $_GET['mode'] != 'empathies_delete') { 
 # Display 404 if mode is undefined
 include_once '404.php'; } }
   
@@ -328,6 +308,8 @@ include_once '404.php'; } }
 if(!$search_post) {
 generalError(404, 'The post could not be found.'); grpfinish($mysql); exit(); } elseif($search_post->num_rows == 0) { generalError(404, 'The post could not be found.'); grpfinish($mysql); exit(); }
 $post = $search_post->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $post['pid'])) {
+require '404.php'; exit(); }
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$post['pid'].'" LIMIT 1')->fetch_assoc();
 $community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$post['community_id'].'" LIMIT 1')->fetch_assoc();
 $title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$community['olive_title_id'].'" LIMIT 1')->fetch_assoc();
@@ -345,6 +327,7 @@ generalError(404, 'Deleted by poster.'); grpfinish($mysql); exit(); }
 require_once 'lib/htmCommunity.php';
 require_once 'lib/htmPost.php';
 require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/post-helper.php';
 $mii = getMii($user, $post['feeling_id']);
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$post['id'].'"');
 printHeader(false); printMenu();
@@ -358,7 +341,7 @@ $pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['va
 $pref_id = 0;
 	}
 
-$canReply = !empty($_SESSION['pid']);
+$canReply = !empty($_SESSION['pid']) && commentCan($_SESSION['pid'], $post['id']);
 	print '<header id="header">';
 if(!$admin_del) {
 print '  <a id="header-reply-button"'.($canReply == false ? ' disabled' : null).' class="header-button reply-button'.($canReply == false ? ' disabled' : null).'"'.($canReply == true ? 'href="#"' : '').' data-modal-open="#add-reply-page">Comment</a>
@@ -505,7 +488,7 @@ print '
 } print '
        </div>';
 	# Add reply page
-if(!empty($_SESSION['pid'])) {
+if($canReply) {
 postForm('replies', $post, $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc());
 }
 	# Posts footer, mandatory for a posts page.

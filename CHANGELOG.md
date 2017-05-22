@@ -1,6 +1,13 @@
 # grape changelog - starting from 0.8.0 #
 
-# 0.8.2 (WIP) #
+# 0.8.5 (WIP) #
+* Blocking is implemented in the database.
+* Comment and Yeah restrictions for posts are implemented in the database.
+* German, French in accounts, and also finishing (except for errcodes)
+* Popular Posts partially implemented.
+* Not finished, of course.
+
+# 0.8.2 #
 * Even more minor fixes in offdevice.
 * User Menu is in offdevice like it should be now.
 * Account Settings. It also displays server traits.

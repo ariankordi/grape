@@ -210,7 +210,12 @@ function userObject($user, $has_memo, $has_button, $type) {
 global $mysql;
 $user_id = htmlspecialchars($user['user_id']);
 $usermii = getMii($user, false);
-$get_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
+
+require_once '../grplib-php/user-helper.php';
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+return null; }
+
+$get_profile = $mysql->query('SELECT comment FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
 $profile = $get_profile->fetch_assoc();
 
 print '<li class="scroll test-user-'.htmlspecialchars($user['user_id']).'">
@@ -275,7 +280,7 @@ print '
   <div class="body">
   ';
   if($has_memo && $get_profile->num_rows != 0 && !empty($profile['favorite_screenshot'])) {
-$fav_scrnsht_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($profile['favorite_screenshot']).'" AND posts.is_hidden = "0" LIMIT 1');
+$fav_scrnsht_post = $mysql->query('SELECT screenshot FROM posts WHERE posts.id = "'.$mysql->real_escape_string($profile['favorite_screenshot']).'" AND posts.is_hidden = "0" LIMIT 1');
 if($fav_scrnsht_post && $fav_scrnsht_post->num_rows != 0) {
 	  print '<div class="user-profile-memo-content">
       <img src="'.htmlspecialchars($fav_scrnsht_post->fetch_assoc()['screenshot']).'" class="user-profile-memo">
@@ -285,7 +290,7 @@ if($fav_scrnsht_post && $fav_scrnsht_post->num_rows != 0) {
       <span class="nick-name">'.htmlspecialchars($user['screen_name']).'</span>
       <span class="id-name">'.htmlspecialchars($user['user_id']).'</span>
     </p>
-    <p class="text">'.($get_profile->num_rows != 0 ? htmlspecialchars($profile['comment']) : '').'</p>
+    <p class="text">'.($get_profile->num_rows != 0 ? getProfileComment($user, $profile) : '').'</p>
   </div>
 </li>';
 }

@@ -1,6 +1,7 @@
 <?php
 if(!empty($_SESSION['pid'])) {
 $lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc(); }
+header('Content-Type: text/html; charset=utf-8');
 
 function printHeader($is_act) {
 global $pagetitle;

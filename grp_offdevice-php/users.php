@@ -3,6 +3,7 @@ require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
 $search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.(empty($_GET['user_id']) ? 'a' : $mysql->real_escape_string($_GET['user_id'])).'"');
+require_once '../grplib-php/user-helper.php';
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'posts') {
 if($search_user->num_rows == 0) {
@@ -10,8 +11,9 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -67,8 +69,9 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -104,7 +107,7 @@ print '<div id="user-page-no-content" class="none"></div>
 ';
 require_once '../grplib-php/olv-url-enc.php';
 while($empathies = $search_user_empathies->fetch_assoc()) {
-$get_empathy_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$empathies['id'].'"  AND posts.is_hidden != "1" UNION ALL SELECT * from replies where replies.id = "'.$empathies['id'].'"  AND replies.is_hidden != "1"');
+$get_empathy_post = $get_post = getPost($empathies['id']);
 if($get_empathy_post->num_rows != 0) {
 printPost($get_empathy_post->fetch_assoc()); }
 }
@@ -126,8 +129,9 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -193,8 +197,9 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -259,8 +264,9 @@ $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', fa
 }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
-require_once '../grplib-php/user-helper.php';
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
@@ -321,7 +327,7 @@ exit();
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'follow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 
 if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
 json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
@@ -331,6 +337,8 @@ http_response_code(403); header('Content-Type: application/json; charset=utf-8')
 json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 
 if($_SESSION['pid'] == $user['pid']) {
 http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
@@ -362,7 +370,7 @@ json_encode(array('success' => 1, 'can_follow_more' => true));
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'unfollow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 
 if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
 json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
@@ -401,13 +409,15 @@ json_encode(array('success' => 1));
 
 if(isset($_GET['mode'])) { if($_GET['mode'] != 'posts' || $_GET['mode'] != 'empathies' || $_GET['mode'] != 'following' || $_GET['mode'] != 'followers' || $_GET['mode'] != 'follow' || $_GET['mode'] != 'unfollow') { 
 # Display 404 if mode is undefined
-include_once '404alli.php'; } }
+include_once '404.php'; } }
 
 if($search_user->num_rows == 0) {
 $pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
 }
 
 $user = $search_user->fetch_assoc();
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 require_once '../grplib-php/user-helper.php';
 $profile = getProfile($user);
@@ -453,7 +463,7 @@ else { $pge_platform = 'wiiu'; $pge_patext = 'Off-Device'; }
 
 if(!empty($profile['comment'])) {
 print '<p class="profile-comment">
-'.nl2br(htmlspecialchars($profile['comment'])).'</p>'; }
+'.nl2br(getProfileComment($user, $profile)).'</p>'; }
 
 print '<div class="user-data">
     <div class="user-main-profile data-content">

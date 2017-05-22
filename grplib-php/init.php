@@ -9,9 +9,14 @@ $mysql = new mysqli($server, $user, $pw, $name);
 $mysql->set_charset('utf8mb4');
 
 if($mysql->connect_errno){
-http_response_code(502); die(); } 
+http_response_code(502); die(); }
 $mysql->query('SET time_zone = "-4:00"');
 date_default_timezone_set('America/New_York');
+return $mysql;
+}
+
+function initAll() {
+$mysql = connectSQL(CONFIG_DB_SERVER, CONFIG_DB_USER, CONFIG_DB_PASS, CONFIG_DB_NAME);
 return $mysql;
 }
 
@@ -53,10 +58,10 @@ function setTextDomain($domain) {
    textdomain($domain);
 }
 
-function initAll() {
-$mysql = connectSQL(CONFIG_DB_SERVER, CONFIG_DB_USER, CONFIG_DB_PASS, CONFIG_DB_NAME);
-return $mysql;
-}
+/* Maybe later? Production? 
+require_once 'err_display.php';
+set_error_handler('grp_err', E_ERROR);
+*/
 
 if(!is_callable('humanTiming')) {
 function humanTiming($time) {
@@ -86,27 +91,27 @@ if($feeling_id == '0' && !empty($att_userfaceJSON->normal)) {
 */
 	if(!empty($user['mii_hash'])) {
 if($feeling_id == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png';
 $mii_face_feeling = 'normal';
 $mii_face_miitoo = 'Yeah!'; }
 if($feeling_id == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_happy_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_happy_face.png';
 $mii_face_feeling = 'happy'; }
 $mii_face_miitoo = 'Yeah!';
 if($feeling_id == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_like_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_like_face.png';
 $mii_face_feeling = 'like';
 $mii_face_miitoo = htmlspecialchars('Yeah♥'); }
 if($feeling_id == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_surprised_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_surprised_face.png';
 $mii_face_feeling = 'surprised';
 $mii_face_miitoo = 'Yeah!?'; }
 if($feeling_id == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_frustrated_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_frustrated_face.png';
 $mii_face_feeling = 'frustrated';
 $mii_face_miitoo = 'Yeah...'; }
 if($feeling_id == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_puzzled_face.png'; 
+$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_puzzled_face.png';
 $mii_face_feeling = 'puzzled';
 $mii_face_miitoo = 'Yeah...'; }
 	}
@@ -122,10 +127,10 @@ $mii_face_miitoo = 'Yeah!'; }
 else {
 	if(!empty($user['mii_hash'])) {
 $mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png'; } elseif(!empty($user['user_face'])) { $mii_face_output = htmlspecialchars($user['user_face']); } else {
-$mii_face_output = '/img/mii/img_unknown_MiiIcon.png';	
+$mii_face_output = '/img/mii/img_unknown_MiiIcon.png';
 }
 
-}	
+}
 return array(
 'output' => $mii_face_output,
 'feeling' => (!empty($feeling_id) ? $mii_face_feeling : null),
@@ -141,12 +146,18 @@ header('Content-Type: application/json; charset=utf-8');
 print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 }
-
 function jsonSuccess() {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json; charset=utf-8'); print
 json_encode(array('success' => 1));
 }
-	 
+function isNintendoUser() {
+if(!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/\bmiiverse\b/', $_SERVER['HTTP_USER_AGENT'])) {
+	return true;
+	} else {
+	return false;
+	}
+}
+
 function grpfinish($mysql) {
 $mysql->close();
 }
@@ -161,23 +172,17 @@ session_start();
 // Locale
 localeSet(null);
 // <Locale
-if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/logout' && $_SERVER['REQUEST_URI'] != '/guest_menu' && $_SERVER['REQUEST_URI'] != '/my_menu') {
+if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/logout' && isset($grp_config_privkey) && isset($grp_config_pubkey)) {
 if(isset($grp_config_privkey) && isset($grp_config_pubkey)) {
 require_once 'crypto.php';
 $identity_auth = initToken(decrypt_identity($grp_config_privkey, base64_decode($_COOKIE['grp_identity'])));
 if($identity_auth) {
-	$_SESSION['signed_in'] = true;
-		                $_SESSION['pid']    = $identity_auth['pid'];
-                        $_SESSION['user_id']    = $identity_auth['user_id'];
-                        $_SESSION['password']    = $identity_auth['user_pass'];
-					    $_SESSION['device_id'] = $identity_auth['device_id'];
-					    $_SESSION['platform_id'] = $identity_auth['platform_id'];
-						
-                   }
-}	}
-
-} elseif(!empty($_SESSION['pid'])) {
-if($mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" AND people.user_id = "'.$_SESSION['user_id'].'"')->num_rows == 0) {{unset($_SESSION['pid']);}}}
+require_once 'account-helper.php';
+setLoginVars($identity_auth, true); }
+	} 	}
+}
+elseif(!empty($_SESSION['pid'])) {
+if($mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" AND people.user_id = "'.$_SESSION['user_id'].'"')->num_rows == 0) {{ unset($_SESSION['pid']); }}}
 
 if(!empty($_SESSION['pid'])) {
 $search_relationships_own = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "1"');
@@ -185,5 +190,5 @@ if($search_relationships_own->num_rows == 0) {
 $mysql->query('INSERT INTO relationships (source, target, is_me2me) VALUES ("'.$_SESSION['pid'].'", "'.$_SESSION['pid'].'", "1")'); }
 }
 
-if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && substr($_SERVER['REQUEST_URI'],0,10) != '/act/login' && substr($_SERVER['REQUEST_URI'],0,6) != '/login' && $_SERVER['REQUEST_URI'] != '/act/create' && $_SERVER['REQUEST_URI'] != '/people') {
-header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'] .'/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302); }
+if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && $_SERVER['SCRIPT_NAME'] != '/act.php') {
+header("Location: {$grp_config_default_redir_prot}{$_SERVER['HTTP_HOST']}/act/login?location=".htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302); }

@@ -13,3 +13,63 @@ msgstr ""
 
 msgid "grp.act.authenticate"
 msgstr "Authentifier"
+
+msgid "grp.act.account_create"
+msgstr "Créer compte"
+
+msgid "grp.act.login"
+msgstr "S'indentifier"
+
+msgid "grp.act.submit"
+msgstr "Soumettre"
+
+msgid "grp.act.login.id"
+msgstr "Login ID"
+
+msgid "grp.act.user.id"
+msgstr "Consommateur ID"
+
+msgid "grp.act.login.passwd"
+msgstr "Mot de passe"
+
+msgid "grp.act.login.passwd_confirm"
+msgstr "Confirmer mot de passe"
+
+msgid "grp.act.err.code"
+msgstr "Code d'erreur: %d-%d"
+
+msgid "grp.act.back"
+msgstr "Verso"
+
+msgid "grp.act.lang"
+msgstr "Langue"
+
+msgid "grp.act.userid_help"
+msgstr "Cette ID sera utilisée pour vous connecter et accéder à votre profil"
+
+msgid "grp.act.email_addr"
+msgstr "E-mail addresse"
+
+msgid "grp.act.email"
+msgstr "E-mail"
+
+msgid "grp.act.email_help"
+msgstr "Sera utilisé pour la confirmation"
+
+msgid "grp.act.nnid"
+msgstr "ID du réseau Nintendo"
+
+msgid "grp.act.nnid_help"
+msgstr "Utilisé pour attraper Mii et d'autres informations de"
+
+msgid "grp.act.screenname"
+msgstr "Nom de l'écran"
+
+msgid "grp.act.screenmii_name"
+msgstr "Nom de l'écran/nom de Mii"
+
+msgid "grp.act.screenname_help"
+msgstr "Le nom que vous aurez; Sera le nom Mii de IDRN (NNID) si c'est vide"
+
+msgid "grp.act.login_account_signup"
+msgstr "Si vous n'avez pas de compte, vous pouvez en obtenir un %sici%s."

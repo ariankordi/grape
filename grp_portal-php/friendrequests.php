@@ -66,12 +66,11 @@ print '<div class="friend-request-buttons">
       </div>
 <div class="body">
         <p class="title">';
-		$get_user_profile_for_fr = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.$row_news_user_select['pid'].'" LIMIT 1');
+		require_once '../grplib-php/user-helper.php';
 		print '
           <span class="nick-name">'.htmlspecialchars($row_news_user_select['screen_name']).'</span>
         </p>
-        <p class="text">'.($get_user_profile_for_fr->num_rows != 0 ? htmlspecialchars($get_user_profile_for_fr->fetch_assoc()['comment']) : '
-		').'</p>
+        <p class="text">'.getProfileComment($row_news_user_select, false).'</p>
       </div>';
 
 

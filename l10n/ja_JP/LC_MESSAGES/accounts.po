@@ -14,6 +14,9 @@ msgstr ""
 msgid "grp.act.authenticate"
 msgstr "認証する"
 
+msgid "grp.act.account_create"
+msgstr "アカウントを作成する"
+
 msgid "grp.act.login"
 msgstr "ログイン"
 
@@ -41,9 +44,6 @@ msgstr "もどる"
 msgid "grp.act.lang"
 msgstr "言語"
 
-msgid "grp.act.create"
-msgstr "アカウントを作成する"
-
 msgid "grp.act.userid_help"
 msgstr "ログインに使用"
 
@@ -70,3 +70,6 @@ msgstr "ハンドルネーム/Mii名"
 
 msgid "grp.act.screenname_help"
 msgstr "表示される名前"
+
+msgid "grp.act.login_account_signup"
+msgstr "アカウントをお持ちでない場合は、アカウントを取得することができます%sここに%s。"

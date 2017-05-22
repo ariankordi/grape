@@ -1,7 +1,7 @@
 <?php
 require_once '../grplib-php/init.php';
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 
 $search_community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$mysql->real_escape_string($_POST['community_id']).'" AND communities.hidden != 1 LIMIT 1');
 
@@ -59,7 +59,7 @@ $gen_olive_url = genURL();
 
 if(empty($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; } 
 
-$createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler) VALUES (
+$createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler, created_from) VALUES (
 "'.$gen_olive_url.'", 
 "'.$_SESSION['pid'].'",
 "'.(!empty($_POST['_post_type']) ? $mysql->real_escape_string($_POST['_post_type']) : 'body').'",
@@ -70,6 +70,7 @@ $createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, 
 "'.(!empty($_POST['screenshot']) ? $result_imgu : null).'",
 "'.$mysql->real_escape_string($_POST['community_id']).'",
 "'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'"
+"'.$mysql->real_escape_string($_SERVER['REMOTE_ADDR']).'"
 )');
 
 if(!$createpost) {

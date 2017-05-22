@@ -11,8 +11,8 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
@@ -80,8 +80,8 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
@@ -123,7 +123,7 @@ require_once 'lib/htmCommunity.php';
 require_once '../grplib-php/community-helper.php';
 require_once '../grplib-php/olv-url-enc.php';
 	while($posts = $search_empathies->fetch_assoc()) {
-$get_post = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$posts['id'].'"  AND posts.is_hidden != "1" UNION ALL SELECT * from replies where replies.id = "'.$posts['id'].'"  AND replies.is_hidden != "1"');
+$get_post = getPost($posts['id']);
 if($get_post->num_rows != 0) {
 printPost($get_post->fetch_assoc(), true, false, false); 
 		}
@@ -150,8 +150,8 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
@@ -230,8 +230,8 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
@@ -309,8 +309,8 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
@@ -416,7 +416,7 @@ grpfinish($mysql); exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'follow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 
 if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
 json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
@@ -426,8 +426,8 @@ http_response_code(403); header('Content-Type: application/json; charset=utf-8')
 json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 
 if($_SESSION['pid'] == $user['pid']) {
 http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
@@ -459,7 +459,7 @@ json_encode(array('success' => 1, 'can_follow_more' => true));
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'unfollow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 
 if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
 json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
@@ -504,8 +504,8 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && findBlock($_SESSION['pid'], $user['pid'])) {
-blockDie(); }
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
@@ -562,7 +562,7 @@ print '<div class="tab-body">
 	
 	';
 if(mb_strlen($profile['comment'], 'utf-8') >= 1) {
-print '<p class="text">'.htmlspecialchars($profile['comment']).'</p>'; }
+print '<p class="text">'.getProfileComment($user, $profile).'</p>'; }
  print '
   <div class="user-data"><table>
     <tbody><tr>

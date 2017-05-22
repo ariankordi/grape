@@ -59,7 +59,7 @@ $gen_olive_url = genURL();
 
 if(empty($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; } 
 
-$createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler) VALUES (
+$createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler, created_from) VALUES (
 "'.$gen_olive_url.'", 
 "'.$_SESSION['pid'].'",
 "'.(!empty($_POST['_post_type']) ? $mysql->real_escape_string($_POST['_post_type']) : 'body').'",
@@ -69,7 +69,8 @@ $createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, 
 "'.(!empty($_POST['url']) ? $mysql->real_escape_string($_POST['url']) : null).'",
 "'.(!empty($_POST['screenshot']) ? $mysql->real_escape_string($_POST['screenshot']) : null).'",
 "'.$mysql->real_escape_string($_POST['community_id']).'",
-"'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'"
+"'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'",
+"'.$mysql->real_escape_string($_SERVER['REMOTE_ADDR']).'"
 )');
 
 if(!$createpost) {

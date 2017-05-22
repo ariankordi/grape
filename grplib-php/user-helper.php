@@ -9,6 +9,17 @@ return array(
 );
 }
 
+function getProfileComment($user, $profile) {
+global $mysql;
+if(!empty($profile)) { return htmlspecialchars($profile['comment']); }
+$get_profile = $mysql->query('SELECT comment FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
+if($get_profile->num_rows != 0) {
+return $get_profile->fetch_assoc()['comment'];
+	} else {
+	return null;
+	}
+}
+
 function findBlock($source, $target) {
 if($source == $target) {
 return false;
@@ -21,9 +32,12 @@ return false;
 	}
 }
 
-function blockDie() {
+function canUserView($user, $me) {
 global $mysql;
-require '404.php'; grpfinish($mysql); exit();
+if($me && findBlock($me, $user)) {
+return true;
+	}
+return false;
 }
 
 function getProfile($user) {

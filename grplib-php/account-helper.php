@@ -18,6 +18,10 @@ return $user;
 
 }
 
+function passgen($pass) {
+return crypt($pass, sprintf('$5$rounds=%d$%s$', 10000, substr(str_replace('+','.',base64_encode(md5(mt_rand(), true))),0,16)));
+}
+
 function setLoginVars($user, $login) {
 if($login == true) {
       $_SESSION['signed_in'] = true;       
@@ -48,7 +52,15 @@ return false;
 return true;
 }
 
+function PIDgen() {
+global $mysql;
+$rPrPid = $mysql->query('SELECT pid FROM people ORDER BY people.pid LIMIT 1');
+$rPid2 = ($rPrPid->num_rows != 0 ? 1799999999 - $rPrPid->fetch_assoc()['pid'] : 1799999999);
+return $rPid2 != 1799999999 ? 1799999998 - $rPid2 : 1799999999;
+}
+
 function getNNASmii($user_id) {
+global $grp_config_olvkey; global $grp_config_olvkey_pass;
         $ch = curl_init();
 	curl_setopt_array($ch, array(
         CURLOPT_URL => 'https://3ds-us.olv.nintendo.net/users/'.$user_id.'/blacklist.confirm',
@@ -74,11 +86,27 @@ if ($results->length > 0) {
 return array(
 'user_id'=>$user_id,
 'screen_name'=>$screen_name,
-'mii_image'=>str_replace('_normal_face.png','',str_replace('http://mii-images.cdn.nintendo.net/',$mii_image))
+'mii_image'=>str_replace('_normal_face.png','',str_replace('http://mii-images.cdn.nintendo.net/','',$mii_image))
 	);
 }
 
-function actformCheck($nss) {
+function userInfoJSON() {
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+	CURLOPT_URL => "https://ipinfo.io/{$_SERVER['REMOTE_ADDR']}/json",
+	CURLOPT_BINARYTRANSFER=>true,CURLOPT_RETURNTRANSFER=>true));
+    $ip_json = json_decode(curl_exec($ch));
+    curl_close($ch);
+
+return json_encode(array(
+'ua' => base64_encode($_SERVER['HTTP_USER_AGENT']),
+'https' => +($_SERVER['HTTPS']=='on'),
+'nintendo' => +isNintendoUser(),
+'ipinfo' => [$ip_json]
+	));
+}
+
+function actformCheck() {
 global $mysql;
 	if(empty($_POST['user_id'])) {
 		$error_message[] = "You did not enter a login ID.";
@@ -96,25 +124,27 @@ global $mysql;
 		$error_message[] = "You did not enter a screen name.";
 		$error_code[] = 1022543; 
 	}
-	elseif(strlen($_POST['screen_name']) < 6 || strlen($_POST['screen_name']) < 6) {
-		$error_message[] = "Your screen name is either too long or too short.";
-		$error_code[] = 1022543; 
-	}
+    elseif(strlen($_POST['screen_name']) > 17) {
+        $error_message[] = "Your screen name is too long.";
+        $error_code[] = 1022543; 
+    }
 	elseif(empty($_POST['password2']) || $_POST['password'] != $_POST['password2']) {
         $error_message[] = "The passwords you have entered do not match.";
 		$error_code[] = 1022616;
 	}
-	if($nss == 0) {
-	$get_nss_keys = in_array(($_POST[''] ?? null), $grp_config_server_nss_keys);
+	global $nss;
+	if($nss == 1) {
+	global $grp_config_server_nss_keys;
+	$get_nss_keys = in_array(($_POST['device_id'] ?? null), $grp_config_server_nss_keys);
 	    if(!$get_nss_keys) {
 		$error_message[] = "The device ID you have entered is not registered on the server.";
 		$error_code[] = 1022452;
 		}
 	}
-	elseif($nss == 1) {
+	elseif($nss == 3) {
 	/* Get an invite key */
 	}
-	$search_ouser = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['user_id']).'" LIMIT 1');
+	$search_ouser = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['user_id'] ?? '').'" LIMIT 1');
 	if(!$search_ouser || $search_ouser->num_rows != 0) {
 		$error_message[] = "The login ID you have entered already exists.";
 		$error_code[] = 1022587;	
@@ -124,4 +154,20 @@ return array($error_code[0], $error_message[0]);
 	} else {
 return true;
 	}
+}
+
+function peopleQuery($values) {
+global $mysql;
+$create_account_stmt = $mysql->prepare('INSERT INTO people('.(implode(', ', array_keys($values))).')
+VALUES('.rtrim(str_repeat('?, ', count($values)), ', ').')');
+$params = '';
+foreach($values as &$param) {
+$params .= is_int($param) ? 'i' : 's';
+        }
+$funcparam = array_merge(array($params), array_values($values));
+foreach($funcparam as $key => $value) $tmp[$key] = &$funcparam[$key];
+call_user_func_array([$create_account_stmt, 'bind_param'], $tmp); 
+
+$create_account_stmt->execute();
+return $create_account_stmt;
 }

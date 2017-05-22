@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
 
 function printHeader($mode) {
 global $pagetitle;
@@ -21,7 +22,7 @@ if(!isset($nnecnojs)) { print '
 <script src="/js/offdevice/complete-old.js"></script>'; } print '<style type="text/css"></style>
   <style type="text/css">* {}</style><style type="text/css">* {}</style></head>
 ';
-print '  <body '.(!empty($bodyID) ? 'id='.$bodyID.' ' : '').''.(!empty($_SESSION['pid']) ? 'class="'.(isset($bodyClass) ? $bodyClass : '').''.(empty($_SESSION['pid']) ? ' guest' : '').'" data-token="" data-hashed-pid="'.sha1($_SESSION['pid']).'" data-user-id="'.htmlspecialchars($_SESSION['user_id']).'" data-game-skill="0" data-follow-done="1" data-post-done="1" data-enable-user-recommendation="1"' : 'class="guest-top guest" data-token=""').'>';
+print '  <body '.(!empty($bodyID) ? 'id='.$bodyID.' ' : '').''.(!empty($_SESSION['pid']) ? 'class="'.($bodyClass ?? '').''.(empty($_SESSION['pid']) ? ' guest' : '').'" data-token="" data-hashed-pid="'.sha1($_SESSION['pid']).'" data-user-id="'.htmlspecialchars($_SESSION['user_id']).'" data-game-skill="0" data-follow-done="1" data-post-done="1" data-enable-user-recommendation="1"' : 'class="guest-top guest" data-token=""').'>';
 print '    
     <div id="wrapper">
       
@@ -46,7 +47,7 @@ print '<div id="sub-body">
 		  ';
 if(!empty($_SESSION['pid'])) {
 global $mysql;
-$miia = $mysql->query('SELECT user_face, mii_hash, mii, user_id FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+$miia = $mysql->query('SELECT user_face, mii_hash, mii, user_id, official_user FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 $mii = getMii($miia, false);
 print (!isset($mode) || $mode != 'old' ? '<li id="global-menu-list">
             <ul>' : '' ).'
@@ -86,10 +87,16 @@ http_response_code(404);
 print '<div id="main-body">
 ';
 if($htext == true) { $nftext = $text; }
-elseif($text == 'posts') { $nftext = 'The post could not be found.'; }
-elseif($text == 'replies') { $nftext = 'The comment could not be found.'; }
-elseif($text == 'users') { $nftext = 'The user could not be found.'; }
-else { $nftext = 'The page could not be found.'; }
+else { switch($text) {
+case 'posts':
+$nftext = 'The post could not be found.'; break;
+case 'replies':
+$nftext = 'The comment could not be found.'; break;
+case 'users':
+$nftext = 'The user could not be found.'; break;
+default:
+$nftext = 'The page could not be found.'; break;
+}	}
 print '
 <div class="no-content track-error" data-track-error="404">
   <div>

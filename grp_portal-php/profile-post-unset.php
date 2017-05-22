@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-include_once '404alli.php'; }
+include_once '404.php'; }
 
 		if(empty($_SESSION['pid'])) {
 http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }

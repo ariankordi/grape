@@ -8,68 +8,68 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_US\n"
+"Language: de_DE\n"
 "X-Generator: Poedit 2.0.1\n"
 
 msgid "grp.act.authenticate"
-msgstr "Authenticate"
+msgstr "Authentifizieren"
 
 msgid "grp.act.account_create"
-msgstr "Create Account"
+msgstr "Benutzerkonto erstellen"
 
 msgid "grp.act.login"
-msgstr "Login"
+msgstr "Anmelden"
 
 msgid "grp.act.submit"
-msgstr "Submit"
+msgstr "Einsenden"
 
 msgid "grp.act.login.id"
-msgstr "Login ID"
+msgstr "Anmeldungs ID"
 
 msgid "grp.act.user.id"
-msgstr "User ID"
+msgstr "Nutzername"
 
 msgid "grp.act.login.passwd"
-msgstr "Password"
+msgstr "Passwort"
 
 msgid "grp.act.login.passwd_confirm"
-msgstr "Confirm Password"
+msgstr "Passwort bestätigen"
 
 msgid "grp.act.err.code"
-msgstr "Error Code: %d-%d"
+msgstr "Fehler Code: %d-%d"
 
 msgid "grp.act.back"
-msgstr "Back"
+msgstr "Zurück"
 
 msgid "grp.act.lang"
-msgstr "Language"
+msgstr "Sprache"
 
 msgid "grp.act.userid_help"
-msgstr "This ID will be used to log in and access your profile"
+msgstr "Gebraucht um dein Profil nutzen zu können"
 
 msgid "grp.act.email_addr"
-msgstr "E-mail Address"
+msgstr "E-mail Adresse"
 
 msgid "grp.act.email"
 msgstr "E-mail"
 
 msgid "grp.act.email_help"
-msgstr "Will be used for confirmation"
+msgstr "Gebraucht für Bestätigung"
 
 msgid "grp.act.nnid"
 msgstr "Nintendo Network ID"
 
 msgid "grp.act.nnid_help"
-msgstr "Used for grabbing Mii and other info from"
+msgstr "Gebraucht für das Mii und Daten davon"
 
 msgid "grp.act.screenname"
-msgstr "Screen name"
+msgstr "Bildschirmname"
 
 msgid "grp.act.screenmii_name"
-msgstr "Screen name/Mii name"
+msgstr "Bildschirmname/Name des Miis"
 
 msgid "grp.act.screenname_help"
-msgstr "Name you will appear as; Will be NNID's Mii name if blank"
+msgstr "Name der dir angezeigt wird"
 
 msgid "grp.act.login_account_signup"
-msgstr "If you do not have an account, you can obtain one %shere%s."
+msgstr "Wenn du kein Konto hast, kannst du eins erhalten %shier%s."

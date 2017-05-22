@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.8.0-dev
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 14, 2017 at 05:45 PM
+-- Generation Time: May 22, 2017 at 02:27 AM
 -- Server version: 5.7.18-0ubuntu0.16.04.1
 -- PHP Version: 7.0.15-0ubuntu0.16.04.4
 
@@ -18,11 +18,6 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
-SET time_zone = "+00:00";
-
 CREATE TABLE `bans` (
   `operator` int(12) NOT NULL,
   `reciever` int(12) NOT NULL,
@@ -32,6 +27,14 @@ CREATE TABLE `bans` (
   `expires_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `finished` int(11) DEFAULT '0',
   `comment` text COLLATE utf8mb4_bin
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+CREATE TABLE `blacklist` (
+  `source` int(12) NOT NULL,
+  `target` int(12) NOT NULL,
+  `type` int(1) NOT NULL DEFAULT '0',
+  `blacklist_id` bigint(20) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 CREATE TABLE `communities` (
@@ -101,6 +104,7 @@ CREATE TABLE `messages` (
   `platform_id` int(1) DEFAULT NULL,
   `body` text COLLATE utf8mb4_bin,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_from` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
   `is_spoiler` int(1) DEFAULT NULL,
   `has_read` int(8) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -124,6 +128,7 @@ CREATE TABLE `people` (
   `mii` varchar(130) CHARACTER SET latin1 DEFAULT NULL,
   `mii_image` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `mii_hash` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `nnas_info` text COLLATE utf8mb4_bin,
   `user_face` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `user_email` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `official_user` int(8) DEFAULT NULL,
@@ -131,6 +136,7 @@ CREATE TABLE `people` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `platform_id` int(8) NOT NULL DEFAULT '1',
   `created_from` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `client_info` varchar(500) COLLATE utf8mb4_bin DEFAULT NULL,
   `device_id` decimal(12,0) DEFAULT NULL,
   `device_cert` varchar(384) CHARACTER SET latin1 DEFAULT NULL,
   `privilege` int(8) NOT NULL DEFAULT '0' COMMENT '0 = normal, 1 = special, 2 = mod, 3 = admin, 4 = superadmin, 5 = dev (god)',
@@ -151,6 +157,7 @@ CREATE TABLE `posts` (
   `body` text COLLATE utf8mb4_bin,
   `url` text CHARACTER SET latin1,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_from` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
   `community_id` int(20) NOT NULL,
   `is_spoiler` varchar(1) COLLATE utf8mb4_bin NOT NULL DEFAULT '0',
   `is_special` int(1) DEFAULT '0',
@@ -166,9 +173,11 @@ CREATE TABLE `profiles` (
   `platform_id` int(8) DEFAULT '1',
   `country` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `gender` varchar(2) COLLATE utf8mb4_bin DEFAULT NULL,
-  `game_experience` varchar(8) COLLATE utf8mb4_bin DEFAULT NULL,
+  `game_experience` varchar(8) COLLATE utf8mb4_bin DEFAULT '0',
   `favorite_screenshot` varchar(25) COLLATE utf8mb4_bin DEFAULT NULL,
-  `empathy_optout` INT(1) NULL DEFAULT '0'
+  `empathy_optout` int(1) DEFAULT '0',
+  `relationship_visibility` int(1) DEFAULT '1',
+  `allow_request` int(1) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 CREATE TABLE `relationships` (
@@ -206,6 +215,15 @@ CREATE TABLE `reports` (
   `finished` int(8) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+CREATE TABLE `restrictions` (
+  `operation_id` bigint(20) NOT NULL,
+  `operator` int(12) NOT NULL,
+  `id` varchar(25) COLLATE utf8mb4_bin DEFAULT NULL,
+  `type` int(1) NOT NULL DEFAULT '0' COMMENT '0 for post, 1 for comment',
+  `recipients` text COLLATE utf8mb4_bin,
+  `operation` int(1) NOT NULL DEFAULT '0' COMMENT '0 for empathy, 1 for reply'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
 CREATE TABLE `settings_title` (
   `settings_id` bigint(20) NOT NULL,
   `pid` int(12) NOT NULL,
@@ -241,7 +259,12 @@ CREATE TABLE `titles` (
 
 ALTER TABLE `bans`
   ADD PRIMARY KEY (`operation_id`),
-  ADD KEY `bpid1` (`operator`);
+  ADD KEY `bibfk1` (`operator`);
+
+ALTER TABLE `blacklist`
+  ADD PRIMARY KEY (`blacklist_id`),
+  ADD KEY `blibfk1` (`source`),
+  ADD KEY `blibfk2` (`target`);
 
 ALTER TABLE `communities`
   ADD PRIMARY KEY (`community_id`),
@@ -249,8 +272,8 @@ ALTER TABLE `communities`
 
 ALTER TABLE `conversations`
   ADD PRIMARY KEY (`conversation_id`),
-  ADD KEY `cpid2` (`sender`),
-  ADD KEY `cpidrecv` (`recipient`);
+  ADD KEY `conibfk1` (`sender`),
+  ADD KEY `conibfk2` (`recipient`);
 
 ALTER TABLE `empathies`
   ADD PRIMARY KEY (`empathy_id`),
@@ -258,23 +281,23 @@ ALTER TABLE `empathies`
 
 ALTER TABLE `favorites`
   ADD PRIMARY KEY (`settings_id`),
-  ADD KEY `cid` (`community_id`),
-  ADD KEY `cpid` (`pid`);
+  ADD KEY `fibfk1` (`community_id`),
+  ADD KEY `fibfk2` (`pid`);
 
 ALTER TABLE `friend_relationships`
   ADD PRIMARY KEY (`relationship_id`),
-  ADD KEY `to_pid2` (`source`),
-  ADD KEY `from_pid2` (`target`);
+  ADD KEY `freibfk1` (`target`),
+  ADD KEY `freibfk3` (`source`);
 
 ALTER TABLE `friend_requests`
   ADD PRIMARY KEY (`news_id`),
-  ADD KEY `pid_from` (`sender`),
-  ADD KEY `pid_to` (`recipient`);
+  ADD KEY `freqibfk1` (`sender`),
+  ADD KEY `freqibfk2` (`recipient`);
 
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pidmess1` (`pid`),
-  ADD KEY `convmess1` (`conversation_id`);
+  ADD KEY `mibfk1` (`conversation_id`);
 
 ALTER TABLE `news`
   ADD PRIMARY KEY (`news_id`),
@@ -305,12 +328,16 @@ ALTER TABLE `replies`
 
 ALTER TABLE `reports`
   ADD PRIMARY KEY (`report_id`),
-  ADD KEY `rpid1` (`source`);
+  ADD KEY `repibfk1` (`source`);
+
+ALTER TABLE `restrictions`
+  ADD PRIMARY KEY (`operation_id`),
+  ADD KEY `resibfk1` (`operator`);
 
 ALTER TABLE `settings_title`
   ADD PRIMARY KEY (`settings_id`),
-  ADD KEY `o2td1` (`olive_title_id`),
-  ADD KEY `o2td2` (`pid`);
+  ADD KEY `stibfk1` (`olive_title_id`),
+  ADD KEY `stibfk2` (`pid`);
 
 ALTER TABLE `settings_tutorial`
   ADD PRIMARY KEY (`tutorial_id`),
@@ -322,86 +349,97 @@ ALTER TABLE `titles`
 
 ALTER TABLE `bans`
   MODIFY `operation_id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `blacklist`
+  MODIFY `blacklist_id` bigint(20) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `communities`
   MODIFY `community_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=421;
 ALTER TABLE `conversations`
   MODIFY `conversation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 ALTER TABLE `empathies`
-  MODIFY `empathy_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1042;
+  MODIFY `empathy_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1062;
 ALTER TABLE `favorites`
   MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 ALTER TABLE `friend_relationships`
-  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 ALTER TABLE `friend_requests`
-  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 ALTER TABLE `news`
-  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=917;
+  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=953;
 ALTER TABLE `people`
   MODIFY `pid` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1800000000;
 ALTER TABLE `relationships`
-  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=496;
+  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=607;
 ALTER TABLE `reports`
   MODIFY `report_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+ALTER TABLE `restrictions`
+  MODIFY `operation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 ALTER TABLE `settings_title`
-  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 ALTER TABLE `settings_tutorial`
   MODIFY `tutorial_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 ALTER TABLE `bans`
-  ADD CONSTRAINT `bpid1` FOREIGN KEY (`operator`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `bibfk1` FOREIGN KEY (`operator`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `blacklist`
+  ADD CONSTRAINT `blibfk1` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `blibfk2` FOREIGN KEY (`target`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `communities`
-  ADD CONSTRAINT `olive_community2title` FOREIGN KEY (`olive_title_id`) REFERENCES `titles` (`olive_title_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `cibfk1` FOREIGN KEY (`olive_title_id`) REFERENCES `titles` (`olive_title_id`);
 
 ALTER TABLE `conversations`
-  ADD CONSTRAINT `cpid1` FOREIGN KEY (`sender`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `cpidrecv` FOREIGN KEY (`recipient`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `conibfk1` FOREIGN KEY (`sender`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `conibfk2` FOREIGN KEY (`recipient`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `empathies`
-  ADD CONSTRAINT `pid_to_empathies` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `eibfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `favorites`
-  ADD CONSTRAINT `cid` FOREIGN KEY (`community_id`) REFERENCES `communities` (`community_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `cpid` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fibfk1` FOREIGN KEY (`community_id`) REFERENCES `communities` (`community_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fibfk2` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `friend_relationships`
-  ADD CONSTRAINT `from_pid2` FOREIGN KEY (`target`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `to_pid2` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `freibfk1` FOREIGN KEY (`target`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `freibfk3` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `friend_requests`
-  ADD CONSTRAINT `pid_from` FOREIGN KEY (`sender`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `pid_to` FOREIGN KEY (`recipient`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `freqibfk1` FOREIGN KEY (`sender`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `freqibfk2` FOREIGN KEY (`recipient`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `messages`
-  ADD CONSTRAINT `convmess1` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`conversation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `pidmess1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `mibfk1` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`conversation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `mibfk2` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `news`
-  ADD CONSTRAINT `from_pid` FOREIGN KEY (`from_pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `to_pid` FOREIGN KEY (`to_pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `nibfk1` FOREIGN KEY (`from_pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `nibfk2` FOREIGN KEY (`to_pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`community_id`) REFERENCES `communities` (`community_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `pibfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pibfk2` FOREIGN KEY (`community_id`) REFERENCES `communities` (`community_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `profiles`
-  ADD CONSTRAINT `profiles_to_people` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `pribfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `relationships`
-  ADD CONSTRAINT `source` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `target` FOREIGN KEY (`target`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ribfk1` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ribfk2` FOREIGN KEY (`target`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `replies`
-  ADD CONSTRAINT `replies_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `replies_ibfk_2` FOREIGN KEY (`reply_to_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `reibfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reibfk2` FOREIGN KEY (`reply_to_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `reports`
-  ADD CONSTRAINT `rpid1` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `repibfk1` FOREIGN KEY (`source`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `restrictions`
+  ADD CONSTRAINT `resibfk1` FOREIGN KEY (`operator`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `settings_title`
-  ADD CONSTRAINT `o2td1` FOREIGN KEY (`olive_title_id`) REFERENCES `titles` (`olive_title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `o2td2` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`);
+  ADD CONSTRAINT `stibfk1` FOREIGN KEY (`olive_title_id`) REFERENCES `titles` (`olive_title_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `stibfk2` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`);
 
 ALTER TABLE `settings_tutorial`
-  ADD CONSTRAINT `pids` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `stuibfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
