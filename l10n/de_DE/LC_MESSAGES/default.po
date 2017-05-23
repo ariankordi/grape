@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
+"Language: de_DE\n"
 "X-Generator: Poedit 2.0.1\n"
 
 msgid "grp.portal.my_menu"
