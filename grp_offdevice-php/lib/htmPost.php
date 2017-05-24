@@ -64,7 +64,7 @@ if(!empty($_SESSION['pid'])) { $myempathy = ($mysql->query('SELECT * FROM empath
 
 print '
     <div class="reply-meta">
-        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($myempathy) && $myempathy == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' reply" data-feeling="'.$mii['feeling'].'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($myempathy) && $myempathy == true ? 'Unyeah' : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
+        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($myempathy) && $myempathy == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' reply" data-feeling="'.$mii['feeling'].'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($myempathy) && $myempathy == true ? $mii['miitoo_delete'] : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
         <div class="empathy symbol"><span class="symbol-label">Yeahs</span><span class="empathy-count">'.$empathies->num_rows.'</span></div>
     </div>
 	  '; }

@@ -42,7 +42,7 @@ print '<div class="tab-body">
 }
 userPostNavTab($user, 'posts');
 
-$search_posts = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$user['pid'].'" ORDER BY posts.created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
+$search_posts = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$user['pid'].'" AND (posts.hidden_resp != 1 OR posts.hidden_resp IS NULL) ORDER BY posts.created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
 
 print '<div class="user-page-content js-post-list post-list" data-next-page-url="'.($search_posts->num_rows > 49 ? '?offset='.(isset($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : 50) : '').'">';
 if(!$search_posts || $search_posts->num_rows == 0) {

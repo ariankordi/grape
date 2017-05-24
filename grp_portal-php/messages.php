@@ -89,7 +89,7 @@ else {
 $create_conversation = $mysql->query('INSERT INTO conversations(sender, recipient) VALUES("'.$_SESSION['pid'].'", "'.$person['pid'].'")');
 if(!$create_conversation) {
 plainErr(500, '500 Internal Server Error'); grpfinish($mysql); exit(); }
-$conversation_id = $create_conversation->fetch_assoc()['conversation_id'];
+$conversation_id = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->insert_id.'" LIMIT 1')->fetch_assoc()['conversation_id'];
 }
 } else {
 $mode = 1;

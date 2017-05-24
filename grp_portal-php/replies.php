@@ -237,7 +237,7 @@ $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$rep
 		data-url-id="'.$reply['id'].'" 
 		data-track-label="default" 
 		data-track-action="yeah" 
-		data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? 'Unyeah' : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
+		data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? $mii['miitoo_delete'] : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
         </div>';
 
 if(!empty($_SESSION['pid'])) {

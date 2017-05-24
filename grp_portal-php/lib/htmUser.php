@@ -196,7 +196,9 @@ print '
         <div class="textarea-memo trigger" data-sound=""><div class="textarea-memo-preview"></div><input type="hidden" name="painting"></div>
       </div>
 	';
+	if($user['privilege'] >= 2 || $user['image_perm'] == 1 || $user['official_user'] == 1) {
 	 print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
+	}
 print '
 	</div>
 

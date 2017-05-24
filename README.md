@@ -132,9 +132,9 @@ Offdevice:
 	rewrite ^/replies/([A-Za-z0-9-_]+)/empathies.delete$ /replies.php?id=$1&mode=empathies_delete last;
 	rewrite ^/users/([^/'"]+)/check_can_post.json$ /generate_success.json last;
 	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1 last;
-	rewrite ^/users/[0-9a-zA-Z-_.]+/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
 	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=follow last;
 	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=unfollow last;
+	rewrite ^/users/[0-9a-zA-Z-_.]+/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
 	
 	rewrite ^/act/([0-9a-zA-Z\\-_.]+)$ /act.php?pg=$1 last;
 	rewrite ^/act/$ /act.php?pg=index last;

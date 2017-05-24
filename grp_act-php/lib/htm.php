@@ -28,7 +28,7 @@ function printHeader() { global $bodyStyle; ?>
 
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?=_('grp.act.lang')?> <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?=loc('grp.act.lang')?> <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
                             
                             <li><a href="?locale.lang=en-US" class="language" rel="en-US">English
@@ -68,12 +68,12 @@ function printFooter() { global $dev_server; ?>
 }
 
 function printErr($code, $message, $back) {
-printHeader(); printf('    <h1>'._('grp.act.err.code').'</h1>', substr($code,0,3), substr($code,3,4));
+printHeader(); printf('    <h1>'.loc('grp.act.err.code').'</h1>', substr($code,0,3), substr($code,3,4));
 print '<br>
     
     <p>'.nl2br($message).'</p>
 <br>
-<a href="'.$back.'" class="btn btn-primary btn-primary">'._('grp.act.back').'</a>  '; printFooter();
+<a href="'.$back.'" class="btn btn-primary btn-primary">'.loc('grp.act.back').'</a>  '; printFooter();
 }
 
 function defaultRedir($has_post) {

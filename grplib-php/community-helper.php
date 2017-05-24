@@ -17,23 +17,25 @@ return $mysql->query('SELECT id, pid, _post_type, screenshot, feeling_id, body, 
 
 function searchPopular($community, $time, $limit, $offset, $all) {
 global $mysql;
-if($time != 'a' && $time != 'n') {
 $time = date('Y-m-d', strtotime($time));
 $time2 = date('Y-m-d', strtotime($time) - 259199);
-} else {
-if($time == 'n') {
-$time = date('Y-m-d', strtotime($time));
-$time2 = date('Y-m-d', 0); }
-if($time == 'a') {
-$time = date('Y-m-d', strtotime($time));
-$time2 = date('Y-m-d', 7258118400); }
-}
-$sql = 'SELECT '.($all ? 'posts.*, ' : '').'posts.created_at, COUNT(empathies.id) AS empathies FROM posts INNER JOIN empathies ON empathies.id = posts.id WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at BETWEEN "'.$time2.'" AND "'.$time.'" GROUP BY posts.id
+$sql = 'SELECT '.($all ? 'posts.*, ' : '').'posts.created_at, COUNT(empathies.id) AS empathies FROM posts INNER JOIN empathies ON empathies.id = posts.id WHERE posts.community_id = "'.$community['community_id'].'" AND (posts.is_hidden != "1" OR posts.is_hidden IS NULL) AND posts.created_at BETWEEN "'.$time2.'" AND "'.$time.'" GROUP BY posts.id
 
 HAVING (SELECT AVG(empathies) FROM (SELECT COUNT(empathies.id) AS empathies FROM posts INNER JOIN empathies ON empathies.id = posts.id WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at BETWEEN "'.$time2.'" AND "'.$time.'" GROUP BY empathies.id) AS empathies) <= empathies
 
 ORDER BY empathies DESC, posts.created_at DESC LIMIT '.$limit.''.(!empty($offset) && is_numeric($offset) ? 'OFFSET '.$offset : '');
 return $mysql->query($sql);
+}
+
+function findPastPopular($mode, $time, $community) {
+global $mysql;
+$sql = 'SELECT created_at FROM posts WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at '.($mode == 0 ? '>' : '<').' '.date('Y-m-d', $time).' ORDER BY posts.created_at DESC LIMIT 1';
+$result = $mysql->query($sql);
+if(!$result || $result->num_rows == 0) {
+return false;
+	} else {
+	return $result->fetch_assoc()['created_at'];
+	}
 }
 
 function postPermission($user, $community) {

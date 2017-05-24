@@ -74,7 +74,9 @@ print '<div class="banner-container">
 printTitle($platformtitles);
         }
 	print '
-	</ul>';
+	</ul>
+	<a href="/communities/categories/wiiu_all" data-pjax="#body" class="more-button scroll">Show More</a>
+	';
 $get_specialtitles = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NULL AND titles.hidden != 1 ORDER BY titles.created_at DESC LIMIT 6');
 print '<h2 class="headline headline-special">Special</h2>
 <ul class="list-content-with-icon-column" id="community-top-content">

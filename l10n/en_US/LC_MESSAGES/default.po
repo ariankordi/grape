@@ -11,6 +11,27 @@ msgstr ""
 "Language: en_US\n"
 "X-Generator: Poedit 2.0.1\n"
 
+msgid "grp.datetime"
+msgstr "m/d/Y g:i A"
+
+msgid "grp.datetime.within_1_minute"
+msgstr "Less than a minute ago"
+
+msgid "grp.datetime.minute_ago"
+msgid_plural "grp.datetime.minutes_ago"
+msgstr[0] "%d minute ago"
+msgstr[1] "%d minutes ago"
+
+msgid "grp.datetime.hour_ago"
+msgid_plural "grp.datetime.hours_ago"
+msgstr[0] "%d hour ago"
+msgstr[1] "%d hours ago"
+
+msgid "grp.datetime.day_ago"
+msgid_plural "grp.datetime.days_ago"
+msgstr[0] "%d day ago"
+msgstr[1] "%d days ago"
+
 msgid "grp.portal.my_menu"
 msgstr "User Menu"
 

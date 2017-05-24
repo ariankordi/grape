@@ -3,7 +3,7 @@ require_once '../grplib-php/init.php';
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; grpfinish($mysql); exit(); }
 
-$search_community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$mysql->real_escape_string($_POST['community_id']).'" AND communities.hidden != 1 LIMIT 1');
+$search_community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$mysql->real_escape_string($_POST['community_id']).'" AND (communities.hidden != 1 OR communities.hidden IS NULL) LIMIT 1');
 
 if($search_community->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8');
 print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }

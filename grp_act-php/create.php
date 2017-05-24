@@ -74,7 +74,7 @@ grpfinish($mysql); exit();
 
 printHeader();
 print '<div class="page-header">
-        <h3>'._('grp.act.account_create').'</h3>
+        <h3>'.loc('grp.act.account_create').'</h3>
     </div>
     <form id="act-create" method="POST" action="/act/create" class="form-horizontal">
 <fieldset>
@@ -84,53 +84,53 @@ print '<div class="page-header">
 
 
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'._('grp.act.user.id').'</label>  
+  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.user.id').'</label>  
   <div class="col-md-4">
-  <input id="textinput" name="user_id" type="text" placeholder="'._('grp.act.login.id').'" class="form-control input-md" required="">
-  <span class="help-block">'._('grp.act.userid_help').'</span>  
+  <input id="textinput" name="user_id" type="text" placeholder="'.loc('grp.act.login.id').'" class="form-control input-md" required="">
+  <span class="help-block">'.loc('grp.act.userid_help').'</span>  
   </div>
 </div>
 
 
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'._('grp.act.login.passwd').'</label>  
+  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.login.passwd').'</label>  
   <div class="col-md-4">
-  <input id="textinput" name="password" type="password" placeholder="'._('grp.act.login.passwd').'" class="form-control input-md" required="">
+  <input id="textinput" name="password" type="password" placeholder="'.loc('grp.act.login.passwd').'" class="form-control input-md" required="">
     
   </div>
 </div>
 
 
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'._('grp.act.login.passwd_confirm').'</label>  
+  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.login.passwd_confirm').'</label>  
   <div class="col-md-4">
-  <input id="textinput" name="password2" type="password" placeholder="'._('grp.act.login.passwd').'" class="form-control input-md" required="">
+  <input id="textinput" name="password2" type="password" placeholder="'.loc('grp.act.login.passwd').'" class="form-control input-md" required="">
     
   </div>
 </div>
 
 
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'._('grp.act.email_addr').'</label>  
+  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.email_addr').'</label>  
   <div class="col-md-4">
-  <input id="textinput" name="email" type="text" placeholder="'._('grp.act.email').'" class="form-control input-md" required="">
-  <span class="help-block">'._('grp.act.email_help').'</span>  
+  <input id="textinput" name="email" type="text" placeholder="'.loc('grp.act.email').'" class="form-control input-md" required="">
+  <span class="help-block">'.loc('grp.act.email_help').'</span>  
   </div>
 </div>
 
 
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'._('grp.act.nnid').'</label>  
+  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.nnid').'</label>  
   <div class="col-md-4">
   <input id="textinput" name="nn_user_id" type="text" placeholder="NNID" class="form-control input-md">
-  <span class="help-block">'._('grp.act.nnid_help').'</span>  
+  <span class="help-block">'.loc('grp.act.nnid_help').'</span>  
   </div>
 </div>
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'._('grp.act.screenname').'</label>  
+  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.screenname').'</label>  
   <div class="col-md-4">
-  <input id="textinput" name="screen_name" type="text" placeholder="'._('grp.act.screenmii_name').'" class="form-control input-md">
-  <span class="help-block">'._('grp.act.screenname_help').'</span>  
+  <input id="textinput" name="screen_name" type="text" placeholder="'.loc('grp.act.screenmii_name').'" class="form-control input-md">
+  <span class="help-block">'.loc('grp.act.screenname_help').'</span>  
   </div>
 </div>
 
@@ -169,7 +169,7 @@ print '
 <div class="form-group">
   
   <div class="col-md-4">
-  <a href="/act/login" class="btn btn-primary btn-primary">'._('grp.act.back').'</a>';
+  <a href="/act/login" class="btn btn-primary btn-primary">'.loc('grp.act.back').'</a>';
   if(!empty($grp_config_recaptcha_pkey) && !isNintendoUser()) { print '
 <!-- Hopefully this works -->
      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -178,10 +178,10 @@ print '
          document.getElementById("act-create").submit();
        }
      </script>
-<button class="g-recaptcha btn btn-primary" data-sitekey="'.$grp_config_recaptcha_pubkey.'" data-callback="onSubmit">'._('grp.act.submit').'
+<button class="g-recaptcha btn btn-primary" data-sitekey="'.$grp_config_recaptcha_pubkey.'" data-callback="onSubmit">'.loc('grp.act.submit').'
 </button>';
   } else {
-  print '<button type="submit" value="submit" class="btn btn-primary">'._('grp.act.submit').'</button>';
+  print '<button type="submit" value="submit" class="btn btn-primary">'.loc('grp.act.submit').'</button>';
   }  print '
   </div>
 </div>

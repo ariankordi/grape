@@ -38,7 +38,7 @@ print '
 # End of user-page
 tab2Activity($user, 'posts');
 }
-$search_user_posts = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$user['pid'].'" ORDER BY posts.created_at DESC LIMIT 50'.(isset($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$mysql->real_escape_string($_GET['offset']) : ''));
+$search_user_posts = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$user['pid'].'" AND (posts.hidden_resp != 1 OR posts.hidden_resp IS NULL) ORDER BY posts.created_at DESC LIMIT 50'.(isset($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$mysql->real_escape_string($_GET['offset']) : ''));
 print '<div class="list post-list" data-next-page-url="'.($search_user_posts->num_rows > 49 ? '?offset='.(isset($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : 50) : '').'">
 ';
 if($search_user_posts->num_rows == 0) {

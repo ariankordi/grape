@@ -5,6 +5,7 @@
 * Comment and Yeah restrictions for posts are implemented in the database.
 * German, French in accounts, and also finishing (except for errcodes)
 * Popular Posts partially implemented.
+* I forgot everything else, sorry.
 * Not finished, of course.
 
 # 0.8.2 #

@@ -51,10 +51,10 @@ $miia = $mysql->query('SELECT user_face, mii_hash, mii, user_id, official_user F
 $mii = getMii($miia, false);
 print (!isset($mode) || $mode != 'old' ? '<li id="global-menu-list">
             <ul>' : '' ).'
-          <li id="global-menu-mymenu"'.(isset($mnselect) && $mnselect == 'users' ? ' class="selected"' : '').'><a href="/users/'.htmlspecialchars($miia['user_id']).'"><span class="icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" alt="'._('grp.portal.my_page').'"></span><span>'._('grp.portal.my_page').'</span></a></li>
-          <li id="global-menu-feed"'.(isset($mnselect) && $mnselect == 'feed' ? ' class="selected"' : '').'><a href="/activity" class="symbol"><span>'._('grp.portal.activity').'</span></a></li>
-          <li id="global-menu-community"'.(isset($mnselect) && $mnselect == 'community' ? ' class="selected"' : '').'><a href="/" class="symbol"><span>'._('grp.portal.community').'</span></a></li>
-          <li id="global-menu-news"'.(isset($mnselect) && $mnselect == 'news' ? ' class="selected"' : '').'><a href="/news/my_news" class="symbol">'.(isset($mode) && $mode == 'old' ? '<span>'._('grp.portal.news').'</span>' : '').'<span class="badge" style="display: none;">0</span></a></li>
+          <li id="global-menu-mymenu"'.(isset($mnselect) && $mnselect == 'users' ? ' class="selected"' : '').'><a href="/users/'.htmlspecialchars($miia['user_id']).'"><span class="icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" alt="'.loc('grp.portal.my_page').'"></span><span>'.loc('grp.portal.my_page').'</span></a></li>
+          <li id="global-menu-feed"'.(isset($mnselect) && $mnselect == 'feed' ? ' class="selected"' : '').'><a href="/activity" class="symbol"><span>'.loc('grp.portal.activity').'</span></a></li>
+          <li id="global-menu-community"'.(isset($mnselect) && $mnselect == 'community' ? ' class="selected"' : '').'><a href="/" class="symbol"><span>'.loc('grp.portal.community').'</span></a></li>
+          <li id="global-menu-news"'.(isset($mnselect) && $mnselect == 'news' ? ' class="selected"' : '').'><a href="/news/my_news" class="symbol">'.(isset($mode) && $mode == 'old' ? '<span>'.loc('grp.portal.news').'</span>' : '').'<span class="badge" style="display: none;">0</span></a></li>
 		  '.(!isset($mode) || $mode != 'old' ? '<li id="global-menu-my-menu"><button class="symbol js-open-global-my-menu open-global-my-menu"></button>
 <menu id="global-my-menu" class="invisible none">
                   <li><a href="/settings/profile" class="symbol my-menu-profile-setting"><span>Profile Settings</span></a></li>

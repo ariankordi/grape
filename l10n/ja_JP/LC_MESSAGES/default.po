@@ -11,6 +11,27 @@ msgstr ""
 "Language: ja_JP\n"
 "X-Generator: Poedit 2.0.1\n"
 
+msgid "grp.datetime"
+msgstr "Y/n/d g:i"
+
+msgid "grp.datetime.within_1_minute"
+msgstr "1分以内"
+
+msgid "grp.datetime.minute_ago"
+msgid_plural "grp.datetime.minutes_ago"
+msgstr[0] "%d分前"
+msgstr[1] "%d分前"
+
+msgid "grp.datetime.hour_ago"
+msgid_plural "grp.datetime.hours_ago"
+msgstr[0] "%d時間前"
+msgstr[1] "%d時間前"
+
+msgid "grp.datetime.day_ago"
+msgid_plural "grp.datetime.days_ago"
+msgstr[0] "%d日前"
+msgstr[1] "%d日前"
+
 msgid "grp.portal.my_menu"
 msgstr "マイメニュー"
 

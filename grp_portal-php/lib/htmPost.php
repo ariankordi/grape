@@ -74,7 +74,7 @@ if(!empty($_SESSION['pid'])) { $myempathy = $mysql->query('SELECT * FROM empathi
               data-action="/replies/'.$reply['id'].'/empathies"
               data-sound="SE_WAVE_MII'.(!empty($_SESSION['pid']) && $myempathy ? 'CANCEL' : 'ADD').'"
               data-url-id="'.$reply['id'].'" data-track-label="reply" data-track-action="yeah" data-track-category="empathy"
-      >'.(isset($myempathy) && $myempathy == true ? 'Unyeah' : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
+      >'.(isset($myempathy) && $myempathy == true ? $mii['miitoo_delete'] : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
       <a href="/replies/'.$reply['id'].'" class="to-permalink-button" data-pjax="#body">
         <span class="feeling">'.$empathies->num_rows.'</span>
       </a>
