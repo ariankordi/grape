@@ -1,9 +1,12 @@
 <?php
-require_once '../config.php';
-$dev_server = $grp_config_server_type == 'dev';
+require_once dirname(__FILE__,2).'/config.php';
+$dev_server = CONFIG_SRV_TYPE == 0;
 
-define('VERSION', '0.8.5');
+$version = '0.8.8';
+define('LOCATION', 'http'.($grp_config_recommend_ssl || (isset($_SERVER['https']) && $_SERVER['https'] == 'on') ? 's' : '').'://'.$_SERVER['HTTP_HOST']);
 
+require_once dirname(__FILE__).'/err_display.php';
+set_error_handler('grp_err', E_ERROR);
 function connectSQL($server, $user, $pw, $name) {
 $mysql = new mysqli($server, $user, $pw, $name);
 $mysql->set_charset('utf8mb4');
@@ -15,13 +18,53 @@ date_default_timezone_set('America/New_York');
 return $mysql;
 }
 
+mb_internal_encoding('UTF-8');
+
 function initAll() {
 $mysql = connectSQL(CONFIG_DB_SERVER, CONFIG_DB_USER, CONFIG_DB_PASS, CONFIG_DB_NAME);
 return $mysql;
 }
 
+function nice_ins($table, $values) {
+global $mysql;
+$stmt = $mysql->prepare('INSERT INTO '.$table.'('.(implode(', ', array_keys($values))).')
+VALUES('.rtrim(str_repeat('?, ', count($values)), ', ').')');
+$params = '';
+foreach($values as &$param) {
+$params .= is_int($param) ? 'i' : 's';
+        }
+$funcparam = array_merge(array($params), array_values($values));
+foreach($funcparam as $key => $value) $tmp[$key] = &$funcparam[$key];
+call_user_func_array([$stmt, 'bind_param'], $tmp);
+
+$stmt->execute();
+if($stmt->errno) {
+	return false;
+	} else {
+	return $stmt->get_result();	
+	}
+}
+function prepared($txt, $values) {
+global $mysql;
+$stmt = $mysql->prepare($txt);
+$params = '';
+foreach($values as &$param) {
+$params .= is_int($param) ? 'i' : 's';
+	}
+$funcparam = array_merge(array($params), $values);
+foreach($funcparam as $key => $value) $tmp[$key] = &$funcparam[$key];
+call_user_func_array([$stmt, 'bind_param'], $tmp);
+
+$stmt->execute();
+if($stmt->errno) {
+	return false;
+	} else {
+	return $stmt->get_result();	
+	}
+}
+
 function localeSet($custom) {
-require_once '../l10n/langs.php';
+require_once dirname(__FILE__,2).'/l10n/langs.php';
 if(!empty($custom)) {
 $lang = $custom;
 		}
@@ -48,8 +91,7 @@ define('LOCALE', $lang);
 $lang_enc = str_replace('-', '_', LOCALE).'.UTF-8';
    setlocale(LC_ALL, $lang_enc);
 // Change later to a default
-   bindtextdomain('default', '../l10n/');
-   bindtextdomain('miitoo', '../l10n/');
+   bindtextdomain('default', dirname(__FILE__,2).'/l10n/');
    textdomain('default');
 }
 
@@ -70,11 +112,6 @@ function setTextDomain($domain) {
    textdomain($domain);
 }
 
-/* Maybe later? Production? 
-require_once 'err_display.php';
-set_error_handler('grp_err', E_ERROR);
-*/
-
 function humanTiming($time) {
 if(time() - $time >= 345600) {
 return date(loc('grp.datetime'),$time); }
@@ -87,88 +124,50 @@ return loc('grp.datetime.within_1_minute'); }
         $numberOfUnits = floor($time / $unit);
         return sprintf(loc('grp.datetime.'.$text.'_ago', 'grp.datetime.'.$text.'s_ago', $numberOfUnits), $numberOfUnits);
     } }
-
-	function getMii($user, $feeling_id) {
-if(isset($feeling_id)) {
-/* Implement in the future
-
-$att_userfaceJSON = json_decode($user['user_face']);
-if($att_userfaceJSON) {
-if($feeling_id == '0' && !empty($att_userfaceJSON->normal)) {
-
-	}
+function getMii($user, $feeling_id) {
+$hash_loc = 'https://mii-secure.cdn.nintendo.net/%s_%s_face.png';
+switch($feeling_id ?? 0) {
+case 1:
+$feeling = 'happy'; break;
+case 2:
+$feeling = 'like'; break;
+case 3:
+$feeling = 'surprised'; break;
+case 4:
+$feeling = 'frustrated'; break;
+case 5:
+$feeling = 'puzzled'; break;
+default :
+$feeling = 'normal';
+break;
 }
-
-*/
-	if(!empty($user['mii_hash'])) {
-if($feeling_id == '0') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png';
-$mii_face_feeling = 'normal';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.normal'); 
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.normal.delete'); }
-if($feeling_id == '1') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_happy_face.png';
-$mii_face_feeling = 'happy';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.happy'); 
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.happy.delete'); }
-if($feeling_id == '2') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_like_face.png';
-$mii_face_feeling = 'like';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.like'); 
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.like.delete'); }
-if($feeling_id == '3') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_surprised_face.png';
-$mii_face_feeling = 'surprised';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.surprised');
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.surprised.delete'); }
-if($feeling_id == '4') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_frustrated_face.png';
-$mii_face_feeling = 'frustrated';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.frustrated'); 
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.frustrated.delete'); }
-if($feeling_id == '5') {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_puzzled_face.png';
-$mii_face_feeling = 'puzzled';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.puzzled'); 
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.puzzled.delete'); }
-	}
-elseif(!empty($user['user_face'])) {
-$mii_face_output = htmlspecialchars($user['user_face']);
-$mii_face_feeling = 'normal';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.normal');
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.normal.delete');
-} else {
-$mii_face_output = '/img/mii/img_unknown_MiiIcon.png';
-$mii_face_feeling = 'normal';
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.normal');
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.normal.delete'); }
+		if(!empty($user['mii_hash'])) {
+		$face = sprintf($hash_loc, $user['mii_hash'], $feeling);
+		} elseif(!empty($user['face'])) {
+		$face = htmlspecialchars($user['face']);
+		} else {
+		$face = '/img/mii/img_unknown_MiiIcon.png';
+		}
+	return array(
+	'output' => $face,
+	'feeling' => $feeling,
+	'miitoo' => loc('miitoo', 'olv.portal.miitoo.' . $feeling),
+	'miitoo_delete' => loc('miitoo', 'olv.portal.miitoo.' . $feeling . '.delete'),
+	'official' => !empty($user['official_user']),
+	);
 }
-else {
-	if(!empty($user['mii_hash'])) {
-$mii_face_output = 'https://mii-secure.cdn.nintendo.net/'.$user['mii_hash'].'_normal_face.png'; } elseif(!empty($user['user_face'])) { $mii_face_output = htmlspecialchars($user['user_face']); } else {
-$mii_face_output = '/img/mii/img_unknown_MiiIcon.png';
-	}
-$mii_face_miitoo = loc('miitoo', 'olv.portal.miitoo.normal');
-$mii_face_miitoodelete = loc('miitoo', 'olv.portal.miitoo.normal.delete');
-}
-return array(
-'output' => $mii_face_output,
-'feeling' => ($mii_face_feeling ?? null),
-'miitoo' => ($mii_face_miitoo ?? null),
-'miitoo_delete' => ($mii_face_miitoodelete ?? null),
-'official' => (!empty($user['official_user']) && $user['official_user'] == 1 ? true : false)
-);
-     }
 
 function json500() {
-global $mysql;
-http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
-print json_encode(array(
-'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
+global $mysql; header('Content-Type: application/json', true, 500);
+print json_encode(array('success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
+}
+function jsonErr($code) {
+$error = (func_num_args() == 2 ? func_get_arg(2) :'');
+header('Content-Type: application/json', true, $code); print 
+json_encode(array('success' => 0, 'errors' => [], 'code' => $code)); exit();
 }
 function jsonSuccess() {
-header('Content-Type: application/json; charset=utf-8'); print
+header('Content-Type: application/json'); print
 json_encode(array('success' => 1));
 }
 function isNintendoUser() {
@@ -179,12 +178,9 @@ if(!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('/\bmiiverse\b/', $_SERVER[
 	}
 }
 
-function grpfinish($mysql) {
-$mysql->close();
-}
 $mysql = initAll();
 
-# Start session if not already started
+// Start session if not already started
 session_name('grp');
 if(session_status() == PHP_SESSION_NONE) {
 session_set_cookie_params(72000);
@@ -193,7 +189,7 @@ session_start();
 // Locale
 localeSet(null);
 // <Locale
-if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/logout' && isset($grp_config_privkey) && isset($grp_config_pubkey)) {
+if(!empty($_COOKIE['grp_identity']) && empty($_SESSION['pid']) && $_SERVER['REQUEST_URI'] != '/act/logout' && isset($grp_config_privkey, $grp_config_pubkey)) {
 if(isset($grp_config_privkey) && isset($grp_config_pubkey)) {
 require_once 'crypto.php';
 $identity_auth = initToken(decrypt_identity($grp_config_privkey, base64_decode($_COOKIE['grp_identity'])));
@@ -202,14 +198,13 @@ require_once 'account-helper.php';
 setLoginVars($identity_auth, true); }
 	} 	}
 }
-elseif(!empty($_SESSION['pid'])) {
-if($mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" AND people.user_id = "'.$_SESSION['user_id'].'"')->num_rows == 0) {{ unset($_SESSION['pid']); }}}
-
-if(!empty($_SESSION['pid'])) {
-$search_relationships_own = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "1"');
-if($search_relationships_own->num_rows == 0) {
-$mysql->query('INSERT INTO relationships (source, target, is_me2me) VALUES ("'.$_SESSION['pid'].'", "'.$_SESSION['pid'].'", "1")'); }
+if(isset($_SESSION['pid'])) {
+if(prepared('SELECT pid FROM people WHERE people.pid = ? AND people.user_id = ?', array($_SESSION['pid'], $_SESSION['user_id']))->num_rows == 0) { $_SESSION['pid'] = false; }
+$me = prepared('SELECT pid, user_id, screen_name, mii_hash, nnas_info, face, email, official_user, organization, platform_id, privilege, image_perm, status, ban_status FROM people WHERE people.pid = ? LIMIT 1', array($_SESSION['pid']))->fetch_assoc();
 }
 
-if($grp_config_server_nsslog == true && empty($_SESSION['pid']) && $_SERVER['SCRIPT_NAME'] != '/act.php') {
-header("Location: {$grp_config_default_redir_prot}{$_SERVER['HTTP_HOST']}/act/login?location=".htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302); }
+if(CONFIG_SRV_NSS == true && empty($_SESSION['pid'])) {
+header('X-Robots-Tag: none');
+	if($_SERVER['SCRIPT_NAME'] != '/act.php') {
+header('Location: '.LOCATION.'/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302);
+exit(); } }

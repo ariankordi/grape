@@ -24,60 +24,58 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
-http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit();
+jsonErr(404);
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
 
 if($post['is_spoiler'] == 1) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400));  exit(); 
 }
 
 $update_post = $mysql->query('UPDATE replies SET replies.is_spoiler = "1" WHERE replies.id = "'.$post['id'].'"');
 
         if(!$update_post) {
-http_response_code(500); header('Content-Type: application/json; charset=utf-8'); print 
+http_response_code(500); header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-header('Content-Type: application/json; charset=utf-8'); print json_encode(array('is_spoiler' => 1,'success' => 1));
+header('Content-Type: application/json'); print json_encode(array('is_spoiler' => 1,'success' => 1));
 }
 
-grpfinish($mysql); exit();	
+ exit();	
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'delete') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
-http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit();
+jsonErr(404);
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
 
 $update_post = $mysql->query('UPDATE replies SET replies.is_hidden = "1", replies.hidden_resp = "1" WHERE replies.id = "'.$post['id'].'"');
 
         if(!$update_post) {
-http_response_code(500); header('Content-Type: application/json; charset=utf-8'); print 
+http_response_code(500); header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
@@ -98,7 +96,7 @@ print '
 printFooter('old');
 }
 
-grpfinish($mysql); exit();	
+ exit();	
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'violations') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -115,30 +113,30 @@ if($post['pid'] == $_SESSION['pid']) { $error_code[] = 400; }
 	    if(!empty($error_code) || !empty($error_message) ) {
 		// JSON response.
 			http_response_code($error_code[0]);
-            header('Content-Type: application/json; charset=utf-8');
+            header('Content-Type: application/json');
 			json_encode(array('success' => 0, 'errors' => [], 'code' => $error_code[0])); }
     else {
 $result_get_spamreports = $mysql->query('SELECT * FROM reports WHERE reports.source = "'.$_SESSION['pid'].'" AND reports.created_at > NOW() - 5');
 if($result_get_spamreports->num_rows != 0) {
-header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 1));
+header('Content-Type: application/json'); print json_encode(array('success' => 1));
 exit();
 }
 $reportcreate = $mysql->query('INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION['pid'].'", "'.$post['id'].'", "1", "'.$mysql->real_escape_string($_POST['type']).'", "'.$mysql->real_escape_string($_POST['body']).'")');
         if(!$reportcreate) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1)); }
-		} grpfinish($mysql); 	exit(); }
+		}  	exit(); }
 
 if(isset($_GET['mode'])) { if($_GET['mode'] != 'empathies' || $_GET['mode'] != 'replies' || $_GET['mode'] != 'violations' || $_GET['mode'] != 'set_spoiler' || $_GET['mode'] != 'screenshot_set_profile_post' || $_GET['mode'] != 'delete' || $_GET['mode'] != 'empathies_delete') { 
 # Display 404 if mode is undefined
 include_once '404.php'; } }
 
 if(!$search_post) {
-$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_post->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('posts', false); printFooter('old'); grpfinish($mysql); exit(); 
+$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old');  exit(); } elseif($search_post->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('posts', false); printFooter('old');  exit(); 
 }
 $reply = $search_post->fetch_assoc();
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].'" LIMIT 1')->fetch_assoc();
@@ -151,11 +149,11 @@ if($reply['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] !=
 printHeader('old'); printMenu('old'); 
 notFound('Deleted by adminsistrator.</p>
 <p>Comment ID: '.getPostID($reply['id']), true); 
-grpfinish($mysql); exit(); }
+ exit(); }
 if($reply['hidden_resp'] == '1') {
 printHeader('old'); printMenu('old'); 
 notFound('Deleted by the author of the comment.', true); 
-grpfinish($mysql); exit(); }
+ exit(); }
 }
 
 # Success
@@ -168,8 +166,8 @@ print '<div id="main-body">
 
 <div id="post-content" class="post reply-permalink-post">
 ';
-$truncate_post_bodyp1 = mb_substr((htmlspecialchars($ogpost['body'])), 0, 20, 'utf-8');
-$truncate_post_body = (mb_strlen($truncate_post_bodyp1, 'utf-8') >= 20 ? "$truncate_post_bodyp1..." : $truncate_post_bodyp1);
+$truncate_post_bodyp1 = mb_substr((htmlspecialchars($ogpost['body'])), 0, 20);
+$truncate_post_body = (mb_strlen($truncate_post_bodyp1) >= 20 ? "$truncate_post_bodyp1..." : $truncate_post_bodyp1);
 
 $ogpost_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
 $ogpost_community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$ogpost['community_id'].'" LIMIT 1')->fetch_assoc();
@@ -216,7 +214,7 @@ $my_empathy_added = ($mysql->query('SELECT * FROM empathies WHERE empathies.id =
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"');
 print '
     <div class="post-meta">
-      <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.($mii['feeling'] ? $mii['feeling'] : 'normal').'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($my_empathy_added) && $my_empathy_added == true ? $mii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
+      <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.($mii['feeling'] ? $mii['feeling'] : 'normal').'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($my_empathy_added) && $my_empathy_added == true ? $mii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
       <div class="empathy symbol"><span class="symbol-label">Yeahs</span><span class="empathy-count">'.$empathies->num_rows.'</span></div>
     </div>
 	';

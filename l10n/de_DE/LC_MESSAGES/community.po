@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
+"X-Generator: Poedit 2.0.1\n"
+
+msgid "grp.portal.titles_headline"
+msgstr "Sämtliche Software (%d)"
+
+msgid "grp.portal.favorites_my"
+msgstr "Lieblings-Communitys"
+
+msgid "grp.portal.favorites_other"
+msgstr "Lieblings-Communitys von %s"
+
+msgid "grp.portal.no_favorites_my"
+msgstr "Berühre die Favoritenschaltfläche (☆) auf einer Community-Seite, um sie hier als Lieblings-Community aufzuführen."
+
+msgid "grp.portal.no_favorites_other"
+msgstr "Es wurden noch keine Lieblings-Communitys hinzugefügt."
+
+msgid "grp.portal.no_community"
+msgstr "In dieser Kategorie gibt es keine Communitys."
+
+msgid "grp.wiiu_games"
+msgstr "Wii U-Spiele"
+
+msgid "grp.3ds_games"
+msgstr "3DS-Spiele"
+
+msgid "grp.wiiu3ds_games"
+msgstr "Wii U-Spiele・3DS-Spiele"
+
+msgid "grp.virtualconsole"
+msgstr "Virtual Console"
+
+msgid "grp.others"
+msgstr "Andere"

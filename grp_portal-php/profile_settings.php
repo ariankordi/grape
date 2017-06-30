@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 
 if(empty($_SESSION['pid'])) {
-notLoggedIn(); grpfinish($mysql); exit(); }
+notLoggedIn();  exit(); }
 
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 require_once 'lib/htm.php';
@@ -11,10 +11,8 @@ $pagetitle = 'Profile Settings';
 require_once 'lib/htm.php';
 printHeader(false);
 printMenu();
-
-$me_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 require_once '../grplib-php/user-helper.php';
-$profile = getProfile($me_user);
+$profile = getProfile($me);
 
 print $GLOBALS['div_body_head'];
 print '<header id="header">
@@ -112,18 +110,6 @@ print '
 
 ';
 
-/*
-# This should always be at the end
-if(isset($grp_config_server_type) && $grp_config_server_type == 'dev' && isset($grp_config_server_env)) {
-print '<li class="scroll">
-        <p class="settings-label">[DEBUG] Server type : dev</p>
-      </li>
-<li class="scroll">
-        <p class="settings-label">[DEBUG] Server environment : '.$grp_config_server_env.'</p>
-      </li>';
-}
-*/
-
 
 // Modals
 print '   
@@ -188,7 +174,7 @@ printFooter();
 else {
 
 function invoke400() {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit();
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400));  exit();
 }
         if(isset($_POST['country']) && strlen($_POST['country']) > 50)
         { invoke400(); }
@@ -213,10 +199,10 @@ if(isset($_POST['relationship_visibility'])) { $updates[] = 'relationship_visibi
 $update_profile = $mysql->query($sql_update);
 if(!$update_profile) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array('success' => 1));
 }
 

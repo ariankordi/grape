@@ -3,27 +3,27 @@ require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
 if(empty($_SESSION['pid'])) {
-notLoggedIn(); grpfinish($mysql); exit();
+notLoggedIn();  exit();
 }
 
-$me_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"')->fetch_assoc();
+$me = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'"')->fetch_assoc();
 
 # If the method is POST, then post.
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 require_once '../grplib-php/user-helper.php';
 if(!empty($_GET['conversation_id'])) {
-if($me_user['privilege'] <= 6) { plainErr(403, '403 Forbidden'); grpfinish($mysql); exit(); } else    {
+if($me['privilege'] <= 6) { plainErr(403, '403 Forbidden');  exit(); } else    {
 $search_conversation = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->real_escape_string($_GET['conversation_id']).'" LIMIT 1');
-if(!$search_conversation || $search_conversation->num_rows == 0) { plainErr(404, '404 Not Found'); grpfinish($mysql); exit(); }
+if(!$search_conversation || $search_conversation->num_rows == 0) { plainErr(404, '404 Not Found');  exit(); }
 	}   
 } else {
 $user_id = userIDtoPID($mysql->real_escape_string($_POST['message_to_user_id']));
-if(!$user_id) { plainErr(404, '404 Not Found'); grpfinish($mysql); exit(); }
+if(!$user_id) { plainErr(404, '404 Not Found');  exit(); }
 $relationship = getFriendRelationship($_SESSION['pid'], $user_id);
-if(!$relationship) { plainErr(403, '403 Forbidden'); grpfinish($mysql); exit(); }
+if(!$relationship) { plainErr(403, '403 Forbidden');  exit(); }
 }
 require_once '../grplib-php/post-helper.php';
-$is_post_valid = postValid($me_user, 'upload');
+$is_post_valid = postValid($me, 'upload');
 if($is_post_valid != 'ok') {
 if($is_post_valid == 'blank') {
 $error_message[] = 'The content you have entered is blank.
@@ -33,7 +33,7 @@ elseif($is_post_valid == 'max') {
 $error_message[] = 'You have exceeded the amount of characters that you can send.';
 $error_code[] = 1515002; }
 } if(!empty($error_code)) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [array('message'=>$error_message[0],'error_code' => $error_code[0])], 'code' => 400)); grpfinish($mysql); exit();
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [array('message'=>$error_message[0],'error_code' => $error_code[0])], 'code' => 400));  exit();
 }
 
 require_once '../grplib-php/olv-url-enc.php';
@@ -60,16 +60,18 @@ $conversation_id = $create_conversation->fetch_assoc()['conversation_id'];
 
 if(!$exec_msg_stmt) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 } else {
+	if(!empty($relationship)) {
 		$updateFM = $mysql->query('UPDATE friend_relationships SET updated = NOW() WHERE relationship_id = "'.$relationship['relationship_id'].'"');
-# Success, print post.
+	}
+		# Success, print post.
 require_once 'lib/htmUser.php';
 printMessage($mysql->query('SELECT * FROM messages WHERE messages.id = "'.$gen_olive_url.'" LIMIT 1')->fetch_assoc());
 	   }
-grpfinish($mysql); exit();
+ exit();
 }
 # If not, then do everything else.
 
@@ -80,22 +82,22 @@ require_once '../grplib-php/user-helper.php';
 if(empty($_GET['conversation_id'])) {
 $mode = 0;
 $search_person = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_GET['user_id']).'"');
-if($search_person->num_rows == 0) { require '404.php'; grpfinish($mysql); exit(); } else { $person = $search_person->fetch_assoc(); }
+if($search_person->num_rows == 0) { require '404.php';  exit(); } else { $person = $search_person->fetch_assoc(); }
 $relationship = getFriendRelationship($_SESSION['pid'], $person['pid']);
-if(!$relationship) { plainErr(403, '403 Forbidden'); grpfinish($mysql); exit(); }
+if(!$relationship) { plainErr(403, '403 Forbidden');  exit(); }
 if(!empty($relationship['conversation_id'])) {
 $conversation_id = $relationship['conversation_id']; }
 else {
 $create_conversation = $mysql->query('INSERT INTO conversations(sender, recipient) VALUES("'.$_SESSION['pid'].'", "'.$person['pid'].'")');
 if(!$create_conversation) {
-plainErr(500, '500 Internal Server Error'); grpfinish($mysql); exit(); }
+plainErr(500, '500 Internal Server Error');  exit(); }
 $conversation_id = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->insert_id.'" LIMIT 1')->fetch_assoc()['conversation_id'];
 }
 } else {
 $mode = 1;
-if($me_user['privilege'] <= 6) { plainErr(403, '403 Forbidden'); grpfinish($mysql); exit(); }
+if($me['privilege'] <= 6) { plainErr(403, '403 Forbidden');  exit(); }
 $search_conversation = $mysql->query('SELECT * FROM conversations WHERE conversations.conversation_id = "'.$mysql->real_escape_string($_GET['conversation_id']).'" LIMIT 1');
-if(!$search_conversation || $search_conversation->num_rows == 0) { plainErr(404, '404 Not Found'); grpfinish($mysql); exit(); }
+if(!$search_conversation || $search_conversation->num_rows == 0) { plainErr(404, '404 Not Found');  exit(); }
 $conversation_id = $search_conversation->fetch_assoc()['conversation_id'];
 }
 
@@ -133,7 +135,7 @@ print '
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 require_once 'lib/htmUser.php';
 # Add message form
-messageForm($me_user, (empty($_GET['conversation_id']) ? $person : false));
+messageForm($me, (empty($_GET['conversation_id']) ? $person : false));
 print $GLOBALS['div_body_head_end'];
 
 (isset($_SERVER['HTTP_X_PJAX']) ? '' : printFooter());

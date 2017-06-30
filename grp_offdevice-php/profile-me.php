@@ -3,12 +3,9 @@ include '../grplib-php/init.php';
 
 if(empty($_SESSION['pid'])) {
 require_once 'lib/htm.php';
-noLogin();
-	grpfinish($mysql); exit();
+noLogin(); exit();
 } else {
-	$getmyuser = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
-    header('Location: '.$grp_config_default_redir_prot.'' . $_SERVER['HTTP_HOST'] .'/users/'.htmlspecialchars($getmyuser['user_id']).'', true, 302);
+	$getmyuser = prepared('SELECT user_id FROM people WHERE people.pid = ? LIMIT 1', [$_SESSION['pid']])->fetch_assoc();
+    header('Location: '.LOCATION.'/users/'.htmlspecialchars($getmyuser['user_id']), true, 302);
 	exit();
 }
-
-?>

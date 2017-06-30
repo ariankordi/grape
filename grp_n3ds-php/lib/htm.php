@@ -46,8 +46,8 @@ print '<div id="header">
 }
 
 function truncate($text, $chars) {
-$truncate_post_bodyp1 = mb_substr(($text), 0, $chars, 'utf-8');
-return (mb_strlen($text, 'utf-8') >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
+$truncate_post_bodyp1 = mb_substr(($text), 0, $chars);
+return (mb_strlen($text) >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
 }
 
 function printFooter() {
@@ -62,7 +62,7 @@ print '
 
 function plainErr($code, $message) {
 http_response_code(!empty($code) ? $code : 403);
-header('Content-Type: text/plain; charset=UTF-8');
+header('Content-Type: text/plain');
 print !empty($message) ? $message."\n" : "403 Forbidden\n";
 }
 

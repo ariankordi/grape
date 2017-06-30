@@ -1,7 +1,7 @@
 <?php
 require_once '../grplib-php/init.php';
 require_once '../grplib-php/user-helper.php';
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 if(empty($_SESSION['pid'])) {
 print json_encode(array(
 'success' => 1,

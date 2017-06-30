@@ -5,7 +5,7 @@ global $mysql;
 if($my == true) { global $my_empathy_added; }
 $empathies_person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.($my == true ? $_SESSION['pid'] : $row['pid']).'" LIMIT 1')->fetch_assoc();
 $empathies_person_mii = getMii($empathies_person, $post['feeling_id']);
-print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" class="post-permalink-feeling-icon'.($empathies_person_mii['official'] == true ? ' official-user' : null).''.($my == true ? ' visitor' : '').''.($last == true ? ' extra' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
+print '<a href="/users/'.htmlspecialchars($empathies_person['user_id']).'" class="post-permalink-feeling-icon'.($empathies_person_mii['official'] == true ? ' official-user' : null).($my == true ? ' visitor' : '').($last == true ? ' extra' : '').'"'.($my == true ? 'style="'.($my_empathy_added == false ? 'display: none;' : '').'"' : '').'><img src="'.$empathies_person_mii['output'].'" class="user-icon"></a>';
 }
 
 function displayreply($ogpost, $reply) {
@@ -23,7 +23,7 @@ $pref_id = 0;
 	}
 $show_spoiler = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']) || $pref_id == 1;
 
-print '<li id="reply-'.$reply['id'].'" data-href'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']? null :($reply['is_spoiler'] == 1 ? '-hidden' : null)).'="/replies/'.$reply['id'].'" class="'.($reply['pid'] == $ogpost['pid'] ? 'my' : 'other').''.($reply['is_spoiler'] == 1 ? ($show_spoiler ? '' : ' hidden') : '').''.($mii['official'] == true ? ' official-user' : null).' trigger">
+print '<li id="reply-'.$reply['id'].'" data-href'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid']? null :($reply['is_spoiler'] == 1 ? '-hidden' : null)).'="/replies/'.$reply['id'].'" class="'.($reply['pid'] == $ogpost['pid'] ? 'my' : 'other').($reply['is_spoiler'] == 1 ? ($show_spoiler ? '' : ' hidden') : '').($mii['official'] == true ? ' official-user' : null).' trigger">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" class="icon"></a>
   <div class="body">
   ';
@@ -64,7 +64,7 @@ if(!empty($_SESSION['pid'])) { $myempathy = ($mysql->query('SELECT * FROM empath
 
 print '
     <div class="reply-meta">
-        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($myempathy) && $myempathy == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' reply" data-feeling="'.$mii['feeling'].'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($myempathy) && $myempathy == true ? $mii['miitoo_delete'] : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
+        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($myempathy) && $myempathy == true ? ' empathy-added' : '').(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' reply" data-feeling="'.$mii['feeling'].'" data-action="/replies/'.$reply['id'].'/empathies"><span class="empathy-button-text">'.(isset($myempathy) && $myempathy == true ? $mii['miitoo_delete'] : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</span></button>
         <div class="empathy symbol"><span class="symbol-label">Yeahs</span><span class="empathy-count">'.$empathies->num_rows.'</span></div>
     </div>
 	  '; }

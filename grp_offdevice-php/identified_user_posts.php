@@ -20,7 +20,7 @@ $identified_users_select = $mysql->query('select a.*, bm.recent_created_at from 
 
 while($identified_users = $identified_users_select->fetch_assoc()) {
 $person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$identified_users['pid'].'"')->fetch_assoc();
-$get_latest_post = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$person['pid'].'" AND posts.hidden_resp != 1 OR posts.pid = "'.$person['pid'].'" AND posts.hidden_resp IS NULL ORDER BY posts.created_at DESC LIMIT 1');
+$get_latest_post = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$person['pid'].'" AND (posts.hidden_resp != 1 OR posts.hidden_resp IS NULL) AND posts.is_spoiler = "0" ORDER BY posts.created_at DESC LIMIT 1');
 if($get_latest_post->num_rows != 0) {
 $posts[] = $get_latest_post->fetch_assoc(); } }
 
@@ -46,4 +46,4 @@ if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 print '
 </div>';
 printFooter('old');
-} grpfinish($mysql);
+}

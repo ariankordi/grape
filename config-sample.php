@@ -8,24 +8,25 @@
 const HOSTS = array(
 'PORTAL_HOST'=>'portal-d1.grp.ariankordi.net',
 'OFFDEVICE_HOST'=>'grape-d1.ariankordi.net',
-'N3DS_HOST'=>null;
-'ADMIN_HOST'=>null;
+'N3DS_HOST'=>null,
+'ADMIN_HOST'=>null,
 );
 
 /* Environment values.
 * "nsslog" can be true or false to indicate NSS being enabled.
 * Server type can be 'dev' or 'prod'. Environment can be one letter and then one number, like 'J2' or 'T1'.
 */
-$grp_config_server_nsslog = true;
-$grp_config_server_type = 'dev';
-$grp_config_server_env = 'N1';
-// Password salt. Set this to false if you want it to be unique.
-$grp_config_server_salt = 'zvHy85=EZLaw8?5ct!Ov9YEiP(Gi)itI';
+const CONFIG_SRV_NAME = 'Grape test server';
+const CONFIG_SRV_NSS = true;
+const CONFIG_SRV_TYPE = 0;
+// 0 - dev, 1 - prod
+const CONFIG_SRV_ENV = 'N1';
 
 // If NSS is enabled, then these can be the allowed keys.
-$grp_config_server_nss_keys = array(
+$grp_config_nss_keys = array(
 ''
 );
+$grp_config_allow_signup = true;
 
 // Database connection info for a MySQL database.
 const CONFIG_DB_SERVER = 'localhost:3306';
@@ -34,7 +35,7 @@ const CONFIG_DB_PASS = '[password]';
 const CONFIG_DB_NAME = 'grape';
 
 // Default protocol for redirects.
-$grp_config_default_redir_prot = 'https://';
+$grp_config_recommend_ssl = false;
 
 // Keys; private and public, RSA, raw PEM data.
 $grp_config_privkey = <<< END_OF_DATA
@@ -56,10 +57,25 @@ $grp_config_olvkey_pass = 'alpine';
 
 // reCAPTCHA keys
 $grp_config_recaptcha_pubkey = '';
-$grp_config_recaptcha_privkey = '';
+$grp_config_recaptcha_pkey = '';
 
 // Maximum time allowed per one post to the next in seconds.
 $grp_config_max_postbuffertime = 2;
 // Same as above, but with replies.
 $grp_config_max_replybuffertime = 1;
 
+// Allow users to block?
+$grp_config_allow_blacklist = true;
+
+// Allow users to post images without permissions?
+$grp_config_allow_allimages = false;
+
+$grp_mail_param = array(
+		'addr' => 'aaaa@ariankordi.net',
+        'host' => 'tls://smtp.zoho.com',
+        'IDHost' => 'smtp.zoho.com',
+        'port' => 465,
+        'username' => 'aaaa@ariankordi.net',
+        'password' => 'no',
+        'auth' => true,
+);

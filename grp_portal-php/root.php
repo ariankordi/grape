@@ -1,17 +1,18 @@
 <?php
 require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
 
 # If user isn't logged in, then 403 them.
 if(empty($_SESSION['pid'])) {
 if($dev_server) {
-plainErr(403, '403 Forbidden'); grpfinish($mysql); exit();
+plainErr(403, '403 Forbidden'); exit();
 }
 else {
 include_once 'communities.php';
-grpfinish($mysql); exit();
+exit();
      }
 }
-require_once 'lib/htm.php';
+
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = 'Activity Feed';
 printHeader(false); printMenu();
@@ -45,7 +46,7 @@ print $GLOBALS['div_body_head_end'];
 }
 
 # Requesting "loading activity feed" page.
-if((!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_PJAX'])) || (empty($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_PJAX']))) {
+if((isset($_SERVER['HTTP_X_REQUESTED_WITH'], $_SERVER['HTTP_X_PJAX'])) || (empty($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_PJAX']))) {
 actFeedLoading();
          }
 }
@@ -56,24 +57,14 @@ print '
 <h1 id="page-title">'.$pagetitle.'</h1>
 ';
 require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/user-helper.php';
 require_once 'lib/htmCommunity.php';
 require_once 'lib/htmUser.php';
 require_once '../grplib-php/olv-url-enc.php';
-$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 
 $search_relationships_real = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"');
 
-$search_relationships_by_post = $mysql->query('select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$mysql->real_escape_string($_GET['offset']) : ''));
-if($search_relationships_by_post->num_rows != 0) {
-$posts = array();
-while($row_relationship_posts = $search_relationships_by_post->fetch_assoc()) {
-$person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row_relationship_posts['target'].'"')->fetch_assoc();
-$get_latest_post = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$person['pid'].'" AND posts.hidden_resp != 1 OR posts.pid = "'.$person['pid'].'" AND posts.hidden_resp IS NULL ORDER BY posts.created_at DESC LIMIT 1');
-if($get_latest_post->num_rows != 0) {
-$posts[] = $get_latest_post->fetch_assoc(); }
-}
-} else {
-$posts = false; }
+$posts = getActivity();
 
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 # Activity Feed post button + form if the community exists
@@ -83,7 +74,7 @@ require_once 'lib/htmCommunity.php';
 print '  <a id="header-post-button" class="header-button" href="#" data-modal-open="#add-post-page">Post</a>';
 
 $act_feed = true;
-postForm('posts', $act_feed_community->fetch_assoc(), $user);
+postForm('posts', $act_feed_community->fetch_assoc(), $me);
 
 }
 print '

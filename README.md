@@ -22,12 +22,12 @@ If you want to set up portal, make its root grp\_portal-php, and the same for of
 Make a database in MySQL, then make a new config.php from the template and connect to your DB.
 Run db\_create.sql in whatever you use as an interface to MySQL, and it'll work.
 
-# Requires #
+# Dependencies #
 grape requires:
 * pecl-xml (dnf install php-pecl-xml)
 * curl (dnf install php-curl)
 * intl (dnf install php-intl)
-* pear-mail (wip)
+* PEAR::Mail and Net::SMTP (pear install Mail; pear install Net_SMTP)
 
 # Rewrites (nginx) #
 These are required, you cannot use the .php files directly or you might get a 404 and JS won't work.
@@ -41,7 +41,6 @@ Portal:
 	rewrite ^/titles/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)/favorite.json$ /communities-createfavorite.php?olive_community_id=$2 last;
 	rewrite ^/titles/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)/unfavorite.json$ /communities-createfavorite.php?olive_community_id=$2&delete last;
 	rewrite ^/settings/titles/([A-Za-z0-9_-]+)$ /title_settings.php?title_id=$1 last;
-	
 	rewrite ^/act/([^/'"]+)$ /act.php?pg=$1 last;
 	rewrite ^/act/$ /act.php?pg=index last;
 	
@@ -55,12 +54,12 @@ Portal:
 	rewrite ^/friend_messages$ /messages.php last;
 	rewrite ^/news/my_news$ /news.php last;
 	rewrite ^/news/friend_requests$ /friendrequests.php last;
-	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php last;
-	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php?cancel last;
-	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php?delete last;
-	rewrite ^/users/[0-9a-zA-Z\-_.]+/friend_request.php?breakup last;
+	rewrite ^/users/friend_request.accept.json$ /friend_request.php last;
+	rewrite ^/users/friend_request.cancel.json$ /friend_request.php?cancel last;
+	rewrite ^/users/friend_request.delete.json$ /friend_request.php?delete last;
+	rewrite ^/users/breakup.json$ /friend_request.php?breakup last;
 	rewrite ^/users$ /user-search.php last;
-	rewrite ^/users/[0-9a-zA-Z\-_.]+/user-show.php last;
+	rewrite ^/users/show$ /user-show.php last;
 	rewrite ^/warning/deleted_account$ /content/warnings/act_deleted.php last;
 	rewrite ^/warning/readonly$ /content/warnings/readonly.php last;
 	rewrite ^/communities$ /communities.php last;
@@ -68,6 +67,7 @@ Portal:
 	rewrite ^/identified_user_posts$ /identified_user_posts.php last;
 	rewrite ^/guest_menu$ /guest_menu.php last;
 	rewrite ^/my_menu$ /my_menu.php last;
+	rewrite ^/users/([^/'"]+)/check_can_post.json$ /generate_success.json last;
 	rewrite ^/admin/titles_create$ /create_title.php last;
 	rewrite ^/admin/communities_create$ /create_community.php last;
 	rewrite ^/settings/profile /profile_settings.php last;
@@ -75,8 +75,8 @@ Portal:
 	rewrite ^/posts$ /post-create.php last;
 	rewrite ^/help_and_guide$ /help_and_guide.php last;
 	rewrite ^/special/redesign_announcement$ /content/special/redesign.php last;
-	rewrite ^/users/[0-9a-zA-Z\-_.]+/profile-me.php last;
-
+	rewrite ^/users/@me$ /profile-me.php last;
+	
 	rewrite ^/posts/([A-Za-z0-9-_]+)$ /posts.php?id=$1 last;
 	rewrite ^/posts/([A-Za-z0-9-_]+)/empathies.delete$ /posts.php?id=$1&mode=empathies_delete last;
 	rewrite ^/posts/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 last;
@@ -87,17 +87,17 @@ Portal:
 	rewrite ^/replies/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ /replies.php?id=$1&mode=$2 last;
 	rewrite ^/replies/([A-Za-z0-9-_]+).([A-Za-z0-9-_]+)$ /replies.php?id=$1&mode=$2 last;
 	rewrite ^/replies/([A-Za-z0-9-_]+)/empathies.delete$ /replies.php?id=$1&mode=empathies last;
-	rewrite ^/users/([^/'"]+)/check_can_post.json$ /generate_success.json last;
-	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1 last;
-	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=follow last;
-	rewrite ^/users/[0-9a-zA-Z-_.]+/users.php?user_id=$1&mode=unfollow last;
-	rewrite ^/users/[0-9a-zA-Z-_.]+/friend_request.create.json$ /friend_request.php?create&user_id=$1 last;
-	rewrite ^/users/[0-9a-zA-Z-_.]+/'"]+)/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
-	rewrite ^/friend_messages/([0-9a-zA-Z\\-_.]+)$ /messages.php?user_id=$1 last;
+	rewrite ^/users/([^/'"]+)$ /users.php?user_id=$1 last;
+	rewrite ^/users/([^/'"]+).follow.json$ /users.php?user_id=$1&mode=follow last;
+	rewrite ^/users/([^/'"]+).unfollow.json$ /users.php?user_id=$1&mode=unfollow last;
+	rewrite ^/users/([A-Za-z0-9_-]+)/friend_request.create.json$ /friend_request.php?create&user_id=$1 last;
+	rewrite ^/users/([^/'"]+)/([^/'"]+)$ /users.php?user_id=$1&mode=$2 last;
+	rewrite ^/friend_messages/([^/'"]+)$ /messages.php?user_id=$1 last;
 	
 Offdevice:
 
-	rewrite ^/titles/([A-Za-z0-9_-]+)$ /titles.php?title_id=$1;
+	rewrite ^/titles/search$ /titles-search.php last;
+	rewrite ^/titles/([0-9_-]+)$ /titles.php?title_id=$1;
 	rewrite ^/titles/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)$ /titles.php?title_id=$1&community_id=$2;
 	rewrite ^/titles/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)/new$ /titles.php?title_id=$1&community_id=$2;
 	rewrite ^/titles/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)/([A-Za-z0-9_-]+)$ /titles.php?title_id=$1&community_id=$2&mode=$3;

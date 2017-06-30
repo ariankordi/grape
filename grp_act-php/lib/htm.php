@@ -52,13 +52,13 @@ function printHeader() { global $bodyStyle; ?>
 	';
 }
 
-function printFooter() { global $dev_server; ?>
+function printFooter() { global $dev_server; global $version; ?>
     </div> <!-- /container -->
 
     <footer class="footer">
       <div class="container" style="text-align:center;">
       <hr>
-        grape<?=($dev_server == true ? '/'.VERSION : '')?>
+        grape<?=($dev_server == true ? '/'.$version : '')?>
       </div>
     </footer>
   
@@ -76,9 +76,10 @@ print '<br>
 <a href="'.$back.'" class="btn btn-primary btn-primary">'.loc('grp.act.back').'</a>  '; printFooter();
 }
 
-function defaultRedir($has_post) {
-// Please change with 'LOCATION' constant that contains something like: https://portal-t1.grp.app.ariankordi.net
-global $grp_config_default_redir_prot;
-if($has_post) { $location = $_POST['location']; } else { $location = $_GET['location']; }
-header('Location: '.$grp_config_default_redir_prot.''.$_SERVER['HTTP_HOST'].''.(!empty($location) ? htmlspecialchars($location) : '/'), true, 302);
+function defaultRedir($has_post, $need_login) {
+if($has_post)
+{ $location = $_POST['location'] ?? null; } elseif($need_login) 
+{ $location = '/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])); } else 
+{ $location = $_GET['location'] ?? null; }
+header('Location: '.LOCATION.(!empty($location) ? htmlspecialchars($location) : '/'), true, 302);
 }

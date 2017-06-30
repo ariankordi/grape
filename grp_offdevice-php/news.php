@@ -50,4 +50,3 @@ print '  </div>
 </div>';
 
 printFooter('old');
-grpfinish($mysql);

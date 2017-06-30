@@ -100,7 +100,7 @@ $body = 'Followed by '.span_u($user['screen_name']).', '.span_u($m2fpu['screen_n
 
 print '<li>
   
-  <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="icon-container'.($usermii['official'] == true ? ' official-user' : '').''.($news['has_read'] == 0 ? ' notify' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
+  <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="icon-container'.($usermii['official'] == true ? ' official-user' : '').($news['has_read'] == 0 ? ' notify' : '').'"><img src="'.$usermii['output'].'" class="icon"></a>
   <a href="'.$newsurl.'" data-pjax="#body" class="'.($news['news_context'] == 6 && $has_user_follow == false ? null : 'arrow-button ').'scroll"></a>
 
 ';
@@ -149,8 +149,7 @@ print '<div id="message-'.$row['id'].'" class="post scroll '.($user['pid'] == $_
 
 function messageForm($user, $other_person) {
 global $mysql;
-print '<div id="add-message-page" class="add-post-page'.($user['privilege'] >= 2 || $user['image_perm'] == 1 || $user['official_user'] == 1 ? 
-' official-user-post' : '').' none" data-modal-types="add-entry add-message require-body preview-body" data-is-template="1">
+print '<div id="add-message-page" class="add-post-page official-user-post none" data-modal-types="add-entry add-message require-body preview-body" data-is-template="1">
   <header class="add-post-page-header">
   ';
 if($other_person) {
@@ -196,9 +195,7 @@ print '
         <div class="textarea-memo trigger" data-sound=""><div class="textarea-memo-preview"></div><input type="hidden" name="painting"></div>
       </div>
 	';
-	if($user['privilege'] >= 2 || $user['image_perm'] == 1 || $user['official_user'] == 1) {
 	 print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
-	}
 print '
 	</div>
 
@@ -234,7 +231,7 @@ print '<div>
   </div>';
 }
 
-if($has_button && !empty($_SESSION['pid'])) {
+if($has_button && !empty($_SESSION['pid']) && $type != 'search' && $_SESSION['pid'] != $user['pid']) {
 
 if($type == 'friends') {
 // already friends
@@ -272,7 +269,7 @@ print '
 </div>';
 	}
 } else {
-$has_button = true;
+$has_arrow = true;
 	   }
 print '
 <a href="/users/'.htmlspecialchars($user['user_id']).'" class="scroll-focus'.($has_arrow ? ' arrow-button' : '').'" data-pjax="#body"></a>
@@ -298,8 +295,6 @@ if($fav_scrnsht_post && $fav_scrnsht_post->num_rows != 0) {
 }
 
 function userDropdown($user, $mii) {
-// Do later
-/*
 $user_page_my = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
 if(!empty($_SESSION['pid']) && !$user_page_my) {
 print '
@@ -312,7 +307,6 @@ print '
 </div>
 ';
 	}
-*/
 }
 
 function userInfo($user, $profile, $mii, $page) {
@@ -353,8 +347,8 @@ if($user_page_my) {
 print '<a href="/settings/profile" data-pjax="#body" class="button edit-button">Profile Settings</a>'; }
 else {
 print '<div class="toggle-button">
-    <a class="follow-button button add-button'.($relationship_exists ? ' none' : '').' relationship-button'.(!empty($_SESSION['pid']) ? '' : ' disabled').'" href="#" data-action="/users/'.htmlspecialchars($user['user_id']).'/follow" data-sound="SE_WAVE_FRIEND_ADD" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="follow" data-track-category="follow">Follow</a>
-    <a href="#" class="unfollow-button button remove-button'.($relationship_exists ? '' : ' none').' relationship-button" data-modal-open="#unfollow-confirm-page" data-user-id="'.htmlspecialchars($user['user_id']).'" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-action="/users/'.htmlspecialchars($user['user_id']).'/unfollow"'.($mii['official'] ? ' data-is-identified="1"' : '').'" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="openUnfollowModal" data-track-category="follow">Follow</a>
+    <a class="follow-button button add-button'.($relationship_exists ? ' none' : '').' relationship-button'.(!empty($_SESSION['pid']) ? '' : ' disabled').'" href="#" data-action="/users/'.htmlspecialchars($user['user_id']).'.follow.json" data-sound="SE_WAVE_FRIEND_ADD" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="follow" data-track-category="follow">Follow</a>
+    <a href="#" class="unfollow-button button remove-button'.($relationship_exists ? '' : ' none').' relationship-button" data-modal-open="#unfollow-confirm-page" data-user-id="'.htmlspecialchars($user['user_id']).'" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-action="/users/'.htmlspecialchars($user['user_id']).'.unfollow.json"'.($mii['official'] ? ' data-is-identified="1"' : '').'" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="openUnfollowModal" data-track-category="follow">Follow</a>
 </div>';	
 }
 if(!$user_page_my) {

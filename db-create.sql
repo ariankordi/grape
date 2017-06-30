@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 22, 2017 at 02:27 AM
+-- Generation Time: Jun 03, 2017 at 08:53 AM
 -- Server version: 5.7.18-0ubuntu0.16.04.1
 -- PHP Version: 7.0.15-0ubuntu0.16.04.4
 
@@ -17,6 +17,7 @@ SET time_zone = "+00:00";
 --
 
 -- --------------------------------------------------------
+
 
 CREATE TABLE `bans` (
   `operator` int(12) NOT NULL,
@@ -59,6 +60,15 @@ CREATE TABLE `conversations` (
   `sender` int(12) NOT NULL,
   `recipient` int(12) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+CREATE TABLE `email_confirmation` (
+  `pid` int(12) NOT NULL,
+  `id` varchar(32) COLLATE utf8mb4_bin NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_bin NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `state` int(1) NOT NULL DEFAULT '0',
+  `finished` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 CREATE TABLE `empathies` (
@@ -123,14 +133,14 @@ CREATE TABLE `news` (
 CREATE TABLE `people` (
   `pid` int(12) NOT NULL,
   `user_id` varchar(20) CHARACTER SET latin1 NOT NULL,
-  `user_pass` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `password` text CHARACTER SET latin1 NOT NULL,
   `screen_name` varchar(30) COLLATE utf8mb4_bin NOT NULL,
   `mii` varchar(130) CHARACTER SET latin1 DEFAULT NULL,
   `mii_image` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `mii_hash` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
   `nnas_info` text COLLATE utf8mb4_bin,
-  `user_face` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
-  `user_email` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `face` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `official_user` int(8) DEFAULT NULL,
   `organization` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -275,6 +285,10 @@ ALTER TABLE `conversations`
   ADD KEY `conibfk1` (`sender`),
   ADD KEY `conibfk2` (`recipient`);
 
+ALTER TABLE `email_confirmation`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ecibfk1` (`pid`);
+
 ALTER TABLE `empathies`
   ADD PRIMARY KEY (`empathy_id`),
   ADD KEY `pid_to_empathies` (`pid`);
@@ -350,33 +364,33 @@ ALTER TABLE `titles`
 ALTER TABLE `bans`
   MODIFY `operation_id` bigint(20) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `blacklist`
-  MODIFY `blacklist_id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `blacklist_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `communities`
-  MODIFY `community_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=421;
+  MODIFY `community_id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `conversations`
-  MODIFY `conversation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `conversation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `empathies`
-  MODIFY `empathy_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1062;
+  MODIFY `empathy_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `favorites`
-  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `friend_relationships`
-  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `friend_requests`
-  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `news`
-  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=953;
+  MODIFY `news_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `people`
-  MODIFY `pid` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1800000000;
+  MODIFY `pid` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `relationships`
-  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=607;
+  MODIFY `relationship_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `reports`
-  MODIFY `report_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `report_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `restrictions`
-  MODIFY `operation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `operation_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `settings_title`
-  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `settings_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 ALTER TABLE `settings_tutorial`
-  MODIFY `tutorial_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `tutorial_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 
 ALTER TABLE `bans`
   ADD CONSTRAINT `bibfk1` FOREIGN KEY (`operator`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -391,6 +405,9 @@ ALTER TABLE `communities`
 ALTER TABLE `conversations`
   ADD CONSTRAINT `conibfk1` FOREIGN KEY (`sender`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `conibfk2` FOREIGN KEY (`recipient`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `email_confirmation`
+  ADD CONSTRAINT `ecibfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `empathies`
   ADD CONSTRAINT `eibfk1` FOREIGN KEY (`pid`) REFERENCES `people` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE;

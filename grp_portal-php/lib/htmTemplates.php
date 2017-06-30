@@ -67,6 +67,52 @@ function unfollowConfirm() { ?>
   </div>
 </div>
 <?php }
+function blockConfirm() { ?>
+<div id="block-confirm-page" class="block-confirm-page window-page none" data-modal-types="confirm-relationship confirm-block" data-is-template="1">
+  <div class="window user-window">
+    <h1 class="window-title">Block</h1>
+    <div class="window-body"><div class="window-body-inner">
+      <div class="user-container">
+        <span class="icon-container"><img src="data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2FwAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D" class="icon"></span>
+        <p class="nickname">
+          <span class="screen-name"></span>
+          <span class="id-name"></span>
+        </p>
+      </div>
+      <div class="message">
+        <p>Are you sure you want to block this user? You will no longer receive friend requests from this user, and you will be less likely to encounter him or her in games.</p>
+      </div>
+    </div></div>
+    <div class="window-bottom-buttons">
+      <input type="button" class="cancel-button button" value="Back" data-sound="SE_WAVE_CANCEL">
+      <input type="button" class="post-button button" value="Block" data-done-msgid="olv.portal.blocklist.block_successed_to" data-track-category="block" data-track-action="block">
+    </div>
+  </div>
+</div>
+<?php }
+function unblockConfirm() { ?>
+<div id="unblock-confirm-page" class="unblock-confirm-page window-page none" data-modal-types="confirm-relationship confirm-unblock" data-is-template="1">
+  <div class="window user-window">
+    <h1 class="window-title">Unblock</h1>
+    <div class="window-body"><div class="window-body-inner">
+      <div class="user-container">
+        <span class="icon-container"><img src="data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2FwAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D" class="icon"></span>
+        <p class="nickname">
+          <span class="screen-name"></span>
+          <span class="id-name"></span>
+        </p>
+      </div>
+      <div class="message">
+        <p>Remove this user from your blocked-user list?</p>
+      </div>
+    </div></div>
+    <div class="window-bottom-buttons">
+      <input type="button" class="cancel-button button" value="Back" data-sound="SE_WAVE_CANCEL">
+      <input type="button" class="post-button button" value="Yes" data-done-msgid="olv.portal.blocklist.unblock_successed_to" data-track-category="block" data-track-action="unblock">
+    </div>
+  </div>
+</div>
+<?php }
 function friendRequestConfirm() { ?>
  <div id="received-request-confirm-page" class="friend-request-confirm-page window-page none" data-modal-types="confirm-relationship confirm-received-request" data-is-template="1">
   <div class="window user-window">
@@ -144,6 +190,8 @@ function userPageTemplate($user, $mii) {
 breakupConfirm();
 recievedRequest();
 unfollowConfirm();
+blockConfirm();
+#unblockConfirm();
 friendRequestConfirm();
 friendRequestPost($user, $mii);
 sentRequestConfirm();

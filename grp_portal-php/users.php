@@ -2,13 +2,13 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
-$search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.(empty($_GET['user_id']) ? 'a' : $mysql->real_escape_string($_GET['user_id'])).'"');
+$search_user = prepared('SELECT * FROM people WHERE people.user_id = ?', [$_GET['user_id'] ?? null]);
 require_once '../grplib-php/user-helper.php';
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'posts') {
 # Display posts for user.
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
@@ -72,12 +72,12 @@ print $GLOBALS['div_body_head_end'];
 printFooter();
 
 }
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'empathies') {
 # Display empathies for user.
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
@@ -143,11 +143,11 @@ print $GLOBALS['div_body_head_end'];
 printFooter();
 
 }
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'following') {
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
@@ -223,11 +223,11 @@ print '</div>';
 print $GLOBALS['div_body_head_end'];	
 printFooter();
 	}
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'followers') {
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
@@ -302,11 +302,11 @@ print '</div>';
 print $GLOBALS['div_body_head_end'];	
 printFooter();
 	}
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'friends') {
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
@@ -378,7 +378,11 @@ print '
   <ul class="list-content-with-icon-and-text arrow-list" id="friend-list-content" data-next-page-url="'.(count($friends) > 49 ? '?offset='.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 50 + $_GET['offset'] : 50) : '').'">
 ';
 foreach($friends as &$users) {
+if($own_page) {
 userObject($users, true, true, ($users['type'] == 1 ? 'friends' : 'friend_request'));
+	} else {
+	userObject($users, true, false, null);
+	}
 }
 print '
   </ul>
@@ -401,44 +405,41 @@ print '</div>';
 print $GLOBALS['div_body_head_end'];	
 printFooter();
 	}
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'favorites') {
 # Search for user first, then use template
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 $is_fav_own = $user['pid'];
 include_once 'communities-showfavorites.php';
 
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'follow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 
-if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($search_user->num_rows == 0) { jsonErr(404); }
 
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
-require '404.php'; exit(); }
 
 if($_SESSION['pid'] == $user['pid']) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
+
+if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+require '404.php'; exit(); }
 
 $search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
 
 if($search_relationship->num_rows != 0) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 
@@ -448,60 +449,56 @@ json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($my
 sendNews($_SESSION['pid'], $user['pid'], 6, null);
         if(!$create_relationship) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 	} else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1, 'can_follow_more' => true));
         }
-		   grpfinish($mysql); exit();
+		    exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'unfollow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 
-if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($search_user->num_rows == 0) { jsonErr(404); }
 
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
 
 if($_SESSION['pid'] == $user['pid']) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 $search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
 
 if($search_relationship->num_rows <= 0) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 // User checks over. Is eligible to follow.
         $delete_relationship = $mysql->query('DELETE FROM relationships WHERE source = "'.$_SESSION['pid'].'" AND target = "'.$user['pid'].'"');
         if(!$delete_relationship) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 	} else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1));
         }
-           grpfinish($mysql); exit();		
+            exit();		
 }
 
 if(isset($_GET['mode'])) { if($_GET['mode'] != 'posts' || $_GET['mode'] != 'empathies' || $_GET['mode'] != 'following' || $_GET['mode'] != 'followers' || $_GET['mode'] != 'favorites' || $_GET['mode'] != 'follow' || $_GET['mode'] != 'unfollow') { 
 # Display 404 if mode is undefined
-include_once '404.php'; grpfinish($mysql); exit(); } }
+include_once '404.php';  exit(); } }
 
 if(!$search_user || $search_user->num_rows == 0) {
-generalError(404, 'The user could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
@@ -561,7 +558,7 @@ print '<div class="tab-body">
 	
 	
 	';
-if(mb_strlen($profile['comment'], 'utf-8') >= 1) {
+if(mb_strlen($profile['comment']) >= 1) {
 print '<p class="text">'.getProfileComment($user, $profile).'</p>'; }
  print '
   <div class="user-data"><table>

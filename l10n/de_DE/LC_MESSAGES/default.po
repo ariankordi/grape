@@ -6,7 +6,7 @@ msgstr ""
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de_DE\n"
 "X-Generator: Poedit 2.0.1\n"
@@ -47,6 +47,30 @@ msgstr "Übersicht"
 msgid "grp.portal.community"
 msgstr "Communitys"
 
+msgid "grp.portal.search_title"
+msgstr "Communitys suchen"
+
+msgid "grp.portal.search"
+msgstr "Suchen"
+
+msgid "grp.portal.favorites"
+msgstr "Favoriten"
+
+msgid "grp.portal.played"
+msgstr "Gespielt"
+
+msgid "grp.portal.show_more"
+msgstr "Weitere anzeigen"
+
+msgid "grp.portal.community_headline"
+msgstr "Neue Communitys"
+
+msgid "grp.portal.special_headline"
+msgstr "Spezial"
+
+msgid "grp.portal.theme"
+msgstr "Thema: "
+
 msgid "grp.portal.message"
 msgstr "Nachrichten"
 
@@ -64,3 +88,9 @@ msgstr "Fehler"
 
 msgid "grp.portal.error_general"
 msgstr "Der Bildschirm konnte nicht angezeigt werden."
+
+msgid "grp.portal.identified_user_banner-title"
+msgstr "Erhalte hier die aktuellsten Neuigkeiten!"
+
+msgid "grp.portal.identified_user_banner-text"
+msgstr "Beiträge von verifizierten Nutzern"

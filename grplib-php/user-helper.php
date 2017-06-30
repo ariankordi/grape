@@ -1,5 +1,35 @@
 <?php
 
+function getActivity() {
+global $mysql;
+$search_relationships_by_post = prepared('SELECT a.target AS pid, bm.recent_created_at FROM (SELECT pid, MAX(created_at) AS recent_created_at FROM posts GROUP BY pid) bm INNER JOIN relationships a ON bm.pid = a.target WHERE a.source = ?
+UNION
+SELECT IF(a.target = ?, a.source, a.target) AS pid, bm.recent_created_at FROM (SELECT pid, MAX(created_at) AS recent_created_at FROM posts GROUP BY pid) bm INNER JOIN friend_relationships a ON bm.pid = IF(a.target = ?, a.source, a.target) WHERE (a.source = ? OR a.target = ?)
+ORDER BY recent_created_at DESC LIMIT 50 OFFSET ?', [$_SESSION['pid'], $_SESSION['pid'], $_SESSION['pid'], $_SESSION['pid'], $_SESSION['pid'], (!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $_GET['offset'] : 0)]);
+if($search_relationships_by_post->num_rows != 0) {
+$posts = array();
+while($row_relationship_posts = $search_relationships_by_post->fetch_assoc()) {
+$person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row_relationship_posts['pid'].'"')->fetch_assoc();
+$get_latest_post = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$person['pid'].'" AND posts.hidden_resp != 1 OR posts.pid = "'.$person['pid'].'" AND posts.hidden_resp IS NULL ORDER BY posts.created_at DESC LIMIT 1');
+if($get_latest_post->num_rows != 0) {
+$posts[] = $get_latest_post->fetch_assoc(); }
+}
+} else {
+$posts = false; }
+return $posts;
+}
+
+function searchUser() {
+global $mysql;
+if(!empty($_GET['query'])) {
+$query = addcslashes($_GET['query'], '%_');
+$param[] = $query;
+$param[] = $query;
+	}
+$param[] = (!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $_GET['offset'] : 0);
+return prepared('SELECT * FROM people WHERE CONCAT_WS(\'\', user_id, screen_name) '.(empty($_GET['query']) ? '= ""' : 'LIKE CONCAT(?, "%") OR CONCAT_WS(\'\', screen_name, user_id) LIKE CONCAT(?, "%")').' ORDER BY people.created_at DESC LIMIT 50 OFFSET ?', $param);
+}
+
 function getUpdates($pid) {
 global $mysql;
 return array(
@@ -25,7 +55,7 @@ if($source == $target) {
 return false;
 	}
 global $mysql;
-if($mysql->query('SELECT type FROM blacklist WHERE blacklist.source = "'.$mysql->real_escape_string($source).'" AND blacklist.target = "'.$mysql->real_escape_string($target).'" OR blacklist.source = "'.$mysql->real_escape_string($target).'" AND blacklist.target = "'.$mysql->real_escape_string($source).'"')->num_rows != 0) {
+if(prepared('SELECT type FROM blacklist WHERE blacklist.source = ? AND blacklist.target = ? OR blacklist.source = ? AND blacklist.target = ?', [$source, $target, $target, $source])->num_rows != 0) {
 return true;
 	} else {
 return false;
@@ -60,14 +90,14 @@ return true;
 
 function sendNews($from, $to, $type, $subject) {
 global $mysql;
-if(($type == 2 || $type == 3) &&$mysql->query('SELECT empathy_optout FROM profiles WHERE pid = "'.$to.'" AND empathy_optout = 1 LIMIT 1')->num_rows == 0) {
+if($type == 2 || $type == 3 ? $mysql->query('SELECT empathy_optout FROM profiles WHERE pid = "'.$to.'" AND empathy_optout = 1 LIMIT 1')->num_rows == 0 : true) {
 	// If the user gave the same type of notification 8 seconds ago, then don't send this.
 	$check_fastnews = $mysql->query('SELECT news.to_pid, news.created_at FROM news WHERE news.from_pid = "'.$from.'" AND news.to_pid = "'.$to.'" AND news.news_context = "'.$type.'" AND news.created_at > NOW() - 8 ORDER BY news.created_at DESC');
     if($check_fastnews->num_rows == 0) {
     $check_ownusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$from.'" AND news.to_pid = "'.$to.'" AND news.news_context = "'.$type.'"'.($type != 6 ? ' AND news.id = "'.$subject.'"' : '').' AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
 	$check_mergedusernews = $mysql->query('SELECT * FROM news WHERE news.from_pid = "'.$from.'" AND news.to_pid = "'.$to.'" AND news.news_context = "'.$type.'"'.($type != 6 ? ' AND news.id = "'.$subject.'"' : '').' AND news.merged IS NOT NULL AND news.created_at > NOW() - 7200 ORDER BY news.created_at DESC');
  if($check_mergedusernews->num_rows != 0) {
-	$result_update_mergedusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$check_mergedusernews['merged'].'"');	
+	$result_update_mergedusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$check_mergedusernews->fetch_assoc()['merged'].'"');	
 	} elseif($check_ownusernews->num_rows != 0) {
 	$result_update_ownusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.$check_ownusernews->fetch_assoc()['news_id'].'"'); }
 else {

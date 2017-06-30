@@ -16,9 +16,9 @@ $router->addRoutes(array(
 // Match the current request
 $match = $router->match();
 if($match) {
-// Temporary, remove later
-$_GET = array_merge($_GET, $match['params']);
-// //
+  foreach($param as &$match['params']) {
+  $_GET[key($param)] = $param;
+  }
   require_once $match['target'];
 }
 else {

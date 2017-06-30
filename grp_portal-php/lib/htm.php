@@ -1,11 +1,13 @@
 <?php
-if(!empty($_SESSION['pid'])) {
-$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc(); }
-header('Content-Type: text/html; charset=utf-8');
+   bindtextdomain('miitoo', '../l10n/');
+   bindtextdomain('community', '../l10n/');
 
 function printHeader($is_act) {
 global $pagetitle;
 global $has_header_js;
+if(!empty($_SESSION['pid'])) {
+global $mysql;
+$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc(); }
 if($is_act == true && $is_act === true) { $pagetitle = 'Grape::Account'; } elseif($is_act == 'err' && empty($pagetitle)) { $pagetitle = loc('grp.portal.error'); }
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
 	print '<title>'.(isset($pagetitle) ? $pagetitle : 'grp.portal.page_title').'</title>
@@ -42,7 +44,6 @@ print '</head>
 ';
 if($is_act == false) {
 if(!empty($_SESSION['pid'])) {
-global $lookup_user;
        print 'data-hashed-pid="'.sha1($_SESSION['pid']).'"
 	   ';
        print 'data-user-id="'.htmlspecialchars($lookup_user['user_id']).'"
@@ -127,15 +128,16 @@ if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH']
 }
 
 function truncate($text, $chars) {
-$truncate_post_bodyp1 = mb_substr(($text), 0, $chars, 'utf-8');
-return (mb_strlen($text, 'utf-8') >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
+$truncate_post_bodyp1 = mb_substr(($text), 0, $chars);
+return (mb_strlen($text) >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
 }
 
 function printMenu() {
 if(empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 
 	if(!empty($_SESSION['pid'])) {
-global $lookup_user;
+global $mysql;
+$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 	print '<menu id="global-menu">
       <li id="global-menu-mymenu"><a href="/users/'.htmlspecialchars($lookup_user['user_id']).'" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="'.getMii($lookup_user, false)['output'].'" alt="'.loc('grp.portal.my_page').'"></span><span>'.loc('grp.portal.my_page').'</span></a></li>
       <li id="global-menu-feed"><a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">'.loc('grp.portal.activity').'</a></li>
@@ -208,20 +210,20 @@ print '<div class="body-content track-error" data-track-error="'.$code.'">';
 noContentWindow((!empty($message) ? $message : loc('grp.portal.error_general'))); print $GLOBALS['div_body_head_end']; printFooter();
 }
 
+function plainErr($code, $message) {
+http_response_code(!empty($code) ? $code : 403);
+header('Content-Type: text/plain');
+print !empty($message) ? $message."\n" : "403 Forbidden\n";
+}
+
 function notLoggedIn() {
 if(isset($_SERVER['HTTP_X_PJAX'])) {
-header('Content-Type: application/json; charset=UTF-8');
+header('Content-Type: application/json');
 http_response_code(401);
 exit(json_encode(array('success' => 0, 'errors' => [array('message' => 'You have been logged out.
 Please log back in.', 'error_code' => 1510110)], 'code' => 401)));
 }
 else {
 plainErr(403, '403 Forbidden');
-} 
-}
-
-function plainErr($code, $message) {
-http_response_code(!empty($code) ? $code : 403);
-header('Content-Type: text/plain; charset=UTF-8');
-print !empty($message) ? $message."\n" : "403 Forbidden\n";
+	} 
 }

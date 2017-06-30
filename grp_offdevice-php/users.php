@@ -7,7 +7,7 @@ require_once '../grplib-php/user-helper.php';
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'posts') {
 if($search_user->num_rows == 0) {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
+$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old');  exit();
 }
 
 $user = $search_user->fetch_assoc();
@@ -65,7 +65,7 @@ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'empathies') {
 if($search_user->num_rows == 0) {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
+$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old');  exit();
 }
 
 $user = $search_user->fetch_assoc();
@@ -125,7 +125,7 @@ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'friends') {
 if($search_user->num_rows == 0) {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
+$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old');  exit();
 }
 
 $user = $search_user->fetch_assoc();
@@ -193,7 +193,7 @@ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'following') {
 if($search_user->num_rows == 0) {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
+$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old');  exit();
 }
 
 $user = $search_user->fetch_assoc();
@@ -260,7 +260,7 @@ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'followers') {
 if($search_user->num_rows == 0) {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
+$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old');  exit();
 }
 
 $user = $search_user->fetch_assoc();
@@ -329,27 +329,23 @@ if(isset($_GET['mode']) && $_GET['mode'] == 'follow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 
-if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($search_user->num_rows == 0) { jsonErr(404); }
 
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
 require '404.php'; exit(); }
 
 if($_SESSION['pid'] == $user['pid']) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 $search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
 
 if($search_relationship->num_rows != 0) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 
@@ -359,52 +355,48 @@ require_once '../grplib-php/user-helper.php';
 sendNews($_SESSION['pid'], $user['pid'], 6, null);
         if(!$create_relationship) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 	} else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1, 'can_follow_more' => true));
         }
-		   grpfinish($mysql); exit();
+		    exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'unfollow') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 
-if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($search_user->num_rows == 0) { jsonErr(404); }
 
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
 
 if($_SESSION['pid'] == $user['pid']) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 $search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
 
 if($search_relationship->num_rows <= 0) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+jsonErr(400); 
 }
 
 // User checks over. Is eligible to follow.
         $delete_relationship = $mysql->query('DELETE FROM relationships WHERE source = "'.$_SESSION['pid'].'" AND target = "'.$user['pid'].'"');
         if(!$delete_relationship) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 	} else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1));
         }
-           grpfinish($mysql); exit();		
+            exit();		
 }
 
 if(isset($_GET['mode'])) { if($_GET['mode'] != 'posts' || $_GET['mode'] != 'empathies' || $_GET['mode'] != 'following' || $_GET['mode'] != 'followers' || $_GET['mode'] != 'follow' || $_GET['mode'] != 'unfollow') { 
@@ -412,7 +404,7 @@ if(isset($_GET['mode'])) { if($_GET['mode'] != 'posts' || $_GET['mode'] != 'empa
 include_once '404.php'; } }
 
 if($search_user->num_rows == 0) {
-$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old'); grpfinish($mysql); exit();
+$pagetitle = 'Error'; printHeader('old'); printMenu('old'); notFound('users', false); printFooter('old');  exit();
 }
 
 $user = $search_user->fetch_assoc();
@@ -455,7 +447,7 @@ else { $pge_sex = 'Not Set'; }
 } else { $pge_sex = 'Not Set'; }
 
 if(isset($profile['platform_id'])) {
-if($profile['platform_id'] == 0) { $pge_platform = '3ds'; $pge_patext = 'Nintendo 3DS'; }
+if($profile['platform_id'] == 0) { $pge_platform = 'n3ds'; $pge_patext = 'Nintendo 3DS'; }
 elseif($profile['platform_id'] == 1) { $pge_platform = 'wiiu'; $pge_patext = 'Wii U'; }
 elseif($profile['platform_id'] == 2) { $pge_platform = 'wiiu'; $pge_patext = 'Off-Device'; }
 else { $pge_platform = 'wiiu'; $pge_patext = 'Off-Device'; }

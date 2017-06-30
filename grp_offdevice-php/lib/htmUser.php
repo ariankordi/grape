@@ -127,7 +127,7 @@ print '<a href="/posts/'.$favorite['id'].'" class="user-profile-memo-container" 
       <img src="'.htmlspecialchars($favorite['screenshot']).'" class="user-profile-screenshot">
     </a>';
 }
-print '<div id="user-content" class="'.($mii['official'] == true ? 'official-user ' : '').''.($favorite != false ? '' : ' no-profile-post-user').'">
+print '<div id="user-content" class="'.($mii['official'] == true ? 'official-user ' : '').($favorite != false ? '' : ' no-profile-post-user').'">
     <span class="icon-container'.($mii['official'] == true ? ' official-user' : '').'"><img src="'.$mii['output'].'" class="icon"></span>
 	';
 	if($user['official_user'] == 1) { print '<span class="user-organization">'.htmlspecialchars($user['organization']).'</span>'; }

@@ -12,9 +12,12 @@ switch($_GET['pg'] ?? '')             // Pop off first item and switch
 	case 'create':
 	    require '../grp_act-php/create.php';
 		break;
-	case 'canvasr':
-	    require '../grp_act-php/canvas.php';
+	case 'edit':
+		require '../grp_act-php/edit.php';
 		break;
-		default:
+	case 'confirm':
+	    require '../grp_act-php/email_confirm.php';
+		break;
+	default:
         require '../grp_act-php/404.php';
 }

@@ -5,14 +5,14 @@ require_once 'lib/htm.php';
 $search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id'] ?? 'a').'" AND titles.hidden != 1');
 
 if(!$search_title) {
-$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_title->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); 
+$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old');  exit(); } elseif($search_title->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old');  exit(); 
 }
 
 if(isset($_GET['community_id'])) {
 # Display community
 $search_community = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" AND communities.olive_community_id = "'.$mysql->real_escape_string($_GET['community_id']).'" AND communities.type != 5');
 if(!$search_community) {
-$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); } elseif($search_community->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); 
+$pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old');  exit(); } elseif($search_community->num_rows == 0) { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old');  exit(); 
 }
 else {
 require_once 'lib/htmCommunity.php';
@@ -55,7 +55,7 @@ $pref_id = 0;
 print '
 	</div>
   ';
-if($mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$community['olive_title_id'].'" ORDER BY created_at DESC LIMIT 2')->num_rows >= 2) {  print '<a href="/titles/'.$title['olive_title_id'].'" class="arrow-button"><span>Related Communities</span></a>'; }
+if($mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$community['olive_title_id'].'" AND communities.type != 5 ORDER BY created_at DESC LIMIT 2')->num_rows >= 2) {  print '<a href="/titles/'.$title['olive_title_id'].'" class="arrow-button"><span>Related Communities</span></a>'; }
   print '
 </div>';
 
@@ -83,24 +83,27 @@ print '<div class="body-content" id="community-post-list" data-region="">
 '; }
 if($is_popular) {
 $search_posts = searchPopular($community, $_GET['date'] ?? date('Y-m-d'), 50, $_GET['offset'] ?? 0, true);
+
 if(!empty($_GET['date'])) {
-$str_date = strtotime($_GET['date']);
+$date = strtotime($_GET['date']);	
+} else {
+$date = time();
 }
 print '
   <div class="pager-button date-pager">
   ';
-	$back_query = $mysql->query('SELECT created_at FROM posts WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at BETWEEN "'.date('Y-m-d', 0).'" AND "'.date('Y-m-d', $str_date ?? time()).'" ORDER BY posts.created_at DESC LIMIT 1');
-	if($back_query->num_rows != 0) {
+    $back_query = findPastPopular(1, $date, $community);
+	if($back_query) {
 	// back
-	print '<a href="'.$title_href.'/hot?date='.date('Y-m-d', strtotime($back_query->fetch_assoc()['created_at'])).'" class="button back-button symbol"><span class="symbol-label">←</span></a>';
+	print '<a href="'.$title_href.'/hot?date='.date('Y-m-d', strtotime($back_query)).'" class="button back-button symbol"><span class="symbol-label">←</span></a>';
 	}
   print '
-    <a href="'.$title_href.'/hot?date='.htmlspecialchars($_GET['date'] ?? date('Y-m-d')).'" class="button selected">'.date('m/d/Y', $str_date ?? time() - 86400).'</a>
+    <a href="'.$title_href.'/hot?date='.htmlspecialchars($_GET['date'] ?? date('Y-m-d')).'" class="button selected">'.date('m/d/Y', $date - 86400).'</a>
 	';
-	$next_query = $mysql->query('SELECT created_at FROM posts WHERE posts.community_id = "'.$community['community_id'].'" AND posts.created_at BETWEEN "'.date('Y-m-d', ($str_date ?? time()) + 86400).'" AND "'.date('Y-m-d').'" ORDER BY posts.created_at ASC LIMIT 1');
-	if($next_query->num_rows != 0) {
+	$next_query = findPastPopular(0, $date, $community);
+	if($next_query) {
 	// next
-	print '<a href="'.$title_href.'/hot?date='.date('Y-m-d', strtotime($next_query->fetch_assoc()['created_at'])).'" class="button next-button symbol"><span class="symbol-label">→</span></a>';
+	print '<a href="'.$title_href.'/hot?date='.date('Y-m-d', strtotime($next_query)).'" class="button next-button symbol"><span class="symbol-label">→</span></a>';
 	}
 	print '
   </div>
@@ -185,4 +188,4 @@ print printFooter('old');
 
 }
 
-else { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old'); grpfinish($mysql); exit(); }
+else { $pagetitle = 'Error'; print printHeader('old'); print printMenu('old'); print notFound('d', false); printFooter('old');  exit(); }

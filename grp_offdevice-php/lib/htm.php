@@ -1,12 +1,13 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+   bindtextdomain('miitoo', '../l10n/');
+   bindtextdomain('community', '../l10n/');
 
 function printHeader($mode) {
 global $pagetitle;
 global $bodyClass;
 global $bodyID;
 print '<!DOCTYPE html>
-    <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <html lang="en"><head><meta http-equiv="Content-Type" content="text/html">
     <meta charset="utf-8">
     <title>'.(!empty($pagetitle) ? $pagetitle : 'grp.offdevice.page_title').'</title>
     <meta http-equiv="content-style-type" content="text/css">
@@ -22,7 +23,7 @@ if(!isset($nnecnojs)) { print '
 <script src="/js/offdevice/complete-old.js"></script>'; } print '<style type="text/css"></style>
   <style type="text/css">* {}</style><style type="text/css">* {}</style></head>
 ';
-print '  <body '.(!empty($bodyID) ? 'id='.$bodyID.' ' : '').''.(!empty($_SESSION['pid']) ? 'class="'.($bodyClass ?? '').''.(empty($_SESSION['pid']) ? ' guest' : '').'" data-token="" data-hashed-pid="'.sha1($_SESSION['pid']).'" data-user-id="'.htmlspecialchars($_SESSION['user_id']).'" data-game-skill="0" data-follow-done="1" data-post-done="1" data-enable-user-recommendation="1"' : 'class="guest-top guest" data-token=""').'>';
+print '  <body '.(!empty($bodyID) ? 'id='.$bodyID.' ' : '').(!empty($_SESSION['pid']) ? ' data-token="" data-hashed-pid="'.sha1($_SESSION['pid']).'" data-user-id="'.htmlspecialchars($_SESSION['user_id']).'" data-game-skill="0" data-follow-done="1" data-post-done="1" data-enable-user-recommendation="1"' : 'class="guest-top guest" data-token=""').'>';
 print '    
     <div id="wrapper">
       
@@ -34,8 +35,8 @@ print '
 	}
 
 function truncate($text, $chars) {
-$truncate_post_bodyp1 = mb_substr(($text), 0, $chars, 'utf-8');
-return (mb_strlen($text, 'utf-8') >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
+$truncate_post_bodyp1 = mb_substr(($text), 0, $chars);
+return (mb_strlen($text) >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate_post_bodyp1);
 }
 
 	
@@ -47,7 +48,7 @@ print '<div id="sub-body">
 		  ';
 if(!empty($_SESSION['pid'])) {
 global $mysql;
-$miia = $mysql->query('SELECT user_face, mii_hash, mii, user_id, official_user FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+$miia = $mysql->query('SELECT face, mii_hash, mii, user_id, official_user FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 $mii = getMii($miia, false);
 print (!isset($mode) || $mode != 'old' ? '<li id="global-menu-list">
             <ul>' : '' ).'
@@ -114,6 +115,7 @@ print '<div class="no-content"><div>
 }
 
 function printFooter($mode) {
+global $version;
 print '
       
       <div id="footer">
@@ -129,7 +131,7 @@ print '        <div id="footer-inner">
 ';            
 }
 global $dev_server;
-print '            <p id="copyright">grape'.($dev_server == true ? '/'.VERSION.' (offdevice)' : '').'</p>
+print '            <p id="copyright">grape'.($dev_server == true ? '/'.$version.' (offdevice)' : '').'</p>
           </div>
 </div> ';
 if(!isset($mode) || $mode != 'old') { print '
@@ -144,7 +146,7 @@ print '</body></html>';
 }
 
 function noLogin() {
-header('Content-Type: text/plain; charset=UTF-8');
+header('Content-Type: text/plain');
 print "403 Forbidden\n";
 }
 

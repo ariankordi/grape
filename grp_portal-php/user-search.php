@@ -15,7 +15,8 @@ print '<div class="body-content" id="user-search-list-page">'."\n".'';
 
 # Search for user here
 
-$search_user = $mysql->query("SELECT * FROM people WHERE CONCAT_WS('', user_id, screen_name) LIKE '".$mysql->real_escape_string($_GET['query'])."%' ORDER BY people.pid DESC");
+require_once '../grplib-php/user-helper.php';
+$search_user = searchUser();
 
 if($search_user->num_rows == 0 || empty($_GET['query'])) {
 noContentWindow('"'.htmlspecialchars($_GET['query'] ?? '').'" could not be found.<br>

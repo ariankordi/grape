@@ -4,7 +4,8 @@ require_once 'lib/htm.php';
 $pagetitle = 'Search Users'; $bodyClass = 'search';
 printHeader('old'); printMenu('old');
 
-$search_users = $mysql->query('SELECT * FROM people WHERE CONCAT_WS(\'\', user_id, screen_name) '.(empty($_GET['query']) ? '= ""' : 'LIKE "'.$mysql->real_escape_string($_GET['query']).'%" OR CONCAT_WS(\'\', screen_name, user_id) LIKE "'.$mysql->real_escape_string($_GET['query']).'%"').' ORDER BY people.created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET ""'.$mysql->real_escape_string($_GET['offset']).'"' : ''));
+require_once '../grplib-php/user-helper.php';
+$search_users = searchUser();
 print '<div id="main-body">
 
   <h2 class="headline">Search Users</h2>

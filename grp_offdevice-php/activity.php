@@ -3,7 +3,7 @@ require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
 if(empty($_SESSION['pid'])) {
-noLogin(); grpfinish($mysql); exit(); }
+noLogin();  exit(); }
 
 $pagetitle = 'Activity Feed'; $mnselect = 'feed';
 printHeader('old'); printMenu('old');
@@ -43,6 +43,7 @@ print '
 }
 else {
 require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/user-helper.php';
 require_once 'lib/htmCommunity.php';
 require_once 'lib/htmUser.php';
 require_once '../grplib-php/olv-url-enc.php';
@@ -54,17 +55,7 @@ postForm($act_feed_community->fetch_assoc(), $user, 'Write a post here to people
 
 $search_relationships_real = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"');
 
-$search_relationships_by_post = $mysql->query('select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join relationships a on bm.pid = a.target WHERE a.source = "'.$_SESSION['pid'].'" ORDER BY recent_created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$mysql->real_escape_string($_GET['offset']) : ''));
-if($search_relationships_by_post->num_rows != 0) {
-$posts = array();
-while($row_relationship_posts = $search_relationships_by_post->fetch_assoc()) {
-$person = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row_relationship_posts['target'].'"')->fetch_assoc();
-$get_latest_post = $mysql->query('SELECT * FROM posts WHERE posts.pid = "'.$person['pid'].'" AND posts.hidden_resp != 1 OR posts.pid = "'.$person['pid'].'" AND posts.hidden_resp IS NULL ORDER BY posts.created_at DESC LIMIT 1');
-if($get_latest_post->num_rows != 0) {
-$posts[] = $get_latest_post->fetch_assoc(); }
-}
-} else {
-$posts = false; }
+$posts = getActivity();
 
 if($search_relationships_real->num_rows == 0) {
 print '<div id="activity-feed-tutorial">

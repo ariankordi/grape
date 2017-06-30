@@ -3,7 +3,7 @@ require_once '../grplib-php/init.php';
 
 require_once 'lib/htm.php';
 if(empty($_SESSION['pid'])) {
-noLogin(); grpfinish($mysql); exit(); }
+noLogin(); exit(); }
 
 $pagetitle = 'User Menu';
 printHeader('old'); printMenu('old');
@@ -20,4 +20,3 @@ print '<div id="main-body">
 
 </div>';
 printFooter('old');
-grpfinish($mysql);

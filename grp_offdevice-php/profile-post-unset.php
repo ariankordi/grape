@@ -19,4 +19,3 @@ print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else { 
 header('Content-Type: application/json; charset=utf-8'); print 
 json_encode(array('success' => 1)); }
-grpfinish($mysql);

@@ -5,11 +5,15 @@ if(empty($row['icon']) || strlen($row['icon']) <= 1) { return 'https://miiverse.
 return htmlspecialchars($row['icon']); }
 }
 
+function favButton() {
+print '<a id="header-favorites-button" href="/communities/favorites" data-pjax="#body">'.loc('community', 'grp.portal.favorites_my').'</a>';
+}
+
 function printTitle($row) {
 global $mysql;
 			print '<li id="community-'.$row['olive_community_id'].'" class="">
 			<span class="icon-container"><img src="'.getIcon($row).'" class="icon"></span>';
-	if($mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$row['olive_title_id'].'" AND communities.type != "5"')->num_rows >= 2) {				
+	if(findMore($row)) {				
 		print '
 		<a href="/titles/'.$row['olive_title_id'].'" data-pjax="#body" class="list-button button">Related Communities</a>
 		';
@@ -21,11 +25,11 @@ global $mysql;
 		
 		';
 if(!empty($row['platform_type'])) {
-if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = 'Wii U Games'; }
-elseif($row['platform_type'] == '1' && $row['platform_id'] != '1') { $platformIDtext = '3DS Games'; } 
-elseif($row['platform_type'] == '2') { $platformIDtext = '3DS Games'; } 
-elseif($row['platform_type'] == '3') { $platformIDtext = 'Virtual Console'; } 
-else { $platformIDtext = 'Others'; } }
+if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = loc('community', 'grp.wiiu_games'); }
+elseif($row['platform_type'] == '1' && $row['platform_id'] != '1') { $platformIDtext = loc('community', 'grp.3ds_games'); } 
+elseif($row['platform_type'] == '2') { $platformIDtext = loc('community', 'grp.3ds_games'); } 
+elseif($row['platform_type'] == '3') { $platformIDtext = loc('community', 'grp.virtualconsole'); } 
+else { $platformIDtext = loc('community', 'grp.other'); } }
 	
 	if(!empty($row['platform_id'])) {
 print '<span class="platform-tag platform-tag-'.($row['platform_id'] == 1 ? 'wiiu' : '3ds').'"></span>
@@ -143,7 +147,7 @@ $pref_id = 0;
 } }
 $show_spoiler = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid']) || $pref_id == 1;
 
-print '<div id="post-'.$row['id'].'" class="post scroll post-subtype-default'.($row['is_spoiler'] == 1 ? ($show_spoiler ? null : ' hidden') : null).''.(!empty($videopost) ? ' with-video-image' : null).''.(!empty($row['screenshot']) ? ' with-image' : null).'" data-post-permalink-url="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'">
+print '<div id="post-'.$row['id'].'" class="post scroll post-subtype-default'.($row['is_spoiler'] == 1 ? ($show_spoiler ? null : ' hidden') : null).(!empty($videopost) ? ' with-video-image' : null).(!empty($row['screenshot']) ? ' with-image' : null).'" data-post-permalink-url="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="user-icon-container scroll-focus'.($usermii['official'] ? ' official-user' : null).'" data-pjax="#body"><img src="'.$usermii['output'].'" class="user-icon"></a>
   ';
 if(!$is_official) {
@@ -207,14 +211,14 @@ print '
         <p class="deleted-message">Post ID: '.getPostID($row['id']).'</p>
 		';
 }
-$truncate_post_body = (mb_strlen($row['body'], 'utf-8') >= 204 ? mb_substr($row['body'], 0, 200, 'utf-8').'...' : $row['body']);
+$truncate_post_body = (mb_strlen($row['body']) >= 204 ? mb_substr($row['body'], 0, 200).'...' : $row['body']);
 
 if($row['_post_type'] == 'artwork') {
 print '<p class="post-content-memo"><img src="'.htmlspecialchars($row['body']).'" class="post-memo"></p>
 	  </div>'; } else {
 print '
 
-            <p class="post-content-text">'.preg_replace("/[\r\n]+/", "\n", $truncate_post_body).'</p>
+            <p class="post-content-text">'.htmlspecialchars(preg_replace("/[\r\n]+/", "\n", $truncate_post_body)).'</p>
       </div>
 	  
 	  
@@ -244,7 +248,7 @@ print '
 
 
       <div class="post-meta">
-        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="submit miitoo-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.$usermii['feeling'].'" data-action="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'/empathies" data-sound="SE_WAVE_MII_'.(isset($my_empathy_added) && $my_empathy_added == true ? 'CANCEL' : 'ADD').'" data-community-id="'.$community['olive_community_id'].'" data-url-id="'.$row['id'].'" data-track-label="default" data-title-id="'.$community['olive_title_id'].'" data-track-action="yeah" data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? $usermii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $usermii['miitoo'] : 'Yeah!')).'</button>
+        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="submit miitoo-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.$usermii['feeling'].'" data-action="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'/empathies" data-sound="SE_WAVE_MII_'.(isset($my_empathy_added) && $my_empathy_added == true ? 'CANCEL' : 'ADD').'" data-community-id="'.$community['olive_community_id'].'" data-url-id="'.$row['id'].'" data-track-label="default" data-title-id="'.$community['olive_title_id'].'" data-track-action="yeah" data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? $usermii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $usermii['miitoo'] : 'Yeah!')).'</button>
         <a href="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="to-permalink-button" data-pjax="#body">
           <span class="feeling">'.$empathies.'</span>
 		  ';
@@ -309,7 +313,7 @@ $get_recent_replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_t
 
       <div class="recent-reply-content">
 
-        <p class="recent-reply-content-text">'.preg_replace("/\r|\n/"," ",(mb_strlen($reply['body'], 'utf-8') >= 204 ? mb_substr($reply['body'], 0, 200, 'utf-8').'...' : $reply['body'])).'</p>
+        <p class="recent-reply-content-text">'.preg_replace("/\r|\n/"," ",(mb_strlen($reply['body']) >= 204 ? mb_substr($reply['body'], 0, 200).'...' : $reply['body'])).'</p>
 
       </div>
       <a href="/posts/'.$row['id'].'" class="to-permalink-button" data-pjax="#body"></a>
@@ -342,11 +346,13 @@ print '</div>';
 function postForm($type, $community, $user) {
 global $act_feed;
 global $pagetitle;
-print '<div id="add-'.($type == 'replies' ? 'reply' : 'post').'-page" class="add-post-page'.($user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' ? ' official-user-post' : '').' none" data-modal-types="add-entry add-'.($type == 'replies' ? 'reply' : 'post').' require-body preview-body" data-is-template="1">
+global $grp_config_allow_allimages;
+$can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' : true);
+print '<div id="add-'.($type == 'replies' ? 'reply' : 'post').'-page" class="add-post-page'.($can_image ? ' official-user-post' : '').' none" data-modal-types="add-entry add-'.($type == 'replies' ? 'reply' : 'post').' require-body preview-body" data-is-template="1">
   <header class="add-post-page-header">
     <h1 class="page-title">'.($type == 'replies' ? 'Comment on '.$pagetitle : 'Post to '.htmlspecialchars($community['name'])).'</h1>
   </header>
-  <form method="post" action="/posts'.($type == 'replies' ? '/'.$community['id'].'/replies' : null).'" class="'.($type == 'replies' ? 'test-reply-form' : 'posts-form').'">
+  <form method="post" enctype="multipart/form-data" action="/posts'.($type == 'replies' ? '/'.$community['id'].'/replies' : null).'" class="'.($type == 'replies' ? 'test-reply-form' : 'posts-form').'">
   ';
 if($type != 'replies') {
 print '
@@ -354,7 +360,7 @@ print '
 ';
 }
 print '
-    <div '.($type == 'posts' ? ($user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' ? 'style="position: absolute; left: 200px; top: 100px;" ' : null) : null).'class="add-post-page-content">
+    <div '.($can_image && $type == 'posts' ? 'style="position: absolute; left: 200px; top: 100px;" ' : null).'class="add-post-page-content">
 ';
 	print '<div class="feeling-selector expression">
   <img src="'.getMii($user, 0)['output'].'" class="icon">
@@ -378,11 +384,15 @@ print '
         <div class="textarea-memo trigger" data-sound=""><div class="textarea-memo-preview"></div><input type="hidden" name="painting"></div>
       </div>
 	  ';
-	 if($user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1') {
+	 if($can_image) {
     if($type == 'posts') {
 	 print '<input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">';	
 	}
 	 print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
+	/*print '
+	  <input type="hidden" name="screenshot" id="screenshot">
+<input type="file" onchange=\'var file = document.querySelectorAll("input[type=file]")[1].files[1]; var reader = new FileReader(); reader.addEventListener("load", function () { document.querySelectorAll("input[id=screenshot]")[1].value = reader.result.split(",")[1]; }, false); if(file) { reader.readAsDataURL(file); }\'>
+';*/
 	 }
 print '
       <label class="spoiler-button checkbox-button">

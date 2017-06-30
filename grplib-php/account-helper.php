@@ -9,17 +9,17 @@ $user = $search_user->fetch_assoc();
 		if($user['ban_status'] >= 4) {
 return 'ban'; }
 
-$parts = explode('$', $user['user_pass']);
-if(crypt($password, sprintf('$%s$%s$%s$', $parts[1], $parts[2], $parts[3])) != $user['user_pass']) {
-if(password_hash($_POST['password'],PASSWORD_BCRYPT,['salt'=>'zvHy85=EZLaw8?5ct!Ov9YEiP(Gi)itI']) != $user['user_pass']) {
+$parts = explode('$', $user['password']);
+if(crypt($password, sprintf('$%s$%s$%s$', $parts[1], $parts[2], $parts[3])) != $user['password']) {
+if(!password_verify($_POST['password'], $user['password'])) {
 return 'fail'; } }
 
 return $user;
-
 }
 
 function passgen($pass) {
-return crypt($pass, sprintf('$5$rounds=%d$%s$', 10000, substr(str_replace('+','.',base64_encode(md5(mt_rand(), true))),0,16)));
+// return crypt($pass, sprintf('$5$rounds=%d$%s$', 10000, substr(str_replace('+','.',base64_encode(md5(mt_rand(), true))),0,16)));
+return password_hash($pass, PASSWORD_BCRYPT);
 }
 
 function setLoginVars($user, $login) {
@@ -32,6 +32,15 @@ if($login == true) {
 	  $_SESSION['pid'] = null;
       $_SESSION['user_id'] = null;
 	}
+}
+
+function findPendingEmailConfirm($user) {
+global $mysql;
+$search = $mysql->query('SELECT id, state FROM email_confirmation WHERE email_confirmation.finished = 0 AND email_confirmation.pid = "'.$user['pid'].'" LIMIT 1');
+if($search && $search->num_rows != 0) {
+return $search->fetch_assoc();
+	}
+return false;
 }
 
 function check_reCAPTCHA($secret) {
@@ -100,10 +109,18 @@ function userInfoJSON() {
 
 return json_encode(array(
 'ua' => base64_encode($_SERVER['HTTP_USER_AGENT']),
-'https' => +($_SERVER['HTTPS']=='on'),
+'https' => +(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'),
 'nintendo' => +isNintendoUser(),
 'ipinfo' => [$ip_json]
 	));
+}
+
+function emailCheck($email) {
+if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE || checkdnsrr(substr($email, strpos($email, '@') + 1)) === FALSE) {
+	return false;
+	} else {
+	return true;
+	}
 }
 
 function actformCheck() {
@@ -120,7 +137,7 @@ global $mysql;
 		$error_message[] = "Your login ID is too short, too long, or contains characters that cannot be used.";
 		$error_code[] = 1022543;
 	}
-	elseif(empty($_POST['screen_name'])) {
+	elseif(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['body']))) {
 		$error_message[] = "You did not enter a screen name.";
 		$error_code[] = 1022543; 
 	}
@@ -133,21 +150,47 @@ global $mysql;
 		$error_code[] = 1022616;
 	}
 	global $nss;
+	if($nss == 0) {
+	if(empty($_POST['email']) || !emailCheck($_POST['email'])) {
+	    $error_message[] = "The e-mail address you have entered is not valid.";
+		$error_code[] = 1022575;
+		}
+	}
 	if($nss == 1) {
-	global $grp_config_server_nss_keys;
-	$get_nss_keys = in_array(($_POST['device_id'] ?? null), $grp_config_server_nss_keys);
+	$get_nss_keys = in_array(($_POST['device_id'] ?? null), $grp_config_nss_keys);
 	    if(!$get_nss_keys) {
 		$error_message[] = "The device ID you have entered is not registered on the server.";
 		$error_code[] = 1022452;
 		}
 	}
-	elseif($nss == 3) {
+	elseif($nss == 2) {
 	/* Get an invite key */
 	}
 	$search_ouser = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['user_id'] ?? '').'" LIMIT 1');
 	if(!$search_ouser || $search_ouser->num_rows != 0) {
 		$error_message[] = "The login ID you have entered already exists.";
 		$error_code[] = 1022587;	
+	}
+if(!empty($error_code)) {
+return array($error_code[0], $error_message[0]);
+	} else {
+return true;
+	}
+}
+
+function acteditCheck() {
+global $mysql;
+	if(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['body']))) {
+		$error_message[] = "You did not enter a screen name.";
+		$error_code[] = 1022543; 
+	}
+    elseif(strlen($_POST['screen_name']) > 17) {
+        $error_message[] = "Your screen name is too long.";
+        $error_code[] = 1022543; 
+    }
+	elseif(!empty($_POST['password']) && (empty($_POST['password2']) || $_POST['password'] != $_POST['password2'])) {
+        $error_message[] = "The passwords you have entered do not match.";
+		$error_code[] = 1022616;
 	}
 if(!empty($error_code)) {
 return array($error_code[0], $error_message[0]);

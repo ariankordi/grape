@@ -30,7 +30,7 @@ print $GLOBALS['div_body_head_end'];
 printFooter(); } else {
 # Posted, now redirect.
 header('Set-Cookie: readonly_displayed=1; path=/');
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print '{"success":1'.(!empty($_POST['location']) ? ',"location":"'.htmlspecialchars(urldecode($_POST['location'])).'"' : '').'}';
 }
 ?>

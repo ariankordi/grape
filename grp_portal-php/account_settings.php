@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 
 if(empty($_SESSION['pid'])) {
-notLoggedIn(); grpfinish($mysql); exit(); }
+notLoggedIn();  exit(); }
 
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 // View settings
@@ -75,7 +75,7 @@ print '
 if($dev_server) {
 print '
       <li class="scroll">
-        <p class="settings-label">grape version '.VERSION.' (portal)
+        <p class="settings-label">grape version '.$version.' (portal)
 </p>
       </li>
       <li class="scroll">
@@ -145,7 +145,7 @@ printFooter();
 } else {
 // Post settings
 function invoke400() {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit();
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400));  exit();
 }
         if(isset($_POST['notify_empathy_notice_opt_out']) && !is_numeric($_POST['notify_empathy_notice_opt_out']) && strval($_POST['notify_empathy_notice_opt_out']) > 1)
         { invoke400(); }
@@ -159,10 +159,10 @@ if(isset($_POST['allow_request'])) { $updates[] = 'allow_request = "'.$mysql->re
 $update_profile = $mysql->query($sql_update);
 if(!$update_profile) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array('success' => 1));
 }
 

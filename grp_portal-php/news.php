@@ -4,7 +4,7 @@ require_once '../grplib-php/init.php';
 # If user isn't logged in, then 403 them.
 if(empty($_SESSION['pid'])) {
 require 'lib/htm.php';
-notLoggedIn(); grpfinish($mysql); exit();
+notLoggedIn();  exit();
 }
 
 $pagetitle = 'Notifications';

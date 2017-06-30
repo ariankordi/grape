@@ -5,7 +5,7 @@ if(empty($row['icon']) || strlen($row['icon']) <= 1) { return 'https://miiverse.
 return htmlspecialchars($row['icon']); }
 }
 
-function printTitle($row, $more) {
+function printTitle($row) {
 print '<li id="community-'.$row['olive_community_id'].'" class="trigger " data-href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" tabindex="0">
   <span class="icon-container"><img src="'.getIcon($row).'" class="icon"></span>
   <div class="body">
@@ -15,17 +15,17 @@ if(!empty($row['platform_id'])) {
 print '        <span class="platform-tag"><img src="https://i.imgur.com/'.($row['platform_id'] == 1 ? 'nZkp8NW' : 'VaXHOg6').'.png"></span>
 ';
 if(!empty($row['platform_type'])) {
-if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = 'Wii U Games'; }
-elseif($row['platform_type'] == '1' && $row['platform_id'] != '1') { $platformIDtext = '3DS Games'; } 
-elseif($row['platform_type'] == '2') { $platformIDtext = '3DS Games'; } 
-elseif($row['platform_type'] == '3') { $platformIDtext = 'Virtual Console'; } 
-else { $platformIDtext = 'Others'; } }
+if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = loc('community', 'grp.wiiu_games'); }
+elseif($row['platform_type'] == '1' && $row['platform_id'] != '1') { $platformIDtext = loc('community', 'grp.3ds_games'); } 
+elseif($row['platform_type'] == '2') { $platformIDtext = loc('community', 'grp.3ds_games'); } 
+elseif($row['platform_type'] == '3') { $platformIDtext = loc('community', 'grp.virtualconsole'); } 
+else { $platformIDtext = loc('community', 'grp.others'); } }
 print '
       <span class="text">'.$platformIDtext.'</span>
 '; }
 print '  </div>
   ';
-  if($more == true) {
+  if(findMore($row)) {
 print '  <a href="/titles/'.$row['olive_title_id'].'" class="siblings symbol"><span class="symbol-label">Related Communities</span></a>'; }
 print '</li>';
 }
@@ -61,8 +61,10 @@ print '  </div>
 
 function postForm($community, $user, $placeholder) {
 if(postPermission($user, $community) == true) {
+global $grp_config_allow_allimages;
+$can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' : true);
 	print '
-<form id="post-form" method="post" action="/posts" class="folded'.($user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' ? ' for-identified-user' : '').'">
+<form id="post-form" method="post" action="/posts" class="folded'.($can_image ? ' for-identified-user' : '').'">
   
   
   <input type="hidden" name="community_id" value="'.$community['community_id'].'">
@@ -73,12 +75,12 @@ if(postPermission($user, $community) == true) {
 
   <textarea name="body" class="textarea-text textarea" maxlength="1000" placeholder="'.($placeholder ? $placeholder : 'Share your thoughts in a post to this community.').'" data-open-folded-form="" data-required=""></textarea>
   ';
-if($user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1') {
+if($can_image) {
 print '
 <input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">
 <label class="file-button-container">
       <span class="input-label">Screenshot <span>JPEG/PNG/BMP</span></span>
-      <input type="file" class="file-button" accept="image/jpeg">
+      <input type="file" class="file-button" accept="image/jpeg, image/png, image/bmp">
       <input type="hidden" name="screenshot" value="">
     </label>
 '; }
@@ -179,8 +181,8 @@ print '<a href="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" clas
 
 if($row['_post_type'] == 'artwork') {
 print '<p class="post-content-memo"><img src="'.htmlspecialchars($row['body']).'" class="post-memo"></p>'; } else {
-$truncate_post_body = (mb_strlen($row['body'], 'utf-8') >= 204 ? mb_substr($row['body'], 0, 200, 'utf-8').'...' : $row['body']);
-print '      <p class="post-content-text">'.preg_replace("/[\r\n]+/", "\n", $truncate_post_body).'</p>
+$truncate_post_body = (mb_strlen($row['body']) >= 204 ? mb_substr($row['body'], 0, 200).'...' : $row['body']);
+print '      <p class="post-content-text">'.htmlspecialchars(preg_replace("/[\r\n]+/", "\n", $truncate_post_body)).'</p>
 	  '; }
 	 if(!empty($row['is_spoiler']) && $row['is_spoiler'] == '1') {
 if(!$show_spoiler) { print '<div class="hidden-content"><p>This '.($reply == true ? 'comment' : 'post').' contains spoilers.
@@ -202,7 +204,7 @@ print '
             <a class="timestamp">'.humanTiming(strtotime($row['created_at'])).'</a>
           </p>';	  
 	  } else {
-	  print '        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').''.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.(!empty($usermii['feeling']) ? $usermii['feeling'] : 'normal').'" data-action="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'/empathies"><span class="empathy-button-text">'.(isset($my_empathy_added) && $my_empathy_added == true ? $usermii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $usermii['miitoo'] : 'Yeah!')).'</span></button>'; } print '
+	  print '        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="symbol submit empathy-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.(!empty($usermii['feeling']) ? $usermii['feeling'] : 'normal').'" data-action="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'/empathies"><span class="empathy-button-text">'.(isset($my_empathy_added) && $my_empathy_added == true ? $usermii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $usermii['miitoo'] : 'Yeah!')).'</span></button>'; } print '
         <div class="empathy symbol"><span class="symbol-label">Yeahs</span><span class="empathy-count">'.$mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$row['id'].'"')->num_rows.'</span></div>'; if($reply == false) { print '
         <div class="reply symbol"><span class="symbol-label">Comment</span><span class="reply-count">'.$mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$row['id'].'"')->num_rows.'</span></div>'; }
 print '      </div>

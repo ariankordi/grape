@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.0.1\n"
+
+msgid "grp.portal.titles_headline"
+msgstr "すべてのソフト(%d)"
+
+msgid "grp.portal.favorites_my"
+msgstr "おきにいりコミュニティ"
+
+msgid "grp.portal.favorites_other"
+msgstr "%sさんの おきにいりコミュニティ"
+
+msgid "grp.portal.no_favorites_my"
+msgstr "コミュニティのページにある☆ボタンを押すと、ここにおきにいりコミュニティとして登録できます。"
+
+msgid "grp.portal.no_favorites_other"
+msgstr "おきにいりコミュニティはありません。"
+
+msgid "grp.portal.no_community"
+msgstr "このカテゴリにはコミュニティがありません"
+
+msgid "grp.wiiu_games"
+msgstr "Wii Uのゲーム"
+
+msgid "grp.3ds_games"
+msgstr "3DSのゲーム"
+
+msgid "grp.wiiu3ds_games"
+msgstr "Wii Uのゲーム・3DSのゲーム"
+
+msgid "grp.virtualconsole"
+msgstr "バーチャルコンソール"
+
+msgid "grp.others"
+msgstr "そのほか"

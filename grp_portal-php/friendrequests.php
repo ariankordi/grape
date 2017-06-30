@@ -4,7 +4,7 @@ require_once '../grplib-php/init.php';
 # If user isn't logged in, then 403 them.
 if(empty($_SESSION['pid'])) {
 require 'lib/htm.php';
-notLoggedIn(); grpfinish($mysql); exit();
+notLoggedIn(); exit();
 }
 
 $pagetitle = 'Notifications';
@@ -59,7 +59,7 @@ $row_news_user_select = $result_news_user_select->fetch_assoc();
 
 $friend_request_mii = getMii($row_news_user_select, false);
 
-print '<a href="/users/'.htmlspecialchars($row_news_user_select['user_id']).'" data-pjax="#body" class="icon-container'.($friend_request_mii['official'] == 1 ? ' official-user' : null).''.($friend_requests['has_read'] == 0 ? ' notify' : null).'"><img src="'.$friend_request_mii['output'].'" class="icon"></a>'."\n".'';
+print '<a href="/users/'.htmlspecialchars($row_news_user_select['user_id']).'" data-pjax="#body" class="icon-container'.($friend_request_mii['official'] == 1 ? ' official-user' : null).($friend_requests['has_read'] == 0 ? ' notify' : null).'"><img src="'.$friend_request_mii['output'].'" class="icon"></a>'."\n".'';
 print '<div class="friend-request-buttons">
         <a href="#" class="button received-request-button" data-modal-open="#received-request-confirm-page" data-user-id="'.htmlspecialchars($row_news_user_select['user_id']).'" data-screen-name="'.htmlspecialchars($row_news_user_select['screen_name']).'"'.($friend_request_mii['official'] == 1 ? ' data-is-identified="1"' : null).' data-mii-face-url="'.$friend_request_mii['output'].'" data-pid="'.$row_news_user_select['pid'].'" data-body="'.$friend_requests['message'].'">View Friend Request</a>
         <span class="ok-message none"></span>

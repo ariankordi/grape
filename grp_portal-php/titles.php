@@ -5,34 +5,34 @@ require_once 'lib/htm.php';
 $search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id'] ?? 'a').'" AND titles.hidden != 1 LIMIT 1');
 
 if(!$search_title) {
-include '404.php'; grpfinish($mysql); exit(); }
+include '404.php';  exit(); }
 elseif($search_title->num_rows == 0) {
-include_once '404.php'; grpfinish($mysql); exit(); }
+include_once '404.php';  exit(); }
 
 # Community listing.
-if(isset($_GET['community_id']) && isset($_GET['title_id'])) {
+if(isset($_GET['community_id'], $_GET['title_id'])) {
 
 if(!empty($_GET['mode']) && $_GET['mode'] != 'hot') {
-include '404.php'; grpfinish($mysql); exit(); }
+include '404.php';  exit(); }
 
 $search_community = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id']).'" AND communities.olive_community_id = "'.$mysql->real_escape_string($_GET['community_id']).'" LIMIT 1');
 
+$pagetitle = 'Communities';
 function noCommErr() {
-(empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? http_response_code(404) : null);
-$pagetitle = 'Communities'; printHeader(false); printMenu(); print $GLOBALS['div_body_head']; print "\n".'<header id="header">
-<h1 id="page-title" class="left">'.$pagetitle.'</h1>
+(empty($_SERVER['HTTP_X_REQUESTED_WITH']) ? http_response_code(404) : null); printHeader(false); printMenu(); print $GLOBALS['div_body_head']; print "\n".'<header id="header">
+<h1 id="page-title" class="left">Communities</h1>
 </header>
 '; print '<div class="body-content track-error" data-track-error="community-404">';
 noContentWindow('Community could not be found.'); print $GLOBALS['div_body_head_end']; printFooter();
 }
 
 if(!$search_community) {
-include '404.php'; grpfinish($mysql); exit(); }
+include '404.php';  exit(); }
 elseif($search_community->num_rows == 0) {
-noCommErr(); grpfinish($mysql); exit(); }
+noCommErr();  exit(); }
 $community = $search_community->fetch_assoc();
 if($community['type'] == 5) {
-noCommErr(); grpfinish($mysql); exit(); }
+noCommErr();  exit(); }
 $title = $search_title->fetch_assoc();
 
 # Success, show community.
@@ -40,7 +40,7 @@ require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmCommunity.php';
 // Does ?date match a regex?
 if((!empty($_GET['mode']) && $_GET['mode'] == 'hot' && !empty($_GET['date'])) && !preg_match('/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/', $_GET['date'])) {
-include '404.php'; grpfinish($mysql); exit(); }
+include '404.php';  exit(); }
 
 $not_offset = !((!empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) || (!empty($_SERVER['HTTP_X_PJAX_CONTAINER']) && $_SERVER['HTTP_X_PJAX_CONTAINER'] == '#community-tab-body'));
 $title_href = '/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'];
@@ -48,8 +48,6 @@ if($not_offset) {
 $pagetitle = htmlspecialchars($title['name']);
 printHeader(false); printMenu();
 
-if(!empty($_SESSION['pid'])) {
-$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc(); }
 $user_permission = empty($_SESSION['pid']) || !postPermission($user, $community);
 
     print $GLOBALS['div_body_head'];
@@ -99,7 +97,7 @@ print '
 
 // Add disabled to hot-post if announcement community:
 // <li id="tab-header-hot-post" class="tab-button disabled"><a class="disabled"><span>Popular posts</span></a></li>
-// ()
+// \/
 print '<menu class="tab-header">
     <li id="tab-header-post" class="tab-button'.(!empty($_GET['mode']) && $_GET['mode'] == 'hot' ? '' : ' selected').'" data-show-post-button="1">
         <a href="'.$title_href.'/new" data-pjax-replace="1" data-pjax="#community-tab-body" data-pjax-cache-container="#body" data-sound="SE_WAVE_SELECT_TAB"><span class="new-post">All Posts</span></a>
@@ -151,7 +149,7 @@ print '
 ';
     if(!$search_posts || $search_posts->num_rows == 0) {
 	print '<div class="js-post-list post-list">';
-noContentWindow('Function is broken, come back later when it\'s fixed');
+noContentWindow('There are no popular posts.');
 print '</div>'; } else {
 print '<div class="js-post-list post-list" data-next-page-url="'.($search_posts->num_rows > 49 ? $title_href.'?offset='.(!empty($_GET['offset']) ? (!empty($_GET['offset']) && is_numeric($_GET['offset']) ? $_GET['offset'] + 50 : '') : 50) : '').'">';
 while($post = $search_posts->fetch_assoc()) {
@@ -233,5 +231,5 @@ print $GLOBALS['div_body_head_end'];
 }
 
 else {
-include '404.php';	grpfinish($mysql); exit();
+include '404.php';	 exit();
 }

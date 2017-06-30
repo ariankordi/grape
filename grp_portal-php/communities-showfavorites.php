@@ -1,23 +1,20 @@
 <?php
 	require_once '../grplib-php/init.php';
-if(empty($is_fav_own)) {
 # If user isn't logged in, then 403 them.
-if(empty($_SESSION['pid'])) {
-if(isset($grp_config_server_type) && $grp_config_server_type == 'prod') {
-include_once 'communities.php';
-grpfinish($mysql); exit();
-}
-else {
+if(empty($is_fav_own) && empty($_SESSION['pid'])) {
 require 'lib/htm.php';
-notLoggedIn(); grpfinish($mysql); exit();
-} }
+notLoggedIn(); exit();
 }
 
 if(!empty($is_fav_own)) {
-$row_userfavorites_user = mysqli_fetch_assoc($mysql->query('SELECT user_id, screen_name, pid FROM people WHERE people.pid = "'.$mysql->real_escape_string($is_fav_own).'"'));
-$pagetitle = htmlspecialchars($row_userfavorites_user['screen_name'])."'s Favorite Communities"; }
+if(!empty($_SESSION['pid']) && $_SESSION['pid'] == $is_fav_own) {
+$user['pid'] = $_SESSION['pid'];
+$pagetitle = loc('community', 'grp.portal.favorites_my');
+} else {
+$user = prepared('SELECT user_id, screen_name, pid FROM people WHERE people.pid = ?', [$is_fav_own])->fetch_assoc();
+$pagetitle = sprintf(loc('community', 'grp.portal.favorites_other'), htmlspecialchars($user['screen_name'])); } }
 else {
-$pagetitle = 'Communities';  }
+$pagetitle = loc('grp.portal.community');  }
    
     require_once 'lib/htm.php';
 printHeader(false);
@@ -30,9 +27,9 @@ print '<header id="header">
 </header>';
 
 if(!empty($is_fav_own)) {
-$search_user_favorite_communities = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$row_userfavorites_user['pid'].'" ORDER BY favorites.created_at DESC');
+$search_user_favorite_communities = prepared('SELECT * FROM favorites WHERE favorites.pid = ? ORDER BY favorites.created_at DESC', [$user['pid']]);
 } else {
-$search_user_favorite_communities = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" ORDER BY favorites.created_at DESC');
+$search_user_favorite_communities = prepared('SELECT * FROM favorites WHERE favorites.pid = ? ORDER BY favorites.created_at DESC', [$_SESSION['pid']]);
 }
 
 print '<div class="body-content'.(empty($is_fav_own) ? ' tab2-content' : '').'" id="community-top">
@@ -41,8 +38,8 @@ print '<div class="body-content'.(empty($is_fav_own) ? ' tab2-content' : '').'" 
 if(empty($is_fav_own)) {
 print '
   <menu class="tab-header tab-header-community">
-    <li id="tab-header-favorite-community" class="tab-button selected"><a href="/communities/favorites" data-pjax="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"><span>Favorites</span></a></li>
-    <li id="tab-header-played-post" class="tab-button disabled"><a class="disabled"><span>Software Used</span></a></li>
+    <li id="tab-header-favorite-community" class="tab-button selected"><a href="/communities/favorites" data-pjax="#body" data-pjax-replace="1" data-sound="SE_WAVE_SELECT_TAB"><span>'.loc('grp.portal.favorites').'</span></a></li>
+    <li id="tab-header-played-post" class="tab-button disabled"><a class="disabled"><span>'.loc('grp.portal.played').'</span></a></li>
   </menu>
   
    <div class="tab-body">
@@ -52,9 +49,9 @@ print '
 	';
 if($search_user_favorite_communities->num_rows == 0) {
 if(!empty($is_fav_own)) {
-noContentWindow('No favorite communities added yet.');
+noContentWindow(loc('community', 'grp.portal.no_favorites_other'));
 } else {
-noContentWindow('Tap the ☆ button on a community\'s page to have it show up as a favorite community here.'); } }
+noContentWindow(loc('community', 'grp.portal.no_favorites_my')); } }
 else {
 print '<ul class="list-content-with-icon-and-text arrow-list" id="community-top-content" data-next-page-url="">';
 while($row_user_favorites = $search_user_favorite_communities->fetch_assoc()) {	

@@ -24,34 +24,49 @@ miitooDelete('posts'); exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'replies') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
-# Display 404 if method isn't POST
-include_once '404.php'; }
+# Display comments
+if(!$search_post || $search_post->num_rows == 0) {
+include_once '404.php'; exit();
+}
+$num_replies = prepared('SELECT COUNT(id) AS num FROM replies WHERE replies.reply_to_id = ?', [$_GET['id']])->fetch_assoc()['num'];
+$replies = prepared('SELECT * FROM replies WHERE replies.reply_to_id = ? ORDER BY created_at LIMIT '.($num_replies > 19 ? ($num_replies - 20) : 120), [$_GET['id']]);
+print '
+<ul class="post-permalink-reply">
+';
+require_once 'lib/htmPost.php';
+require_once '../grplib-php/community-helper.php';
+require_once '../grplib-php/olv-url-enc.php';
+$post = $search_post->fetch_assoc();
+while($display_replies = $replies->fetch_assoc()) {
+displayReply($post, $display_replies);
+	}
+print '
+</ul>';
+	exit();
+}
 require_once '../grplib-php/post-helper.php';
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 $ogpost_result = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$mysql->real_escape_string($_GET['id']).'" LIMIT 1');
 
 if($ogpost_result->num_rows == 0) {
-http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit();
+jsonErr(404);
 }
 
 $ogpost = $ogpost_result->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $ogpost['pid'])) {
 require '404.php'; exit(); }
-$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
 
 if(!commentCan($_SESSION['pid'], $ogpost['id'])) {
- 		http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+ 		jsonErr(403); }
 
-$is_post_valid = postValid($user, 'url');
-$fastpost = ($mysql->query('SELECT replies.pid, replies.created_at FROM replies WHERE replies.pid = "'.$user['pid'].'" AND replies.created_at > NOW() - '.(isset($grp_config_max_postbuffertime) ? $grp_config_max_postbuffertime : '10').' ORDER BY replies.created_at DESC LIMIT 5')->num_rows != 0 ? true : false);
+$is_post_valid = postValid($me, 'url');
+$fastpost = ($mysql->query('SELECT replies.pid, replies.created_at FROM replies WHERE replies.pid = "'.$me['pid'].'" AND replies.created_at > NOW() - '.(isset($grp_config_max_postbuffertime) ? $grp_config_max_postbuffertime : '10').' ORDER BY replies.created_at DESC LIMIT 5')->num_rows != 0 ? true : false);
 if($is_post_valid != 'ok' || $fastpost == true) {
 if($fastpost == true) {
 $error_message[] = 'Multiple posts cannot be made in such a short period of time. Please try posting again later.';
-$error_code[] = '1515918'; }
+$error_code[] = 1515918; }
 if($is_post_valid == 'blank') {
 $error_message[] = 'The content you have entered is blank.
 Please enter content into your post.';
@@ -59,12 +74,27 @@ $error_code[] = 1515001; }
 elseif($is_post_valid == 'max') {
 $error_message[] = 'You have exceeded the amount of characters that you can send.';
 $error_code[] = 1515002; }
+elseif($is_post_valid == 'min') {
+$error_message[] = 'The URL you have specified is too short.';
+$error_code[] = 1515004; }
+elseif($is_post_valid == 'nohttp') {
+$error_message[] = 'The URL you have specified is not of HTTPS.';
+$error_code[] = 1515003; }
+elseif($is_post_valid == 'nossl') {
+$error_message[] = 'The URL you have specified is not of HTTP or HTTPS.';
+$error_code[] = 1515003; }
+elseif($is_post_valid == 'invalid') {
+$error_message[] = 'The URL you have specified is not valid.';
+$error_code[] = 1515005; }
+elseif($is_post_valid == 'invalid_screenshot') {
+$error_message[] = 'The screenshot you have specified is not valid.';
+$error_code[] = 1515005; }
 }
 if(!empty($error_code)) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [array(
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [array(
 'message' => $error_message[0],
 'error_code' => $error_code[0]
-)], 'code' => 400)); grpfinish($mysql); exit();
+)], 'code' => 400));  exit();
 }
 
 
@@ -78,7 +108,7 @@ $createpost = $mysql->query('INSERT INTO replies(id, reply_to_id, pid, feeling_i
 "'.$ogpost['id'].'",
 "'.$_SESSION['pid'].'",
 "'.(!empty($_POST['feeling_id']) && is_numeric($_POST['feeling_id']) ? $mysql->real_escape_string($_POST['feeling_id']) : 0).'",
-"2",
+"1",
 "'.$mysql->real_escape_string($_POST['body']).'",
 "'.(!empty($_POST['screenshot']) ? $mysql->real_escape_string($_POST['screenshot']) : null).'",
 "'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'",
@@ -87,7 +117,7 @@ $createpost = $mysql->query('INSERT INTO replies(id, reply_to_id, pid, feeling_i
 
 if(!$createpost) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 } else {
@@ -147,7 +177,7 @@ else {
 
 }
 # Finished, clear sys resources!
-grpfinish($mysql); exit();
+ exit();
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'screenshot.set_profile_post') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -155,31 +185,30 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update user's favorite post here.
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
-http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit();
+jsonErr(404);
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
         $update_profile = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "'.$post['id'].'" WHERE profiles.pid = "'.$_SESSION['pid'].'"');
         if(!$update_profile) {
-http_response_code(500); header('Content-Type: application/json; charset=utf-8'); print 
+http_response_code(500); header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 		else { 
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1));
 }
 
-grpfinish($mysql); exit();
+ exit();
 	
 	}
 if(isset($_GET['mode']) && $_GET['mode'] == 'violations') {
@@ -197,88 +226,87 @@ if($post['pid'] == $_SESSION['pid']) { $error_code[] = 400; }
 	    if(!empty($error_code) || !empty($error_message) ) {
 		// JSON response.
 			http_response_code($error_code[0]);
-            header('Content-Type: application/json; charset=utf-8');
+            header('Content-Type: application/json');
 			json_encode(array('success' => 0, 'errors' => [], 'code' => $error_code[0])); }
     else {
 $result_get_spamreports = $mysql->query('SELECT * FROM reports WHERE reports.source = "'.$_SESSION['pid'].'" AND reports.created_at > NOW() - 5');
 if($result_get_spamreports->num_rows != 0) {
-header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 1));
+header('Content-Type: application/json'); print json_encode(array('success' => 1));
 exit();
 }
 $reportcreate = $mysql->query('INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION['pid'].'", "'.$post['id'].'", "0", "'.$mysql->real_escape_string($_POST['type']).'", "'.$mysql->real_escape_string($_POST['body']).'")');
         if(!$reportcreate) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1)); }
-		} grpfinish($mysql); 	exit(); }
+		}  	exit(); }
 if(isset($_GET['mode']) && $_GET['mode'] == 'set_spoiler') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
-http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit();
+jsonErr(404);
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
 
 if($post['is_spoiler'] == 1) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); 
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 400));  exit(); 
 }
 
 $update_post = $mysql->query('UPDATE posts SET posts.is_spoiler = "1" WHERE posts.id = "'.$post['id'].'"');
 
         if(!$update_post) {
-http_response_code(500); header('Content-Type: application/json; charset=utf-8'); print 
+http_response_code(500); header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-header('Content-Type: application/json; charset=utf-8'); print json_encode(array('is_spoiler' => 1,'success' => 1));
+header('Content-Type: application/json'); print json_encode(array('is_spoiler' => 1,'success' => 1));
 }
 
-grpfinish($mysql); exit();	
+ exit();	
 }
 if(isset($_GET['mode']) && $_GET['mode'] == 'delete') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update post spoiler here.	
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
-http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit();
+jsonErr(404);
 }
 $post = $search_post->fetch_assoc();
 
-if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
 if($post['pid'] != $_SESSION['pid']) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); 
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
 
 $update_post = $mysql->query('UPDATE posts SET posts.is_hidden = "1", posts.hidden_resp = "1" WHERE posts.id = "'.$post['id'].'"');
 
         if(!$update_post) {
-http_response_code(500); header('Content-Type: application/json; charset=utf-8'); print 
+http_response_code(500); header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 		}
 else {
-if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows != 0); {
-$delete_user_favoritepost = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); }	
+if($mysql->query('SELECT profiles.favorite_screenshot FROM profiles WHERE profiles.pid = "'.$_SESSION['pid'].'" AND profiles.favorite_screenshot = "'.$post['id'].'"')->num_rows != 0) {
+$delete_user_favoritepost = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = "" WHERE profiles.pid = "'.$_SESSION['pid'].'"'); 
+}	
 
 require_once 'lib/htm.php';
 print '    <title>Your Post</title>
@@ -296,7 +324,7 @@ print '
 </div>';
 }
 
-grpfinish($mysql); exit();	
+ exit();	
 }
 
 
@@ -306,7 +334,7 @@ include_once '404.php'; } }
   
 # If normal use; /posts/*
 if(!$search_post) {
-generalError(404, 'The post could not be found.'); grpfinish($mysql); exit(); } elseif($search_post->num_rows == 0) { generalError(404, 'The post could not be found.'); grpfinish($mysql); exit(); }
+generalError(404, 'The post could not be found.');  exit(); } elseif($search_post->num_rows == 0) { generalError(404, 'The post could not be found.');  exit(); }
 $post = $search_post->fetch_assoc();
 if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $post['pid'])) {
 require '404.php'; exit(); }
@@ -319,9 +347,9 @@ require_once '../grplib-php/olv-url-enc.php';
 if($post['is_hidden'] == '1') {
 if($post['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] != $post['pid'])) {
 generalError(404, 'Deleted by adminsistrator.</p>
-<p>Post ID: '.getPostID($post['id'])); grpfinish($mysql); exit(); }
+<p>Post ID: '.getPostID($post['id']));  exit(); }
 if($post['hidden_resp'] == '1') {
-generalError(404, 'Deleted by poster.'); grpfinish($mysql); exit(); }
+generalError(404, 'Deleted by poster.');  exit(); }
 }
 # Success
 require_once 'lib/htmCommunity.php';
@@ -471,12 +499,18 @@ print '</div>
 	print '</div>';
 
 	#  Put comments here.	
-    print '<div id="post-permalink-comments">
-
+    print '<div id="post-permalink-comments">';
+if($replies->num_rows > 19) {
+print '
+<a href="/posts/'.$post['id'].'/replies" class="more-button all-replies-button" data-reply-count="'.$replies->num_rows.'"><span>Show all comments ('.$replies->num_rows.')</span></a>';
+}
+print '
 <ul class="post-permalink-reply">
 
 ';
-
+if($replies->num_rows > 19) {
+$replies = $mysql->query('SELECT * FROM replies WHERE replies.reply_to_id = "'.$post['id'].'" ORDER BY created_at LIMIT 20 OFFSET '.($replies->num_rows - 20));
+}
     while($reply = $replies->fetch_assoc()) {
 displayReply($post, $reply);
 	}
@@ -489,7 +523,7 @@ print '
        </div>';
 	# Add reply page
 if($canReply) {
-postForm('replies', $post, $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc());
+postForm('replies', $post, $me);
 }
 	# Posts footer, mandatory for a posts page.
 postsFooter('posts', $post);

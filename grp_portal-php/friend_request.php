@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 	include_once '404.php';
-    grpfinish($mysql); exit();
+     exit();
 }
 
 if(isset($_GET['user_id'])) {
@@ -10,41 +10,39 @@ $search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.(em
 $search_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.(empty($_POST['pid']) ? 'a' : $mysql->real_escape_string($_POST['pid'])).'"');	
 }
 
-if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json; charset=utf-8');
-print json_encode(array('success' => 0, 'errors' => [], 'code' => 404)); grpfinish($mysql); exit(); }
+if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json');
+print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
 if(empty($_SESSION['pid'])) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit(); }
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 $user = $search_user->fetch_assoc();
 
 if($_SESSION['pid'] == $user['pid']) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); }
+jsonErr(400); }
 
 if(isset($_GET['breakup'])) {
 $result_friend_relationship = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'"');
 if($result_friend_relationship->num_rows == 0) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print 
-json_encode(array('success' => 0, 'errors' => [], 'code' => 400)); grpfinish($mysql); exit(); }
+jsonErr(400); }
 
 # Breakup
 $result_breakup = $mysql->query('DELETE FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'"');
 if(!$result_breakup) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 	} else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1)); }
-grpfinish($mysql); exit();		
+ exit();		
 }
 
 if(isset($_GET['create']) && substr($_SERVER['QUERY_STRING'], 0, 6) == 'create') {
 require_once '../grplib-php/user-helper.php';
 if(!checkFriendOK($user)) {
-http_response_code(403); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403)); grpfinish($mysql); exit();
+http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit();
 }
 if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"')->num_rows != 0 || ($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'"')->num_rows != 0)) {
 			$error_message[] = 'You have either already sent a friend request to this user\n or are already friends with them.';
@@ -53,18 +51,18 @@ if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "
             $error_message[] = 'You have exceeded the amount of characters that you can send.';
 			$error_code[] = 1515002; }
 	    if(!empty($error_code) || !empty($error_message) ) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [array( 'message' => $error_message[0], 'error_code' => $error_code[0])], 'code' => 400)); grpfinish($mysql); exit(); }
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [array( 'message' => $error_message[0], 'error_code' => $error_code[0])], 'code' => 400));  exit(); }
 else {
 $result_create_friendrequest = $mysql->query('INSERT INTO friend_requests (sender, recipient, `message`, `has_read`, `finished`) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "'.$mysql->real_escape_string($_POST['body']).'", "0", "0")');
 if(!$result_create_friendrequest) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500));
 	} else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1)); }
-grpfinish($mysql); exit();
+ exit();
         }
 }
 
@@ -85,7 +83,7 @@ if($_SERVER['QUERY_STRING'] == 'delete' && $mysql->query('SELECT * FROM friend_r
 			$error_code[] = 1512014;  }
 
 	    if(!empty($error_code) || !empty($error_message) ) {
-http_response_code(400); header('Content-Type: application/json; charset=utf-8'); print json_encode(array('success' => 0, 'errors' => [array( 'message' => $error_message[0], 'error_code' => $error_code[0])], 'code' => 400)); grpfinish($mysql); exit(); }
+http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [array( 'message' => $error_message[0], 'error_code' => $error_code[0])], 'code' => 400));  exit(); }
 else {
 
 if($_SERVER['QUERY_STRING'] == 'delete' || $_SERVER['QUERY_STRING'] == 'cancel') {
@@ -97,11 +95,11 @@ if($_SERVER['QUERY_STRING'] == 'delete' || $_SERVER['QUERY_STRING'] == 'cancel')
         $result_newscreate = $mysql->query($sql_newscreate);
         if(!$result_newscreate) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); }
         else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1)); }
 }
 	
@@ -111,11 +109,11 @@ $result_relationshipcreate = $mysql->query('INSERT INTO friend_relationships(sou
 $result_newscreate = $mysql->query('UPDATE friend_requests SET finished="1" WHERE sender="'.$user['pid'].'" AND recipient="'.$_SESSION['pid'].'"');
         if(!$result_relationshipcreate) {
 http_response_code(500);
-header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json');
 print json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); }
         else {
-header('Content-Type: application/json; charset=utf-8'); print 
+header('Content-Type: application/json'); print 
 json_encode(array('success' => 1)); }
 }		
 }
