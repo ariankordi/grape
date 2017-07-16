@@ -1,5 +1,6 @@
 At the time the below was written, I was actually working on it. I don't work on this anymore and am looking forward to giving it a complete and total re-write in another language having actually nearly exact things Miiverse did. Below is my original readme.md.
-PF2M has uploaded this before me, however it is my project and mine entirely. Don't use his, and by the way, don't host this on a public server since it might be taken down by Nintendo.
+
+Note that PF2M has uploaded this as well. It was without my permission, but I didn't have a copyright at all and I don't feel like taking him down even if I am. This is my project and mine entirely. Don't use his, and by the way, don't host this on a public server since it might be taken down by Nintendo.
 
 # grape #
 A Miiverse clone, named which due to Miiverse's original codename being 'olive'.
