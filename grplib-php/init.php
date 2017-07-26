@@ -211,3 +211,7 @@ header('X-Robots-Tag: none');
 	if($_SERVER['SCRIPT_NAME'] != '/act.php') {
 header('Location: '.LOCATION.'/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])), true, 302);
 exit(); } }
+
+if(!empty($_SESSION['pid'])) {
+$user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+}
