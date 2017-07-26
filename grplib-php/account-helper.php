@@ -137,7 +137,7 @@ global $mysql;
 		$error_message[] = "Your login ID is too short, too long, or contains characters that cannot be used.";
 		$error_code[] = 1022543;
 	}
-	elseif(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['body']))) {
+	elseif(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['screen_name']))) {
 		$error_message[] = "You did not enter a screen name.";
 		$error_code[] = 1022543; 
 	}
@@ -180,7 +180,7 @@ return true;
 
 function acteditCheck() {
 global $mysql;
-	if(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['body']))) {
+	if(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['screen_name']))) {
 		$error_message[] = "You did not enter a screen name.";
 		$error_code[] = 1022543; 
 	}
