@@ -1,3 +1,3 @@
 <?php
 
-/* Put config from template in config-template.php here! */
+/* Put config from template in config-sample.php here! */
