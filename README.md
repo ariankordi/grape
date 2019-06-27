@@ -1,5 +1,5 @@
 # Description #
-This is a fork of ariankordi's grape miiverse with added support for miiverse api and games.
+This is a fork of ariankordi's grape miiverse clone with added support for miiverse api and games.
 
 
 # Old Text #
