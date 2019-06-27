@@ -154,7 +154,9 @@ CREATE TABLE `people` (
   `status` int(8) NOT NULL DEFAULT '0' COMMENT '0 = ok, 1 = cannot comment, 2 = tempban, 3 = permaban, 4 = device ban, 5 = deleted',
   `empathy_restriction` int(8) DEFAULT NULL,
   `ban_status` int(8) DEFAULT '0',
-  `comment` text CHARACTER SET latin1
+  `comment` text CHARACTER SET latin1,
+  `nnid_token_long` text CHARACTER SET latin1 NOT NULL,
+  `nnid_token_short` text CHARACTER SET latin1 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 CREATE TABLE `posts` (
