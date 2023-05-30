@@ -444,7 +444,7 @@ jsonErr(400);
 
 
 // User checks over. Is eligible to follow.
-        $create_relationship = $mysql->query('INSERT INTO grape.relationships(source, target) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'")');
+        $create_relationship = $mysql->query('INSERT INTO relationships(source, target) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'")');
 
 sendNews($_SESSION['pid'], $user['pid'], 6, null);
         if(!$create_relationship) {

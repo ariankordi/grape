@@ -6,7 +6,7 @@ http_response_code(403);
 $pagetitle = 'Warning';
 $has_header_js = 'no';
 include_once '../../lib/htm.php';
-printHeader();
+printHeader(false);
 
 print $GLOBALS['div_body_head'];
 print '<div class="window-page">

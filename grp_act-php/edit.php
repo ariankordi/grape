@@ -27,14 +27,13 @@ if(!empty($_POST['password'])) {
 $arr_var_prepare[] = passgen($_POST['password']);
 	}
 if($has_mii) {
-$arr_var_prepare[] = json_encode($get_mii);
-$arr_var_prepare[] = $get_mii['mii_image'];
+$arr_var_prepare[] = $get_mii;
 }
 if(!empty($_POST['email'])) {
 $arr_var_prepare[] = $_POST['email'];
 }
 $arr_var_prepare[] = $_SESSION['pid'];
-$update_user = prepared('UPDATE people SET screen_name = ?'.(!empty($_POST['password']) ? ', password = ?' : '').($has_mii ? ', nnas_info = ?, mii_hash = ?' : '').(!empty($_POST['email']) ? ', email = ?' : '').' WHERE people.pid = ?', $arr_var_prepare);
+$update_user = prepared('UPDATE people SET screen_name = ?'.(!empty($_POST['password']) ? ', password = ?' : '').($has_mii ? ', mii_hash = ?' : '').(!empty($_POST['email']) ? ', email = ?' : '').' WHERE people.pid = ?', $arr_var_prepare);
 defaultRedir(true, false);
 exit();
 }

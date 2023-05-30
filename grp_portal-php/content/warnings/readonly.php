@@ -5,7 +5,8 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 # If method isn't POST, display form/warning.
 http_response_code(403);
 $pagetitle = 'Warning';
-printHeader();
+include_once '../../lib/htm.php';
+printHeader(false);
 
 print $GLOBALS['div_body_head'];
 print '<div class="window-page">

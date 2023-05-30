@@ -49,8 +49,8 @@ printErr(1022402, 'The Nintendo Network ID that has been submitted either doesn\
 
 $pidgen = PIDgen();
 $query_params = array('pid'=> $pidgen, 'user_id'=> $_POST['user_id'], 'password'=> passgen($_POST['password']), 
-'email'=> $_POST['email'], 'screen_name'=> (!empty($_POST['screen_name']) ? $_POST['screen_name'] : (!empty($get_mii) ? $get_mii['screen_name'] : null)), 
-'mii_hash'=> $get_mii['mii_image'] ?? null, 
+'email'=> $_POST['email'], 'screen_name'=> $_POST['screen_name'], 
+'mii_hash'=> $get_mii ?? null, 
 'created_from'=> $_SERVER['REMOTE_ADDR'], 'client_info' => userInfoJSON(), 
 'platform_id'=> $platform ?? 3);
 
@@ -60,9 +60,6 @@ $query_params['client_id'] = hexdec(substr($_POST['device_id'],2));
 /* elseif($nss == 2) {
 $query_params['client_id'] = (int)
 } */
-if(isset($get_mii)) {
-$query_params['nnas_info'] = json_encode($get_mii);
-}
 
 $create_account = peopleQuery($query_params);
 

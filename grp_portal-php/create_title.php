@@ -1,8 +1,10 @@
 <?php
 //Create title
 require_once '../grplib-php/init.php';
+require_once 'lib/htm.php';
 
-	if((strval($_SESSION['user_privilege']) <= 3) | (strval($_SESSION['user_status']) > 2)) {
+//if(false) {
+	if((strval($_SESSION['user_privilege']) <= 3) || (strval($_SESSION['user_status']) > 2)) {
 	#The user can't create a title, redirect them.
     header('Location: http://'.$_SERVER['HTTP_HOST'] .'/communities', true, 302);
 	}

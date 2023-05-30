@@ -3,7 +3,7 @@
 require_once dirname(__FILE__,2).'/config.php';
 $dev_server = CONFIG_SRV_TYPE == 0;
 
-$version = '0.8.8';
+$version = '0.8.9';
 define('LOCATION', 'http'.($grp_config_recommend_ssl || (isset($_SERVER['https']) && $_SERVER['https'] == 'on') ? 's' : '').'://'.$_SERVER['HTTP_HOST']);
 
 require_once dirname(__FILE__).'/err_display.php';
@@ -19,7 +19,9 @@ date_default_timezone_set('America/New_York');
 return $mysql;
 }
 
+if(extension_loaded('mbstring')){
 mb_internal_encoding('UTF-8');
+}
 
 function initAll() {
 $mysql = connectSQL(CONFIG_DB_SERVER, CONFIG_DB_USER, CONFIG_DB_PASS, CONFIG_DB_NAME);

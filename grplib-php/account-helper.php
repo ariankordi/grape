@@ -69,7 +69,7 @@ return $rPid2 != 1799999999 ? 1799999998 - $rPid2 : 1799999999;
 }
 
 function getNNASmii($user_id) {
-global $grp_config_olvkey; global $grp_config_olvkey_pass;
+/*global $grp_config_olvkey; global $grp_config_olvkey_pass;
         $ch = curl_init();
 	curl_setopt_array($ch, array(
         CURLOPT_URL => 'https://3ds-us.olv.nintendo.net/users/'.$user_id.'/blacklist.confirm',
@@ -96,7 +96,18 @@ return array(
 'user_id'=>$user_id,
 'screen_name'=>$screen_name,
 'mii_image'=>str_replace('_normal_face.png','',str_replace('http://mii-images.cdn.nintendo.net/','',$mii_image))
-	);
+	);*/
+$ch = curl_init();
+curl_setopt_array($ch, array(
+  CURLOPT_URL => 'https://pf2m.com/hash/'.$user_id,
+  CURLOPT_RETURNTRANSFER => true
+));
+
+$response = curl_exec($ch);
+if(curl_getinfo($ch, CURLINFO_RESPONSE_CODE) != 200) {
+  return false;
+}
+return $response;
 }
 
 function userInfoJSON() {
