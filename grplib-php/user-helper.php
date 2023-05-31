@@ -104,12 +104,12 @@ else {
 $result_update_newsmergesearch = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$to.'"'.($type != 6 ? ' AND news.id = "'.$subject.'"' : '').' AND news.created_at > NOW() - 7200 AND news.news_context = "'.$type.'" ORDER BY news.created_at DESC');	
 if($result_update_newsmergesearch->num_rows != 0) {
 $row_update_newsmergesearch = $result_update_newsmergesearch->fetch_assoc();
-$result_newscreatemerge = $mysql->query('INSERT INTO grape.news(from_pid, to_pid,'.($type != 6 ? ' id,' : '').' merged, news_context, has_read) VALUES ("'.$from.'", "'.$to.'",'.($type != 6 ? ' "'.$subject.'",' : '').' "'.$row_update_newsmergesearch['news_id'].'", "'.$type.'", "0")');
+$result_newscreatemerge = $mysql->query('INSERT INTO news(from_pid, to_pid,'.($type != 6 ? ' id,' : '').' merged, news_context, has_read) VALUES ("'.$from.'", "'.$to.'",'.($type != 6 ? ' "'.$subject.'",' : '').' "'.$row_update_newsmergesearch['news_id'].'", "'.$type.'", "0")');
 
 $result_update_newsformerge = $mysql->query('UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
 		}
 else {
-        $result_newscreate = $mysql->query('INSERT INTO grape.news(from_pid, to_pid,'.($type != 6 ? ' id,' : '').' news_context, has_read) VALUES ("'.$from.'", "'.$to.'",'.($type != 6 ? ' "'.$subject.'",' : '').' "'.$type.'", "0")'); 	
+        $result_newscreate = $mysql->query('INSERT INTO news(from_pid, to_pid,'.($type != 6 ? ' id,' : '').' news_context, has_read) VALUES ("'.$from.'", "'.$to.'",'.($type != 6 ? ' "'.$subject.'",' : '').' "'.$type.'", "0")'); 	
 	} } 
     } }
 return true;

@@ -11,7 +11,7 @@ $search_profile = $mysql->query('SELECT * FROM profiles WHERE profiles.pid = "'.
 if($search_profile->num_rows == 0) {
 http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
-	$update_profile = $mysql->query('UPDATE grape.profiles SET profiles.favorite_screenshot = NULL WHERE profiles.pid = "'.$_SESSION['pid'].'"');
+	$update_profile = $mysql->query('UPDATE profiles SET profiles.favorite_screenshot = NULL WHERE profiles.pid = "'.$_SESSION['pid'].'"');
         if(!$update_profile) {
 http_response_code(500);
 header('Content-Type: application/json');

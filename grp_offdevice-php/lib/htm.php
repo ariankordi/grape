@@ -44,7 +44,7 @@ function printMenu($mode) {
 global $mnselect;
 print '<div id="sub-body">
         <menu id="'.(isset($mode) && $mode == 'old' && empty($_SESSION['pid']) ? '' : 'global-menu').'">
-          <li id="global-menu-logo"><h1>'.(!isset($mode) || $mode != 'old' ? '<a href="/">' : '').'<img src="'.(isset($mode) && $mode == 'old' ? 'https://i.imgur.com/09X3SeK.png' : 'https://d13ph7xrk1ee39.cloudfront.net/img/menu-logo.png').'" alt="Miiverse" width="'.(!isset($mode) || $mode != 'old' ? '165' : '200').'" height="'.(!isset($mode) || $mode != 'old' ? '30' : '55').'">'.(!isset($mode) || $mode != 'old' ? '</a>' : '').'</h1></li>
+          <li id="global-menu-logo"><h1>'.(!isset($mode) || $mode != 'old' ? '<a href="/">' : '').'<img src="'.(isset($mode) && $mode == 'old' ? 'https://web.archive.org/web/20140326221047id_/https://d13ph7xrk1ee39.cloudfront.net/img/menu-logo.png' : 'https://d13ph7xrk1ee39.cloudfront.net/img/menu-logo.png').'" alt="Miiverse" width="'.(!isset($mode) || $mode != 'old' ? '165' : '200').'" height="'.(!isset($mode) || $mode != 'old' ? '30' : '55').'">'.(!isset($mode) || $mode != 'old' ? '</a>' : '').'</h1></li>
 		  ';
 if(!empty($_SESSION['pid'])) {
 global $mysql;

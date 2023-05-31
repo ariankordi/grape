@@ -1,6 +1,9 @@
 # stolen from french https://github.com/Rix565
 Options +FollowSymLinks -Indexes
 RewriteEngine on
+ErrorDocument 503 error/503.html
+ErrorDocument 502 error/502.html
+ErrorDocument 500 error/500.html
 ErrorDocument 404 /404.php
 RewriteRule ^$ /root.php [L,NC,QSA]
 RewriteRule ^communities$ /communities.php [L,NC,QSA]

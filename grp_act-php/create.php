@@ -148,7 +148,7 @@ print '<div class="page-header">
 <div class="form-group">
   <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.screenname').'</label>  
   <div class="col-md-4">
-  <input id="textinput" name="screen_name" type="text" placeholder="'.loc('grp.act.screenmii_name').'" class="form-control input-md">
+  <input id="textinput" name="screen_name" type="text" placeholder="'.loc('grp.act.screenmii_name').'" class="form-control input-md" required>
   <span class="help-block">'.loc('grp.act.screenname_help').'</span>  
   </div>
 </div>

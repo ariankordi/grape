@@ -154,7 +154,7 @@ print displayReply($ogpost, $search_post_created);
 	$result_update_ownusernewsagain = $mysql->query('UPDATE news SET has_read = "0", created_at = CURRENT_TIMESTAMP WHERE news.news_id = "'.mysqli_fetch_assoc($result_check_ownusernews)['news_id'].'"');	
 	}
 		else {
-		$result_news_send = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$row_news_getcomments['pid'].'", "'.$mysql->real_escape_string($_GET['id']).'", "5", "0")'); }
+		$result_news_send = $mysql->query('INSERT INTO news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$row_news_getcomments['pid'].'", "'.$mysql->real_escape_string($_GET['id']).'", "5", "0")'); }
 		}
 		}
 		else {
@@ -176,11 +176,11 @@ else {
 	if($result_update_newsmergesearch->num_rows != 0) {
 $row_update_newsmergesearch = $result_update_newsmergesearch->fetch_assoc();
 	
-	$result_newscreatemerge = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, id, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$get_empathy_poster['pid'].'", "'.$ogpost['id'].'", "'.$row_update_newsmergesearch['news_id'].'", "4", "0")');
+	$result_newscreatemerge = $mysql->query('INSERT INTO news(from_pid, to_pid, id, merged, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$get_empathy_poster['pid'].'", "'.$ogpost['id'].'", "'.$row_update_newsmergesearch['news_id'].'", "4", "0")');
 $result_update_newsformerge = $mysql->query('UPDATE news SET has_read = "0", created_at = NOW() WHERE news.news_id = "'.$row_update_newsmergesearch['news_id'].'"');
 		}
 else {
-        $result_newscreate = $mysql->query('INSERT INTO grape.news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$get_empathy_poster['pid'].'", "'.$ogpost['id'].'", "4", "0")'); 	
+        $result_newscreate = $mysql->query('INSERT INTO news(from_pid, to_pid, id, news_context, has_read) VALUES ("'.$_SESSION['pid'].'", "'.$get_empathy_poster['pid'].'", "'.$ogpost['id'].'", "4", "0")'); 	
 	} }
 		
 		
