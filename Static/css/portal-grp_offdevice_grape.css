@@ -754,7 +754,7 @@ input, label, button {
 
 .big-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #body .friend-button {
@@ -807,7 +807,7 @@ input, label, button {
 
 .toggle-button .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #body .remove-button {
@@ -908,7 +908,7 @@ input, label, button {
 
 .button-with-option.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .button-with-option .main-button {
@@ -1010,7 +1010,7 @@ input, label, button {
 
 .select-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .select-button:after {
@@ -1096,7 +1096,7 @@ input, label, button {
 
 .checkbox-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .checkbox-button:after {
@@ -1163,7 +1163,7 @@ input, label, button {
 
 .settings-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .settings-button:after {
@@ -1220,7 +1220,7 @@ input, label, button {
 
 .radio-buttons-2.loading, .radio-buttons-3.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .radio-buttons-2 label, .radio-buttons-3 label {
@@ -1262,7 +1262,7 @@ input, label, button {
 
 .radio-buttons-2 label.loading, .radio-buttons-3 label.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-white.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#992ee5), to(#9800c7)) 0 0;
+    background: url('/img/loading-image-white.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#992ee5), to(#9800c7)) 0 0;
 }
 
 .radio-buttons-2 label.checked-mark, .radio-buttons-3 label.checked-mark {
@@ -1471,7 +1471,7 @@ input.fixed-bottom-button {
 
 #scroll-to-top.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .unfavorite-button {
@@ -1512,7 +1512,7 @@ input.fixed-bottom-button {
 
 .unfavorite-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .unfavorite-button.unfavorite-done {
@@ -1555,7 +1555,7 @@ input.fixed-bottom-button {
 
 .official-tag-selector .dropdown-toggle.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .official-tag-selector .dropdown-toggle.selected {
@@ -1602,7 +1602,7 @@ input.fixed-bottom-button {
 
 .official-tag-selector .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .official-tag-selector .button.checked {
@@ -1661,7 +1661,7 @@ input.fixed-bottom-button {
 
 .topic-category-selector .dropdown-toggle.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .topic-category-selector .dropdown-toggle.selected {
@@ -1708,7 +1708,7 @@ input.fixed-bottom-button {
 
 .topic-category-selector .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .topic-category-selector .button.checked {
@@ -1770,7 +1770,7 @@ input.fixed-bottom-button {
 
 .pager-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .pager-button a {
@@ -2217,7 +2217,7 @@ input.fixed-bottom-button {
 
 .dropdown .dropdown-menu .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .dropdown .dropdown-menu > div {
@@ -2558,7 +2558,7 @@ input.fixed-bottom-button {
 
 .list-content-with-icon-and-text .button.loading, .list-content-with-icon-column .button.loading, .list-content-with-icon-and-text .button-with-option.loading, .list-content-with-icon-column .button-with-option.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .list-content-with-icon-and-text .dropdown-button, .list-content-with-icon-column .dropdown-button {
@@ -3086,7 +3086,7 @@ input.fixed-bottom-button {
 
 .info-content .button.loading, .info-content .button-with-option.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .info-content .button, .info-content .button-with-option {
@@ -3129,7 +3129,7 @@ input.fixed-bottom-button {
 
 .info-content .button.loading, .info-content .button-with-option.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .identified-user-info {
@@ -3170,7 +3170,7 @@ input.fixed-bottom-button {
 }
 
 .identified-user-info:after {
-    background-image: url('https://miiverse.nintendo.net/img/tutorial/tutorial-identified-user.png');
+    background-image: url('/img/tutorial/tutorial-identified-user.png');
     width: 250px;
 }
 
@@ -3441,7 +3441,7 @@ input.fixed-bottom-button {
 .window .window-body.loading .window-body-inner.message p {
     padding: 64px 0 0;
     margin: 20px 0;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center 0;
+    background: url('/img/loading-image-green.gif') no-repeat center 0;
 }
 
 .window .window-bottom-buttons {
@@ -3494,7 +3494,7 @@ input.fixed-bottom-button {
 
 .window .window-bottom-buttons .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .window .window-bottom-buttons input.button {
@@ -3564,7 +3564,7 @@ input.fixed-bottom-button {
 
 .window .window-center-buttons .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .window .user-container {
@@ -3649,7 +3649,7 @@ input.fixed-bottom-button {
 
 .window .user-container .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .window .title-container {
@@ -3829,7 +3829,7 @@ input.fixed-bottom-button {
 
 .message-window .window-body-inner.message .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .message-window .window-body-inner.message h2 {
@@ -3939,7 +3939,7 @@ input.fixed-bottom-button {
 
 .tutorial-window .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .tutorial-window h3 {
@@ -3974,25 +3974,25 @@ input.fixed-bottom-button {
 .tutorial-window#activity-feed-tutorial p.tutorial-text {
     padding-right: 395px;
     min-height: 243px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-activity-feed.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-activity-feed.png') no-repeat right center;
 }
 
 #community-top .tutorial-window p {
     padding-right: 340px;
     min-height: 222px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-community.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-community.png') no-repeat right center;
 }
 
 #messages-list .tutorial-window p {
     padding-right: 296px;
     min-height: 231px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-message.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-message.png') no-repeat right center;
 }
 
 #news-page .tutorial-window p {
     padding-right: 315px;
     min-height: 221px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-news.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-news.png') no-repeat right center;
 }
 
 .tutorial-window.tutorial-balloon {
@@ -4074,7 +4074,7 @@ input.fixed-bottom-button {
 #communities-guide .tutorial-window p {
     padding-right: 340px;
     min-height: 222px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-community.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-community.png') no-repeat right center;
 }
 
 #news-page #news-empahty-notice-opt-out-tutorial {
@@ -4109,7 +4109,7 @@ input.fixed-bottom-button {
 }
 
 .body-content .profile-tutorial .tutorial-window:after {
-    background-image: url('https://miiverse.nintendo.net/img/tutorial/tutorial-profile.png');
+    background-image: url('/img/tutorial/tutorial-profile.png');
     background-repeat: no-repeat;
     bottom: 17px;
     content: '';
@@ -4222,7 +4222,7 @@ input.fixed-bottom-button {
 }
 
 .body-content .profile-tutorial .game-skill-body {
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome8-1.png') no-repeat 105px bottom, url('https://miiverse.nintendo.net/img/welcome/welcome8-2.png') no-repeat 378px bottom, url('https://miiverse.nintendo.net/img/welcome/welcome8-3.png') no-repeat 654px bottom;
+    background: url('/img/welcome/welcome8-1.png') no-repeat 105px bottom, url('/img/welcome/welcome8-2.png') no-repeat 378px bottom, url('/img/welcome/welcome8-3.png') no-repeat 654px bottom;
 }
 
 .body-content .profile-tutorial .game-skill-body p {
@@ -4273,14 +4273,14 @@ input.fixed-bottom-button {
 }
 
 .body-content .profile-tutorial textarea {
-    background: #ffffff url("https://miiverse.nintendo.net/img/profile-text-bg-welcome.jpg") no-repeat 0 0;
+    background: #ffffff url("/img/profile-text-bg-welcome.jpg") no-repeat 0 0;
     width: 840px;
     height: 130px;
     padding: 10px;
 }
 
 #favorite-community-suggest .tutorial-window:after {
-    background-image: url('https://miiverse.nintendo.net/img/tutorial/suggest-favorite-bg.png');
+    background-image: url('/img/tutorial/suggest-favorite-bg.png');
     bottom: 15px;
     height: 90px;
     left: 25px;
@@ -4326,7 +4326,7 @@ input.fixed-bottom-button {
 #activity-feed .no-content-window .window p {
     min-height: 243px;
     padding-right: 395px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-activity-feed.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-activity-feed.png') no-repeat right center;
 }
 
 #activity-feed #activity-feed-tutorial.no-content {
@@ -4360,7 +4360,7 @@ input.fixed-bottom-button {
     min-height: auto;
     padding: 64px 0 0;
     margin: 20px 0;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center 0;
+    background: url('/img/loading-image-green.gif') no-repeat center 0;
 }
 
 #messages-list .no-content-window .window {
@@ -4371,7 +4371,7 @@ input.fixed-bottom-button {
 #messages-list .no-content-window .window p {
     padding-right: 315px;
     min-height: 221px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-message.png') no-repeat right center;
+    background: url('/img/tutorial/tutorial-message.png') no-repeat right center;
 }
 
 #album-no-content.no-content-window .window, #user-page-no-content .window {
@@ -4587,7 +4587,7 @@ input.fixed-bottom-button {
 
 #body .image-selector .dropdown-toggle.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #body .image-selector .dropdown-toggle.forbidden {
@@ -4734,7 +4734,7 @@ input.fixed-bottom-button {
 
 #body .image-selector .dropdown-menu .no-select-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #body .image-selector .dropdown-menu .no-select-button input {
@@ -4863,7 +4863,7 @@ input.fixed-bottom-button {
 
 #config-other-menu .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #config-other-menu #user-config-button {
@@ -5175,7 +5175,7 @@ input.fixed-bottom-button {
 
 .post-list .post.recommend-user-container .button.profile-page-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .post-list .post.recommend-user-container .profile-page-link {
@@ -5439,7 +5439,7 @@ input.fixed-bottom-button {
 
 .post-list .post .post-meta .miitoo-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .post-list .post .post-meta .miitoo-button:disabled {
@@ -5585,7 +5585,7 @@ input.fixed-bottom-button {
 
 .post-list .post .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .post-list .post .recent-reply {
@@ -5763,7 +5763,7 @@ input.fixed-bottom-button {
 
 .post-list .empathy-activity .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .post-list .empathy-activity .empathy-body, .post-list .empathy-activity .other-empathy-button {
@@ -6115,7 +6115,7 @@ input.fixed-bottom-button {
 
 #post-permalink .reply-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink #copyright {
@@ -6373,7 +6373,7 @@ input.fixed-bottom-button {
 
 #post-permalink-content .more-content-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-content .post-content.memo {
@@ -6478,7 +6478,7 @@ input.fixed-bottom-button {
 
 #post-permalink-content #close-topic-post input.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-content .post-meta {
@@ -6529,7 +6529,7 @@ input.fixed-bottom-button {
 
 #post-permalink-content .spoiler-button.loading, #post-permalink-content .report-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-content .report-button {
@@ -6589,7 +6589,7 @@ input.fixed-bottom-button {
 
 #post-permalink-content .miitoo-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-content .miitoo-button:disabled {
@@ -6636,7 +6636,7 @@ input.fixed-bottom-button {
 
 #post-permalink-content .link-button.loading, #post-permalink-content .data-button.loading, #post-permalink-content .tag-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-content .link-button {
@@ -6688,7 +6688,7 @@ input.fixed-bottom-button {
 
 #post-permalink-content .edit-post-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-content .post-permalink-feeling {
@@ -6829,7 +6829,7 @@ input.fixed-bottom-button {
 
 #post-permalink-comments .more-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #post-permalink-comments .select-content {
@@ -7237,7 +7237,7 @@ input.fixed-bottom-button {
 
 #reply-permalink .post-permalink-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #reply-permalink .post-permalink-button > span {
@@ -7319,7 +7319,7 @@ input.fixed-bottom-button {
 
 #reply-permalink #post-permalink-comments .edit-reply-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #reply-permalink #post-permalink-comments .spoiler-button, #reply-permalink #post-permalink-comments .report-button {
@@ -7361,7 +7361,7 @@ input.fixed-bottom-button {
 
 #reply-permalink #post-permalink-comments .spoiler-button.loading, #reply-permalink #post-permalink-comments .report-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #reply-permalink #post-permalink-comments .miitoo-button {
@@ -7403,7 +7403,7 @@ input.fixed-bottom-button {
 
 #reply-permalink #post-permalink-comments .miitoo-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #reply-permalink #post-permalink-comments .miitoo-button:disabled {
@@ -7839,7 +7839,7 @@ input.fixed-bottom-button {
 
 .user-page .more-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .user-page #diary_post-post-list, .user-page #artwork_post-post-list, .user-page #topic_post, .user-page .album-content {
@@ -8017,7 +8017,7 @@ input.fixed-bottom-button {
 
 .user-button-container .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .user-button-container .button:before {
@@ -8312,7 +8312,7 @@ input.fixed-bottom-button {
 
 #title-search-list-page .more-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #new-post-button-container {
@@ -8354,7 +8354,7 @@ input.fixed-bottom-button {
 
 #new-post-button-container .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #new-post-button-container #new-post {
@@ -8499,7 +8499,7 @@ input.fixed-bottom-button {
 
 #community-top .more-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .featured-community-list {
@@ -8670,7 +8670,7 @@ input.fixed-bottom-button {
 
 .with-filter .dropdown-toggle.loading, .with-filter .headline-filter-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .with-filter.headline-3ds .dropdown-toggle {
@@ -8758,7 +8758,7 @@ input.fixed-bottom-button {
 
 .platform-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .platform-button-wiiu {
@@ -8871,7 +8871,7 @@ input.fixed-bottom-button {
 
 .banner-container .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .banner-container .identified-user-button {
@@ -9791,7 +9791,7 @@ input.fixed-bottom-button {
 
 .message-post-list .post .post-body .admin-message-reference-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .message-post-list .post .post-body .post-content.deleted-message {
@@ -10034,7 +10034,7 @@ textarea.placeholder {
 }
 
 .setting-profile-comment #profile-text {
-    background: #ffffff url("https://miiverse.nintendo.net/img/profile-text-bg.jpg") no-repeat 0 0;
+    background: #ffffff url("/img/profile-text-bg.jpg") no-repeat 0 0;
     width: 1020px;
     height: 140px;
     padding: 10px;
@@ -10098,7 +10098,7 @@ textarea.placeholder {
 #setting-page-visible-title .window-body-inner {
     width: 500px;
     padding-right: 320px;
-    background: url('https://miiverse.nintendo.net/img/setting-page-visible-title.jpg') no-repeat right center;
+    background: url('/img/setting-page-visible-title.jpg') no-repeat right center;
 }
 
 .capture-page.window-page {
@@ -10125,13 +10125,13 @@ textarea.placeholder {
     -webkit-box-align: center;
     height: 450px;
     margin-bottom: 40px;
-    background: url("https://miiverse.nintendo.net/img/loading-image-green.gif") no-repeat center 206px;
+    background: url("/img/loading-image-green.gif") no-repeat center 206px;
 }
 
 .capture-page .capture {
     max-height: 450px;
     min-height: 360px;
-    background: url("https://miiverse.nintendo.net/img/loading-image-green.gif") no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#dddddd), to(#ffffff));
+    background: url("/img/loading-image-green.gif") no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#dddddd), to(#ffffff));
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
     -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
 }
@@ -10174,7 +10174,7 @@ textarea.placeholder {
 
 .capture-page .cancel-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .capture-page .cancel-button span {
@@ -10197,7 +10197,7 @@ textarea.placeholder {
 .post-content .capture-container, #reply-permalink .capture-container {
     max-height: 450px;
     min-height: 384px;
-    background: url("https://miiverse.nintendo.net/img/loading-image-green.gif") no-repeat center center #f6f6f6;
+    background: url("/img/loading-image-green.gif") no-repeat center center #f6f6f6;
     text-align: center;
     display: inline-block;
     min-width: 450px;
@@ -10208,7 +10208,7 @@ textarea.placeholder {
 .post-content .capture-container .capture, #reply-permalink .capture-container .capture {
     max-height: 450px;
     min-height: 384px;
-    background: url("https://miiverse.nintendo.net/img/loading-image-green.gif") no-repeat center center #f6f6f6;
+    background: url("/img/loading-image-green.gif") no-repeat center center #f6f6f6;
     vertical-align: bottom;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -10343,7 +10343,7 @@ textarea.placeholder {
 
 .album-dialog .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .album-dialog .edit-button-container {
@@ -10668,7 +10668,7 @@ textarea.placeholder {
 
 #community-post-list .multi-timeline-post-list .headline.with-filter .post-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #community-post-list .multi-timeline-post-list .headline.with-filter .post-button:before {
@@ -10737,7 +10737,7 @@ textarea.placeholder {
 
 #community-post-list .multi-timeline-post-list .more-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #community-post-list .multi-timeline-post-list .empty {
@@ -11076,7 +11076,7 @@ textarea.placeholder {
 
 .multi-post-list .hidden-content .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .multi-post-list .hidden .multi-post-body {
@@ -11397,7 +11397,7 @@ textarea.placeholder {
 
 .topic-multi-post-list .hidden-content .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .topic-multi-post-list .hidden-content p {
@@ -11491,7 +11491,7 @@ textarea.placeholder {
 
 .before-renewal .button.loading, .related-community .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 .before-renewal {
@@ -11701,7 +11701,7 @@ textarea.placeholder {
 
 #help #index button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #help #index button.help-content-body-open {
@@ -11865,7 +11865,7 @@ textarea.placeholder {
 
 #help .help-content .anchor.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #help .help-content .anchor:before {
@@ -12308,7 +12308,7 @@ textarea.placeholder {
 
 #help #guide .guide-img6 {
     padding-right: 200px;
-    background: url('https://miiverse.nintendo.net/img/help/official_user.png') no-repeat right top;
+    background: url('/img/help/official_user.png') no-repeat right top;
     background-size: 180px 180px;
 }
 
@@ -12320,7 +12320,7 @@ textarea.placeholder {
 #welcome-start .window-body-inner p {
     padding-bottom: 267px;
     margin: 0;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome1.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome1.png') no-repeat center bottom;
 }
 
 #welcome-parental_confirm .window-title {
@@ -12338,7 +12338,7 @@ textarea.placeholder {
     -webkit-box-pack: center;
     width: 430px;
     padding: 0 370px 0 20px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome2.png') no-repeat right bottom;
+    background: url('/img/welcome/welcome2.png') no-repeat right bottom;
 }
 
 #welcome-parental_confirm .window-body-inner p {
@@ -12347,12 +12347,12 @@ textarea.placeholder {
 
 #welcome-parental_control .window-body-inner p {
     padding-bottom: 200px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome3.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome3.png') no-repeat center bottom;
 }
 
 #welcome-about .window-body-inner .p1 {
     padding-bottom: 150px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome4.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome4.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline-container {
@@ -12388,7 +12388,7 @@ textarea.placeholder {
 
 #welcome-guideline .guideline1 {
     padding-bottom: 390px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome5-1.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome5-1.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline1 h2 {
@@ -12398,7 +12398,7 @@ textarea.placeholder {
 
 #welcome-guideline .guideline2 {
     padding-bottom: 410px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome5-4.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome5-4.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline2 h2 {
@@ -12409,7 +12409,7 @@ textarea.placeholder {
 #welcome-guideline .guideline3 {
     padding-bottom: 190px;
     margin-bottom: 80px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome5-2.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome5-2.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline3 h2 {
@@ -12419,7 +12419,7 @@ textarea.placeholder {
 
 #welcome-guideline .guideline4 {
     padding-bottom: 390px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome5-3.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome5-3.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline4 h2 {
@@ -12429,7 +12429,7 @@ textarea.placeholder {
 
 #welcome-guideline .guideline5 {
     padding-bottom: 220px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome5-6.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome5-6.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline5 h2 {
@@ -12439,7 +12439,7 @@ textarea.placeholder {
 
 #welcome-guideline .guideline6 {
     padding-bottom: 210px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome5-5.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome5-5.png') no-repeat center bottom;
 }
 
 #welcome-guideline .guideline6 h2 {
@@ -12496,7 +12496,7 @@ textarea.placeholder {
 
 #welcome-guideline .guideline-button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #welcome-guideline .next-button {
@@ -12544,7 +12544,7 @@ textarea.placeholder {
 #welcome-notice_opt_in .window-body p {
     padding-bottom: 183px;
     margin: 0 0 10px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome6.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome6.png') no-repeat center bottom;
 }
 
 #welcome-luminous_opt_in .window-body {
@@ -12554,7 +12554,7 @@ textarea.placeholder {
 #welcome-luminous_opt_in .window-body p {
     padding-bottom: 183px;
     margin: 0 0 10px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome7.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome7.png') no-repeat center bottom;
 }
 
 #welcome-settings .window-body {
@@ -12564,12 +12564,12 @@ textarea.placeholder {
 #welcome-settings .window-body p {
     padding-bottom: 180px;
     margin: 0 0 13px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome8-1.png') no-repeat 95px bottom, url('https://miiverse.nintendo.net/img/welcome/welcome8-2.png') no-repeat 345px bottom, url('https://miiverse.nintendo.net/img/welcome/welcome8-3.png') no-repeat 600px bottom;
+    background: url('/img/welcome/welcome8-1.png') no-repeat 95px bottom, url('/img/welcome/welcome8-2.png') no-repeat 345px bottom, url('/img/welcome/welcome8-3.png') no-repeat 600px bottom;
 }
 
 #welcome-complete .window-body-inner {
     padding-bottom: 245px;
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome9.png') no-repeat center bottom;
+    background: url('/img/welcome/welcome9.png') no-repeat center bottom;
 }
 
 #welcome-complete p {
@@ -12577,7 +12577,7 @@ textarea.placeholder {
 }
 
 #welcome-finish .window-body {
-    background: url('https://miiverse.nintendo.net/img/welcome/welcome10.png') no-repeat center center;
+    background: url('/img/welcome/welcome10.png') no-repeat center center;
 }
 
 #welcome-finish .window-body-inner {
@@ -12606,7 +12606,7 @@ textarea.placeholder {
 
 #renewal-guide-window .p1 {
     padding-bottom: 310px;
-    background: url('https://miiverse.nintendo.net/img/tutorial/tutorial-renewal.png') no-repeat center bottom;
+    background: url('/img/tutorial/tutorial-renewal.png') no-repeat center bottom;
 }
 
 .add-post-page .add-post-page-header {
@@ -13374,7 +13374,7 @@ textarea.placeholder {
 
 #miiverse-will-reborn .button-container .button.loading {
     text-indent: -3000px;
-    background: url('https://miiverse.nintendo.net/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
+    background: url('/img/loading-image-green.gif') no-repeat center center, -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(0.5, #ffffff), color-stop(0.8, #f6f6f6), color-stop(0.96, #f5f5f5), to(#bbbbbb)) 0 0;
 }
 
 #miiverse-will-reborn .button-container .button:before {
@@ -13395,7 +13395,7 @@ textarea.placeholder {
 }
 
 #miiverse-will-reborn .content.album-guide h2:before {
-    content: url('https://miiverse.nintendo.net/img/special/album-image.png');
+    content: url('/img/special/album-image.png');
     width: 96px;
     height: 97px;
     position: absolute;
@@ -13443,7 +13443,7 @@ textarea.placeholder {
 }
 
 #miiverse-will-reborn .content.diary-guide h2:before {
-    content: url('https://miiverse.nintendo.net/img/special/diary-image.png');
+    content: url('/img/special/diary-image.png');
     width: 96px;
     height: 97px;
     position: absolute;

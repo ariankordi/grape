@@ -15,7 +15,7 @@ $query = prepared('SELECT pid FROM settings_tutorial WHERE pid = ? AND my_news =
 $query = prepared('SELECT pid FROM settings_tutorial WHERE pid = ? AND friend_messages = 1 LIMIT 1', [$_SESSION['pid']]);
 }
 
-if(!query || $query->num_rows != 0) {
+if(!$query || $query->num_rows != 0) {
 jsonErr(400); exit();
 }
 
