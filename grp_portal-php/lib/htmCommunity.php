@@ -1,7 +1,7 @@
 <?php
 
 function getIcon($row) {
-if(empty($row['icon']) || strlen($row['icon']) <= 1) { return 'https://miiverse.nintendo.net/img/title-icon-default.png'; } else {
+if(empty($row['icon']) || strlen($row['icon']) <= 1) { return '/img/title-icon-default.png'; } else {
 return htmlspecialchars($row['icon']); }
 }
 

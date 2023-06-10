@@ -13,7 +13,7 @@ print '<div id="main-body">
     <span class="title">Posts from Verified Users</span>
     <span class="text">Get the latest news here!</span>
   </span>
-  <img src="https://d13ph7xrk1ee39.cloudfront.net/img/identified-user.png">
+  <img src="/img/identified-user.png">
 </div>';
 }
 $identified_users_select = $mysql->query('select a.*, bm.recent_created_at from (select pid, max(created_at) as recent_created_at from posts group by pid) bm inner join people a on bm.pid = a.pid WHERE a.official_user = "1" ORDER BY recent_created_at DESC LIMIT 50'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? 'OFFSET '.$mysql->real_escape_string($_GET['offset']) : null));	

@@ -475,7 +475,7 @@ print '<div class="user-data">
       <div class="note"><div class="device-'.$pge_platform.'">
 	  ';
 	  if($pge_patext != 'Off-Device') {
-	  print '<img src="https://d13ph7xrk1ee39.cloudfront.net/img/'.$pge_platform.'.png" class="'.$pge_platform.'-icon">'; } print '<span>'.$pge_patext.'</span></div>
+	  print '<img src="/img/'.$pge_platform.'.png" class="'.$pge_platform.'-icon">'; } print '<span>'.$pge_patext.'</span></div>
       </div>
     </div>
   </div>';

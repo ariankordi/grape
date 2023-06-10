@@ -61,7 +61,7 @@ if($search_relationships_real->num_rows == 0) {
 print '<div id="activity-feed-tutorial">
   <p class="tleft">In your activity feed, you can view posts from your friends and from people you\'re following. To get started, why not follow some people whose posts interest you? You can also search for friends using Search Users in the upper right.<br>
 </p>
-  <img src="https://d13ph7xrk1ee39.cloudfront.net/img/tutorial/tutorial-activity-feed.png?TPsXJlkWDzZaF8SSsZSQLw" class="tutorial-image">
+  <img src="/img/tutorial/tutorial-activity-feed.png" class="tutorial-image">
     <h3>Latest Updates from Verified Users</h3>
     <ul class="list list-content-with-icon-and-text arrow-list follow-list">
 	';

@@ -1,7 +1,7 @@
 <?php
 
 function getIcon($row) {
-if(empty($row['icon']) || strlen($row['icon']) <= 1) { return 'https://miiverse.nintendo.net/img/title-icon-default.png'; } else {
+if(empty($row['icon']) || strlen($row['icon']) <= 1) { return '/img/title-icon-default.png'; } else {
 return htmlspecialchars($row['icon']); }
 }
 
@@ -12,7 +12,7 @@ print '<li id="community-'.$row['olive_community_id'].'" class="trigger " data-h
       <a class="title" href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" tabindex="-1">'.htmlspecialchars($row['name']).'</a>
 	  ';
 if(!empty($row['platform_id'])) {
-print '        <span class="platform-tag"><img src="https://i.imgur.com/'.($row['platform_id'] == 1 ? 'nZkp8NW' : 'VaXHOg6').'.png"></span>
+print '        <span class="platform-tag"><img src="/img/platform-tag-'.($row['platform_id'] == 1 ? 'wiiu' : '3ds').'.png"></span>
 ';
 if(!empty($row['platform_type'])) {
 if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = loc('community', 'grp.wiiu_games'); }
@@ -50,7 +50,7 @@ print '<li id="community-'.$row['olive_community_id'].'" class="trigger " data-h
       <a class="title" href="/titles/'.$row['olive_title_id'].'/'.$row['olive_community_id'].'" tabindex="-1">'.htmlspecialchars($row['name']).'</a>
 	  ';
 if(!empty($row_t['platform_id'])) {
-print '        <span class="platform-tag"><img src="https://i.imgur.com/'.($row_t['platform_id'] == 1 ? 'nZkp8NW' : 'VaXHOg6').'.png"></span>
+print '        <span class="platform-tag"><img src="/img/platform-tag-'.($row_t['platform_id'] == 1 ? 'wiiu' : '3ds').'.png"></span>
 ';
 print '
       <span class="text">'.htmlspecialchars($row_t['name']).'</span>

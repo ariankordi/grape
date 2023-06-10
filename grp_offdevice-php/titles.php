@@ -33,7 +33,7 @@ print '<div id="page-title">'.$pagetitle.'</div>'.(!empty($community['banner_3ds
 <div id="community-content" class>
   <span class="icon-container"><img src="'.getIcon($community).'" class="icon"></span>';
   if(!empty($title['platform_id'])) {
-print '  <span class="platform-tag"><img src="https://i.imgur.com/'.($title['platform_id'] == 1 ? 'nZkp8NW' : 'VaXHOg6').'.png"></span>'; }
+print '  <span class="platform-tag"><img src="/img/platform-tag-'.($title['platform_id'] == 1 ? 'wiiu' : '3ds').'.png"></span>'; }
 if(!empty($community['type']) && $community['type'] >= 1) {
   print '<span class="news-community-badge">'.($community['type'] == 2 ? 'Announcement Community' : 'Main Community').'</span>
 '; }
