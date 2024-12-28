@@ -131,7 +131,7 @@ print '        <div id="footer-inner">
 ';            
 }
 global $dev_server;
-print '            <p id="copyright">grape'.($dev_server == true ? '/'.$version.' (offdevice)' : '').'</p>
+print '            <p id="copyright">rverse'.($dev_server == true ? '/'.$version.' (offdevice)' : '').'</p>
           </div>
 </div> ';
 if(!isset($mode) || $mode != 'old') { print '
@@ -150,4 +150,9 @@ header('Content-Type: text/plain');
 print "403 Forbidden\n";
 }
 
+$me = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION["pid"].'"')->fetch_assoc();
+$mee = $mysql->query('SELECT * FROM bans WHERE reciever = "'.$mysql->real_escape_string($user["pid"]).'" LIMIT 1')->num_rows;
+if($mee !== 0){
+    exit("You are currently banned from rv3.");
+}
 

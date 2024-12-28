@@ -4,10 +4,10 @@ require_once '../grp_act-php/lib/htm.php';
 
 if(!empty($_SESSION['pid'])) {
 require_once '../grplib-php/account-helper.php';
-setLoginVars($_SESSION, false);
+session_destroy();
 unset($_COOKIE['grp_identity']);
-setcookie('grp_identity', false, time() - 4, '/');
-defaultRedir(false, false);
+session_destroy();
+exit('Logged out.<script>setTimeout(function(){window.location.href="/";},1000);');
 }
 
 else {

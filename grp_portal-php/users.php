@@ -1,8 +1,11 @@
 <?php
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
-
-$search_user = prepared('SELECT * FROM people WHERE people.user_id = ?', [$_GET['user_id'] ?? null]);
+if($_GET['user_id'] == "show" && isset($_GET["pid"])){
+  $search_user = prepared('SELECT * FROM people WHERE people.pid = ?', [$_GET['pid'] ?? null]);
+} else {
+  $search_user = prepared('SELECT * FROM people WHERE people.user_id = ?', [$_GET['user_id'] ?? null]);
+}
 require_once '../grplib-php/user-helper.php';
 
 if(isset($_GET['mode']) && $_GET['mode'] == 'posts') {
@@ -11,14 +14,14 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
-$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$own_page = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 if(empty($_SERVER['HTTP_X_PJAX_CONTAINER']) || $_SERVER['HTTP_X_PJAX_CONTAINER'] != '.tab-body') {
 $pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
@@ -80,14 +83,17 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if($_SESSION["pid"] !== $user["pid"] && $user["status"] > 1){
+  generalError(403, 'This user is banned.');  exit();
+}
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
-$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$own_page = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 if(empty($_SERVER['HTTP_X_PJAX_CONTAINER']) || $_SERVER['HTTP_X_PJAX_CONTAINER'] != '.tab-body') {
 $pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
@@ -150,14 +156,17 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
+if($_SESSION["pid"] !== $user["pid"] && $user["status"] > 1){
+  generalError(403, 'This user is banned.');  exit();
+}
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
-$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$own_page = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
@@ -175,7 +184,7 @@ print '<div class="body-content user-page'.($own_page ? ' is-visitor' : '').'">
 ';
 userInfo($user, $profile, $mii, 'following');
 userNavTab($user, 'following');
-$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+$can_view = $own_page || !empty($_SESSION["pid"]) && profileRelationshipVisible($_SESSION["pid"], $user['pid'], $profile['relationship_visibility']);
 
 if($can_view) {
 $search_relationships = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me = "0" ORDER BY relationships.relationship_id DESC LIMIT 20'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
@@ -230,14 +239,17 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if($_SESSION["pid"] !== $user["pid"] && $user["status"] > 1){
+  generalError(403, 'This user is banned.');  exit();
+}
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
-$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$own_page = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
@@ -255,7 +267,7 @@ print '<div class="body-content user-page'.($own_page ? ' is-visitor' : '').'">
 ';
 userInfo($user, $profile, $mii, 'followers');
 userNavTab($user, 'followers');
-$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+$can_view = $own_page || !empty($_SESSION["pid"]) && profileRelationshipVisible($_SESSION["pid"], $user['pid'], $profile['relationship_visibility']);
 
 if($can_view) {
 $search_relationships = $mysql->query('SELECT * FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0" ORDER BY relationships.relationship_id DESC LIMIT 20'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
@@ -309,14 +321,17 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
+if($_SESSION["pid"] !== $user["pid"] && $user["status"] > 1){
+  generalError(403, 'This user is banned.');  exit();
+}
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
-$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$own_page = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 if(empty($_SERVER['HTTP_X_AUTOPAGERIZE'])) {
 $pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
@@ -334,7 +349,7 @@ print '<div class="body-content user-page'.($own_page ? ' is-visitor' : '').'">
 ';
 userInfo($user, $profile, $mii, 'friends');
 userNavTab($user, 'friends');
-$can_view = $own_page || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+$can_view = $own_page || !empty($_SESSION["pid"]) && profileRelationshipVisible($_SESSION["pid"], $user['pid'], $profile['relationship_visibility']);
 
 if($can_view) {
 $search_relationships = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" ORDER BY friend_relationships.relationship_id DESC LIMIT 100'.(!empty($_GET['offset']) && is_numeric($_GET['offset']) ? ' OFFSET '.$_GET['offset'] : ''));
@@ -424,19 +439,22 @@ include_once '404.php'; }
 
 if($search_user->num_rows == 0) { jsonErr(404); }
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
 
-if($_SESSION['pid'] == $user['pid']) {
+if($_SESSION["pid"] == $user['pid']) {
 jsonErr(400); 
 }
+if($_SESSION["pid"] !== $user["pid"] && $user["status"] > 1){
+  generalError(403, 'This user is banned.');  exit();
+}
 
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
 
-$search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
+$search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
 
 if($search_relationship->num_rows != 0) {
 jsonErr(400); 
@@ -444,9 +462,9 @@ jsonErr(400);
 
 
 // User checks over. Is eligible to follow.
-        $create_relationship = $mysql->query('INSERT INTO relationships(source, target) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'")');
+        $create_relationship = $mysql->query('INSERT INTO relationships(source, target) VALUES ("'.$_SESSION["pid"].'", "'.$user['pid'].'")');
 
-sendNews($_SESSION['pid'], $user['pid'], 6, null);
+sendNews($_SESSION["pid"], $user['pid'], 6, null);
         if(!$create_relationship) {
 http_response_code(500);
 header('Content-Type: application/json'); print 
@@ -464,23 +482,23 @@ include_once '404.php'; }
 
 if($search_user->num_rows == 0) { jsonErr(404); }
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
 
-if($_SESSION['pid'] == $user['pid']) {
+if($_SESSION["pid"] == $user['pid']) {
 jsonErr(400); 
 }
 
-$search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
+$search_relationship = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.target = "'.$user['pid'].'" AND relationships.is_me2me = "0"');
 
 if($search_relationship->num_rows <= 0) {
 jsonErr(400); 
 }
 
 // User checks over. Is eligible to follow.
-        $delete_relationship = $mysql->query('DELETE FROM relationships WHERE source = "'.$_SESSION['pid'].'" AND target = "'.$user['pid'].'"');
+        $delete_relationship = $mysql->query('DELETE FROM relationships WHERE source = "'.$_SESSION["pid"].'" AND target = "'.$user['pid'].'"');
         if(!$delete_relationship) {
 http_response_code(500);
 header('Content-Type: application/json'); print 
@@ -501,14 +519,14 @@ if(!$search_user || $search_user->num_rows == 0) {
 generalError(404, 'The user could not be found.');  exit(); }
 
 $user = $search_user->fetch_assoc();
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 require '404.php'; exit(); }
 $mii = getMii($user, false);
 
 $profile = getProfile($user);
 
 require_once 'lib/htmUser.php';
-$own_page = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$own_page = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 $pagetitle = ($own_page ? 'User Page' : htmlspecialchars($user['screen_name']).'\'s Profile');
 
 printHeader(false); printMenu();
@@ -522,7 +540,7 @@ print '  <h1 id="page-title">'.$pagetitle.'</h1>
 ';
 
 #Begin body-content user-page
-print '<div class="body-content user-page'.(!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'] ? ' is-visitor' : '').'">
+print '<div class="body-content user-page'.(!empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'] ? ' is-visitor' : '').'">
 ';
 
 userInfo($user, $profile, $mii, false);
@@ -585,13 +603,33 @@ print '      <th><span>Systems Owned</span></th>
   </tbody></table></div>
 </div>
 ';
+if($_GET["user_id"] == $_SESSION["user_id"] || $_GET["pid"] == $_SESSION["pid"]){
+  $query = $mysql->query('SELECT pid FROM settings_tutorial WHERE pid = '.$_SESSION["pid"].' AND profile_setup = 1 LIMIT 1');
+  if(!$query || $query->num_rows != 0) {
+
+  } else {
+    print '
+    <div class="tutorial-window tutorial-balloon js-tutorial-balloon" id="lead-to-community" data-balloon-target="#global-menu-community a">
+      <p>Once you\'ve set up your profile, take a look at some communities.</p>
+    </div>
+    ';
+    global $mysql;
+    $query = $mysql->prepare('INSERT INTO settings_tutorial (pid, profile_setup) VALUES (?, 1)');
+    $query->bind_param("i", $_SESSION["pid"]);
+    $query->execute();
+    if($query->error){
+      // ill do something else eventually.
+      exit("An error occurred.");
+  }
+  }
+}
   
 print '<div class="favorite-communities scroll">
   <h2 class="headline">Favorite Communities</h2>
   <ul class="list-content-with-icon arrow-list">
   ';
 require_once 'lib/htmCommunity.php';
-$favorite_communities_search = $mysql->query('select a.*, bm.* from (select * from communities group by community_id) bm inner join favorites a on bm.community_id = a.community_id WHERE a.pid = "'.$user['pid'].'" ORDER BY a.created_at DESC');
+$favorite_communities_search = $mysql->query('select a.*, bm.* from (select * from communities group by community_id) bm inner join favorites a on bm.community_id = a.community_id WHERE a.pid = "'.$user['pid'].'" ORDER BY a.created_at DESC LIMIT 8');
 while($favorite_communities = $favorite_communities_search->fetch_assoc()) {
 print favoriteWithIcon($favorite_communities, true);
 }
@@ -626,5 +664,18 @@ userPageTemplate($user, $mii);
 print '</div>';
 	print $GLOBALS['div_body_head_end'];	
 	printFooter();
+  if($_GET["user_id"] == $_SESSION["user_id"] || $_GET["pid"] == $_SESSION["pid"]){
+    $query = query('SELECT pid FROM settings_tutorial WHERE pid = '.$_SESSION["pid"].' AND profile_setup = 1 LIMIT 1');
+    if(!$query || $query->num_rows != 0) {
 
+    } else {
+      $query = $mysql->prepare('INSERT INTO settings_tutorial (pid, profile_setup) VALUES (?, 1)');
+      $query->bind_param("i", $_SESSION["pid"]);
+      $query->execute();
+      if($query->error){
+        // ill do something else eventually.
+        exit("An error occurred.");
+    }
+    }
+  }
 exit();

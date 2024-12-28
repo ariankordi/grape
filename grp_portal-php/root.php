@@ -3,7 +3,7 @@ require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
 # If user isn't logged in, then 403 them.
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 if($dev_server) {
 plainErr(403, '403 Forbidden'); exit();
 }
@@ -62,7 +62,7 @@ require_once 'lib/htmCommunity.php';
 require_once 'lib/htmUser.php';
 require_once '../grplib-php/olv-url-enc.php';
 
-$search_relationships_real = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.is_me2me = "0"');
+$search_relationships_real = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.is_me2me = "0"');
 
 $posts = getActivity();
 

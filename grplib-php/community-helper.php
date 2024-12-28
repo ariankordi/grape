@@ -2,8 +2,8 @@
 function miitooCan($pid, $post, $type) {
 global $mysql;
 $getpost = $mysql->query('SELECT pid FROM '.($type == 'replies' ? 'replies' : 'posts').' WHERE id = "'.$post.'"')->fetch_assoc();
-$getuser = $mysql->query('SELECT people.status, people.privilege FROM people WHERE people.pid = "'.$pid.'" LIMIT 1')->fetch_assoc();
-$search_restrictions = $mysql->query('SELECT type FROM restrictions WHERE restrictions.id = "'.$post.'" AND operation = 0 AND (restrictions.recipients LIKE "%'.$pid.'%" OR restrictions.recipients IS NULL) LIMIT 1');
+$getuser = $mysql->query('SELECT people.status, people.privilege FROM people WHERE people.pid = "'.$_SESSION["pid"].'" LIMIT 1')->fetch_assoc();
+$search_restrictions = $mysql->query('SELECT type FROM restrictions WHERE restrictions.id = "'.$post.'" AND operation = 0 AND (restrictions.recipients LIKE "%'.$_SESSION["pid"].'%" OR restrictions.recipients IS NULL) LIMIT 1');
 if($getpost['pid'] == $pid) { return false; }
 elseif(strval($getuser['status'] >= 3)) { return false; }
 elseif($search_restrictions->num_rows != 0) { return false; }

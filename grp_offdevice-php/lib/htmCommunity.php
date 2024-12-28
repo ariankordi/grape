@@ -75,9 +75,11 @@ $can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' || $u
 
   <textarea name="body" class="textarea-text textarea" maxlength="1000" placeholder="'.($placeholder ? $placeholder : 'Share your thoughts in a post to this community.').'" data-open-folded-form="" data-required=""></textarea>
   ';
+  if($user['official_user'] == '1'){
+    print '<input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">';
+  }
 if($can_image) {
 print '
-<input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">
 <label class="file-button-container">
       <span class="input-label">Screenshot <span>JPEG/PNG/BMP</span></span>
       <input type="file" class="file-button" accept="image/jpeg, image/png, image/bmp">
@@ -179,8 +181,10 @@ print '<p class="deleted-message">
 if(isset($videopost)) {
 print '<a href="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="screenshot-container video"><img height="48" src="https://i.ytimg.com/vi/'.$videopost.'/default.jpg"></a>'; }
 
-if($row['_post_type'] == 'artwork') {
-print '<p class="post-content-memo"><img src="'.htmlspecialchars($row['body']).'" class="post-memo"></p>'; } else {
+if($row['_post_type'] == 'artwork' && str_contains($row["body"], "rvqcportal.rverse.club")) {
+  print '<p class="post-content-memo"><img src="'.htmlspecialchars($row['body']).'" class="post-memo"></p>';
+} else if($row['_post_type'] == 'artwork' && !str_contains($row["body"], "rvqcportal.rverse.club")) { 
+  print '<p class="post-content-memo"><img src="data:image/png;base64,'.htmlspecialchars($row['body']).'" class="post-memo"></p>'; } else {
 $truncate_post_body = (mb_strlen($row['body']) >= 204 ? mb_substr($row['body'], 0, 200).'...' : $row['body']);
 print '      <p class="post-content-text">'.htmlspecialchars(preg_replace("/[\r\n]+/", "\n", $truncate_post_body)).'</p>
 	  '; }

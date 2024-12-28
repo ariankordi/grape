@@ -4,6 +4,7 @@ ErrorDocument 404 /404.php
 RewriteRule ^$ /communities.php [L,NC,QSA]
 RewriteRule ^communities$ /communities.php [L,NC,QSA]
 RewriteRule ^communities\/favorites$ /communities-showfavorites.php [L,NC,QSA]
+RewriteRule ^titles\/show$ /communities.php [L,NC,QSA]
 RewriteRule ^titles\/search$ /titles-search.php [L,NC,QSA]
 RewriteRule ^titles\/([0-9_-]+)$ /titles.php?title_id=$1 [L,NC,QSA]
 RewriteRule ^titles\/([A-Za-z0-9_-]+)\/([A-Za-z0-9_-]+)$ /titles.php?title_id=$1&community_id=$2 [L,NC,QSA]
@@ -39,3 +40,6 @@ RewriteRule ^users\/([^\/]+).unfollow.json$ /users.php?user_id=$1&mode=unfollow 
 RewriteRule ^users\/([^\/]+).follow.json$ /users.php?user_id=$1&mode=follow [L,NC,QSA]
 RewriteRule ^users\/([^\/]+)$ /users.php?user_id=$1 [L,NC,QSA]
 RewriteRule ^users\/([^\/]+)\/([^\/]+)$ /users.php?user_id=$1&mode=$2 [L,NC,QSA]
+RewriteRule ^admin$ /admin.php [L,NC,QSA]
+
+php_flag display_errors off

@@ -13,21 +13,21 @@ $search_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.(empty(
 if($search_user->num_rows == 0) { http_response_code(404); header('Content-Type: application/json');
 print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 $user = $search_user->fetch_assoc();
 
-if($_SESSION['pid'] == $user['pid']) {
+if($_SESSION["pid"] == $user['pid']) {
 jsonErr(400); }
 
 if(isset($_GET['breakup'])) {
-$result_friend_relationship = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'"');
+$result_friend_relationship = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION["pid"].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION["pid"].'"');
 if($result_friend_relationship->num_rows == 0) {
 jsonErr(400); }
 
 # Breakup
-$result_breakup = $mysql->query('DELETE FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'"');
+$result_breakup = $mysql->query('DELETE FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION["pid"].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION["pid"].'"');
 if(!$result_breakup) {
 http_response_code(500);
 header('Content-Type: application/json'); print 
@@ -44,8 +44,8 @@ require_once '../grplib-php/user-helper.php';
 if(!checkFriendOK($user)) {
 http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit();
 }
-if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"')->num_rows != 0 || ($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'"')->num_rows != 0)) {
-			$error_message[] = 'You have either already sent a friend request to this user\n or are already friends with them.';
+if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION["pid"].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"')->num_rows != 0 || ($mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION["pid"].'" AND friend_relationships.target = "'.$user['pid'].'"')->num_rows != 0)) {
+			$error_message[] = 'You have either already sent a friend request to this user or are already friends with them.';
 			$error_code[] = 1512013; }
 		if(strlen($_POST['body']) > 255) {
             $error_message[] = 'You have exceeded the amount of characters that you can send.';
@@ -53,7 +53,7 @@ if($mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "
 	    if(!empty($error_code) || !empty($error_message) ) {
 http_response_code(400); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [array( 'message' => $error_message[0], 'error_code' => $error_code[0])], 'code' => 400));  exit(); }
 else {
-$result_create_friendrequest = $mysql->query('INSERT INTO friend_requests (sender, recipient, `message`, `has_read`, `finished`) VALUES ("'.$_SESSION['pid'].'", "'.$user['pid'].'", "'.$mysql->real_escape_string($_POST['body']).'", "0", "0")');
+$result_create_friendrequest = $mysql->query('INSERT INTO friend_requests (sender, recipient, `message`, `has_read`, `finished`) VALUES ("'.$_SESSION["pid"].'", "'.$user['pid'].'", "'.$mysql->real_escape_string($_POST['body']).'", "0", "0")');
 if(!$result_create_friendrequest) {
 http_response_code(500);
 header('Content-Type: application/json'); print 
@@ -67,18 +67,18 @@ json_encode(array('success' => 1)); }
 }
 
 else {
-$sql_fr_ees1 = 'SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$mysql->real_escape_string($_POST['pid']).'" AND friend_requests.finished = "1"';
-$sql_fr_ees2 = 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$mysql->real_escape_string($_POST['pid']).'"';
+$sql_fr_ees1 = 'SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION["pid"].'" AND friend_requests.recipient = "'.$mysql->real_escape_string($_POST['pid']).'" AND friend_requests.finished = "1"';
+$sql_fr_ees2 = 'SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION["pid"].'" AND friend_relationships.target = "'.$mysql->real_escape_string($_POST['pid']).'"';
 
 if($mysql->query($sql_fr_ees2)->num_rows != 0) {
-			$error_message[] = 'You have either already sent a friend request to this user\n or are already friends with them.';
+			$error_message[] = 'You have either already sent a friend request to this user or are already friends with them.';
 			$error_code[] = '1512013';	
 }
 
-if($_SERVER['QUERY_STRING'] == 'cancel' && $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"')->num_rows == 0) {
+if($_SERVER['QUERY_STRING'] == 'cancel' && $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION["pid"].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"')->num_rows == 0) {
 			$error_message[] = 'You have not sent a friend request to this user.';
 			$error_code[] = 1512014;  }
-if($_SERVER['QUERY_STRING'] == 'delete' && $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$user['pid'].'" AND friend_requests.recipient = "'.$_SESSION['pid'].'" AND friend_requests.finished = "0"')->num_rows == 0) {
+if($_SERVER['QUERY_STRING'] == 'delete' && $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$user['pid'].'" AND friend_requests.recipient = "'.$_SESSION["pid"].'" AND friend_requests.finished = "0"')->num_rows == 0) {
 			$error_message[] = 'You have not sent a friend request to this user.';
 			$error_code[] = 1512014;  }
 
@@ -88,9 +88,9 @@ else {
 
 if($_SERVER['QUERY_STRING'] == 'delete' || $_SERVER['QUERY_STRING'] == 'cancel') {
 	if($_SERVER['QUERY_STRING'] == 'cancel') {
-		$sql_newscreate = 'UPDATE friend_requests SET finished="1" WHERE recipient="'.$user['pid'].'" AND sender="'.$_SESSION['pid'].'"';
+		$sql_newscreate = 'UPDATE friend_requests SET finished="1" WHERE recipient="'.$user['pid'].'" AND sender="'.$_SESSION["pid"].'"';
 	} else {
-		$sql_newscreate = 'UPDATE friend_requests SET finished="1" WHERE sender="'.$user['pid'].'" AND recipient="'.$_SESSION['pid'].'"';	
+		$sql_newscreate = 'UPDATE friend_requests SET finished="1" WHERE sender="'.$user['pid'].'" AND recipient="'.$_SESSION["pid"].'"';	
 	}
         $result_newscreate = $mysql->query($sql_newscreate);
         if(!$result_newscreate) {
@@ -105,8 +105,8 @@ json_encode(array('success' => 1)); }
 	
 else {
 # Create friend!	
-$result_relationshipcreate = $mysql->query('INSERT INTO friend_relationships(source, target) VALUES ("'.$user['pid'].'", "'.$_SESSION['pid'].'")');
-$result_newscreate = $mysql->query('UPDATE friend_requests SET finished="1" WHERE sender="'.$user['pid'].'" AND recipient="'.$_SESSION['pid'].'"');
+$result_relationshipcreate = $mysql->query('INSERT INTO friend_relationships(source, target) VALUES ("'.$user['pid'].'", "'.$_SESSION["pid"].'")');
+$result_newscreate = $mysql->query('UPDATE friend_requests SET finished="1" WHERE sender="'.$user['pid'].'" AND recipient="'.$_SESSION["pid"].'"');
         if(!$result_relationshipcreate) {
 http_response_code(500);
 header('Content-Type: application/json');

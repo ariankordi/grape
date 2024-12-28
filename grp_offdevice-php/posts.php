@@ -410,8 +410,10 @@ print '
         Post ID: '.getPostID($post['id']).'
       </p>';
 	}
-if($post['_post_type'] == 'artwork') {
-print '<p class="post-content-memo"><img src="'.htmlspecialchars($post['body']).'" class="post-memo"></p>'; 
+if($post['_post_type'] == 'artwork' && str_contains($post["body"], "tga")) {
+print '<p class="post-content-memo"><img src="'.htmlspecialchars($post['body']).'" class="post-memo"></p>';
+} else if($post['_post_type'] == 'artwork' && !str_contains($post["body"], "tga")) { 
+print '<p class="post-content-memo"><img src="'.htmlspecialchars($post['body']).'" class="post-memo"></p>';
 } else {
 print '	<p class="post-content-text">'.htmlspecialchars($post['body']).'</p>'; 
 }
@@ -537,7 +539,7 @@ print '
 ';
 }
 else {
-$can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' : true);
+$can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' : true);
 print '<form id="reply-form" method="post" class="folded'.($can_image ? ' for-identified-user' : '').'" action="/posts/'.$post['id'].'/replies">
   
 

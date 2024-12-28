@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 
 # If user isn't logged in, then 403 them.
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 require 'lib/htm.php';
 notLoggedIn(); exit();
 }
@@ -25,7 +25,7 @@ print '<header id="header">
 print '<div class="body-content tab2-content" id="news-page">
 ';
 
-$find_user_newstutorial = $mysql->query('SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.my_news = "1"');
+$find_user_newstutorial = $mysql->query('SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION["pid"].'" AND settings_tutorial.my_news = "1"');
 
 if($find_user_newstutorial->num_rows == 0) {
 print '<div class="tutorial-window">
@@ -42,7 +42,7 @@ print '<div class="tutorial-window">
 print '
     <div class="tab-body">';
 
-$find_user_friend_requests = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.recipient = "'.$_SESSION['pid'].'" AND friend_requests.finished = "0" ORDER BY news_id DESC LIMIT 100');
+$find_user_friend_requests = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.recipient = "'.$_SESSION["pid"].'" AND friend_requests.finished = "0" ORDER BY news_id DESC LIMIT 100');
 
 if($find_user_friend_requests->num_rows == 0) {
 nocontentWindow('You don\'t have any friend requests.'); }

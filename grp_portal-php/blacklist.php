@@ -11,23 +11,23 @@ require_once '../grplib-php/user-helper.php';
 
 if($search_user->num_rows == 0) { jsonErr(404); }
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])){
 jsonErr(403); }
 
 $user = $search_user->fetch_assoc();
 require_once '../grplib-php/user-helper.php';
 
-if($_SESSION['pid'] == $user['pid']) {
+if($_SESSION["pid"] == $user['pid']){
 jsonErr(400); 
 }
-$block = findBlock($_SESSION['pid'], $user['pid']);
+$block = findBlock($_SESSION["pid"], $user['pid']);
 
 if(isset($_GET['un'])) {
 	if(!$block) {
 	jsonErr(400);	
 	}
 
-$delete_blacklist = prepared('DELETE FROM blacklist WHERE blacklist.source = ? AND blacklist.target = ?', [$_SESSION['pid'], $user['pid']]);
+$delete_blacklist = prepared('DELETE FROM blacklist WHERE blacklist.source = ? AND blacklist.target = ?', [$_SESSION["pid"], $user['pid']]);
 } else {
 	if($block) {
 if(empty($grp_config_allow_blacklist)) {
@@ -36,5 +36,5 @@ jsonErr(403); exit();
 	jsonErr(400);
 	}
 
-$create_blacklist = nice_ins('blacklist', ['source'=>$_SESSION['pid'], 'target'=>$user['pid'], 'type'=>0]);
+$create_blacklist = nice_ins('blacklist', ['source'=>$_SESSION["pid"], 'target'=>$user['pid'], 'type'=>0]);
 }

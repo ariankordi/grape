@@ -6,7 +6,7 @@ $search_user = $mysql->query('SELECT * FROM people WHERE people.user_id = "'.$us
       if(!$search_user ||$search_user->num_rows == 0) {
 return 'none'; }
 $user = $search_user->fetch_assoc();
-		if($user['ban_status'] >= 4) {
+		if($user['ban_status'] > 1) {
 return 'ban'; }
 
 $parts = explode('$', $user['password']);
@@ -23,9 +23,40 @@ return password_hash($pass, PASSWORD_BCRYPT);
 }
 
 function setLoginVars($user, $login) {
+global $mysql;
 if($login == true) {
+	if($_SERVER["REQUEST_URI"] == "/act/login"){
+	if(isset($_SERVER["HTTP_X_NINTENDO_SERVICETOKEN"])){
+		$serviceToken = bin2hex(base64_decode($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']));
+		$sessionId = substr($serviceToken, 0, 64);
+		$stmt = $mysql->prepare("SELECT * FROM `console_auth` WHERE `user_id` = ?");
+		$stmt->bind_param("s", $user['user_id']);
+		$stmt->execute();
+		$res = $stmt->get_result();
+		if($res->num_rows > 2){
+		  $stmt = $mysql->prepare("INSERT INTO `console_auth` (`long_id`, `pid`, `user_id`) VALUES (?, ?, ?);");
+		  $stmt->bind_param("sss", $sessionId, $user["pid"], $user["user_id"]);
+		  $stmt->execute();
+		  if($stmt->error){
+			exit("Failed to login.");
+		  } else {
+			header("Location: /users/@me");
+			exit();
+		  }
+		} else {
+			$stmt = $mysql->prepare("INSERT INTO `console_auth` (`long_id`, `pid`, `user_id`) VALUES (?, ?, ?);");
+			$stmt->bind_param("sss", $sessionId, $user["pid"], $user["user_id"]);
+			$stmt->execute();
+			if($stmt->error){
+			  exit("Failed to login.");
+			} else {
+			  header("Location: /users/@me");
+			  exit();
+			}
+		}
+	}
       $_SESSION['signed_in'] = true;       
-	  $_SESSION['pid'] = $user['pid'];
+	  $_SESSION["pid"] = $user['pid'];
       $_SESSION['user_id'] = $user['user_id'];
 } else {
       $_SESSION['signed_in'] = false;       
@@ -33,6 +64,51 @@ if($login == true) {
       $_SESSION['user_id'] = null;
 	}
 }
+}
+
+function setLoginVarsNA($user, $pid, $login) {
+	global $mysql;
+	if($login == true) {
+		if($_SERVER["REQUEST_URI"] == "/act/login" || $_SERVER["REQUEST_URI"] == "/act/create"){
+		if(isset($_SERVER["HTTP_X_NINTENDO_SERVICETOKEN"])){
+			$serviceToken = bin2hex(base64_decode($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']));
+			$sessionId = substr($serviceToken, 0, 64);
+			$stmt = $mysql->prepare("SELECT * FROM `console_auth` WHERE `user_id` = ?");
+			$stmt->bind_param("s", $user);
+			$stmt->execute();
+			$res = $stmt->get_result();
+			if($res->num_rows > 2){
+			  $stmt = $mysql->prepare("INSERT INTO `console_auth` (`long_id`, `pid`, `user_id`) VALUES (?, ?, ?);");
+			  $stmt->bind_param("sss", $sessionId, $pid, $user);
+			  $stmt->execute();
+			  if($stmt->error){
+				exit("Failed to login.");
+			  } else {
+				header("Location: /users/@me");
+				exit();
+			  }
+			} else {
+				$stmt = $mysql->prepare("INSERT INTO `console_auth` (`long_id`, `pid`, `user_id`) VALUES (?, ?, ?);");
+				$stmt->bind_param("sss", $sessionId, $pid, $user);
+				$stmt->execute();
+				if($stmt->error){
+				  exit("Failed to login.");
+				} else {
+				  header("Location: /users/@me");
+				  exit();
+				}
+			}
+		}
+		  $_SESSION['signed_in'] = true;       
+		  $_SESSION["pid"] = $pid;
+		  $_SESSION['user_id'] = $user;
+	} else {
+		  $_SESSION['signed_in'] = false;       
+		  $_SESSION['pid'] = null;
+		  $_SESSION['user_id'] = null;
+		}
+	}
+	}
 
 function findPendingEmailConfirm($user) {
 global $mysql;
@@ -137,19 +213,7 @@ if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE || checkdnsrr(substr($ema
 
 function actformCheck() {
 global $mysql;
-	if(empty($_POST['user_id'])) {
-		$error_message[] = "You did not enter a login ID.";
-		$error_code[] = 1022543;
-	}
-	if(empty($_POST['password'])) {
-		$error_message[] = "The password field cannot be blank.";
-		$error_code[] = 1022616;
-	}
-	elseif(!preg_match('/^[A-Za-z0-9-._]{6,20}$/', $_POST['user_id'])) {
-		$error_message[] = "Your login ID is too short, too long, or contains characters that cannot be used.";
-		$error_code[] = 1022543;
-	}
-	elseif(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['screen_name']))) {
+	if(empty($_POST['screen_name']) || empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['screen_name']))) {
 		$error_message[] = "You did not enter a screen name.";
 		$error_code[] = 1022543; 
 	}
@@ -157,25 +221,8 @@ global $mysql;
         $error_message[] = "Your screen name is too long.";
         $error_code[] = 1022543; 
     }
-	elseif(empty($_POST['password2']) || $_POST['password'] != $_POST['password2']) {
-        $error_message[] = "The passwords you have entered do not match.";
-		$error_code[] = 1022616;
-	}
 	global $nss;
-	if($nss == 0) {
-	if(empty($_POST['email']) || !emailCheck($_POST['email'])) {
-	    $error_message[] = "The e-mail address you have entered is not valid.";
-		$error_code[] = 1022575;
-		}
-	}
-	if($nss == 1) {
-	$get_nss_keys = in_array(($_POST['device_id'] ?? null), $grp_config_nss_keys);
-	    if(!$get_nss_keys) {
-		$error_message[] = "The device ID you have entered is not registered on the server.";
-		$error_code[] = 1022452;
-		}
-	}
-	elseif($nss == 2) {
+	if($nss == 2) {
 	/* Get an invite key */
 	}
 	$search_ouser = $mysql->query('SELECT pid FROM people WHERE people.user_id = "'.$mysql->real_escape_string($_POST['user_id'] ?? '').'" LIMIT 1');

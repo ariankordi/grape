@@ -1,7 +1,8 @@
 <?php
 require_once '../grplib-php/user-helper.php';
 
-function miitooAdd($type) {
+function miitooAdd($type, $silent=false) {
+global $plsnoprint;
 global $mysql;
 global $search_post;
 # Method is POST.
@@ -33,8 +34,8 @@ sendNews($_SESSION['pid'], $post['pid'], ($type == 'replies' ? 3 : 2), $post['id
         if(!$empathycreate)
         { json_encode(array(
 'success' => 0, 'errors' => [array( 'message' => 'An internal error has occurred.', 'error_code' => 1600000 + $mysql->errno)], 'code' => 500)); } else {
-header('Content-Type: application/json'); print 
-json_encode(array('success' => 1)); }	
+header('Content-Type: application/json'); if(!$silent){ print 
+json_encode(array('success' => 1)); }	}
   }
 }
 function miitooDelete($type) {

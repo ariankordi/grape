@@ -23,7 +23,7 @@ $news_post = ($news_post1->num_rows == 0 ? array('body' => 'not found') : $news_
 $news_body = truncate($news_post['body'], 17); }
 if($news['news_context'] == 6) {
 $newsurl = '/users/'.htmlspecialchars($user['user_id']);
-$get_follow_user = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'"');
+$get_follow_user = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.target = "'.$user['pid'].'"');
 $has_user_follow = (isset($merged) && count($merged) >= 1 ? true : ($get_follow_user->num_rows != 0 ? true : false));
 }
 require_once '../grplib-php/user-helper.php';
@@ -126,7 +126,7 @@ global $mysql;
 $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$row['pid'].'"')->fetch_assoc();
 $mii = getMii($user, $row['feeling_id']);
 
-print '<div id="message-'.$row['id'].'" class="post scroll '.($user['pid'] == $_SESSION['pid'] ? 'my' : 'other').'-post">
+print '<div id="message-'.$row['id'].'" class="post scroll '.($user['pid'] == $_SESSION["pid"] ? 'my' : 'other').'-post">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" data-pjax="#body" class="scroll-focus user-icon-container'.($mii['official'] ? ' official-user' : '').'"><img src="'.$mii['output'].'" class="user-icon"></a>
   <header>
     <span class="timestamp">'.humanTiming(strtotime($row['created_at'])).'</span>
@@ -195,7 +195,7 @@ print '
         <div class="textarea-memo trigger" data-sound=""><div class="textarea-memo-preview"></div><input type="hidden" name="painting"></div>
       </div>
 	';
-	 print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
+	 //print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
 print '
 	</div>
 
@@ -211,7 +211,7 @@ $user_id = htmlspecialchars($user['user_id']);
 $usermii = getMii($user, false);
 
 require_once '../grplib-php/user-helper.php';
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $user['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $user['pid'])) {
 return null; }
 
 $get_profile = $mysql->query('SELECT comment FROM profiles WHERE profiles.pid = "'.$user['pid'].'" LIMIT 1');
@@ -231,7 +231,7 @@ print '<div>
   </div>';
 }
 
-if($has_button && !empty($_SESSION['pid']) && $type != 'search' && $_SESSION['pid'] != $user['pid']) {
+if($has_button && !empty($_SESSION["pid"]) && $type != 'search' && $_SESSION["pid"] != $user['pid']) {
 
 if($type == 'friends') {
 // already friends
@@ -242,7 +242,7 @@ $has_arrow = false;
 }
 elseif($type == 'friend_request') {
 // friend request
-$friend_request = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0" ORDER BY friend_requests.news_id DESC LIMIT 1')->fetch_assoc();
+$friend_request = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION["pid"].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0" ORDER BY friend_requests.news_id DESC LIMIT 1')->fetch_assoc();
 print '
 <button type="button" class="button friend-requested-button relationship-button remove-button" data-modal-open="#sent-request-confirm-page"'.($usermii['official'] ? ' data-is-identified="1"': '').' data-user-id="'.htmlspecialchars($user['user_id']).'" data-is-identified="1" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$usermii['output'].'" data-pid="'.$user['pid'].'" data-body="'.htmlspecialchars($friend_request['message']).'" data-timestamp="'.date("m/d/Y g:i A",strtotime($friend_request['created_at'])).'">Request Pending</button>
 ';
@@ -251,7 +251,7 @@ $has_arrow = false;
 
 else {
 // follow
-$relationship_exists = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" LIMIT 1')->num_rows != 0;
+$relationship_exists = $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.target = "'.$user['pid'].'" LIMIT 1')->num_rows != 0;
 print '
 <div class="toggle-button">
 ';
@@ -295,8 +295,8 @@ if($fav_scrnsht_post && $fav_scrnsht_post->num_rows != 0) {
 }
 
 function userDropdown($user, $mii) {
-$user_page_my = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
-if(!empty($_SESSION['pid']) && !$user_page_my) {
+$user_page_my = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
+if(!empty($_SESSION["pid"]) && !$user_page_my) {
 print '
 <div id="dropdown-user-report" class="dropdown">
   <a href="#" class="option-button user-option-menu dropdown-toggle setting-button" data-toggle="dropdown" data-sound="SE_WAVE_BALLOON_OPEN"></a>
@@ -311,7 +311,7 @@ print '
 
 function userInfo($user, $profile, $mii, $page) {
 global $mysql;
-$user_page_my = !empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid'];
+$user_page_my = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid'];
 if($user_page_my) {
 print '<a id="header-mymenu-button" href="/my_menu" data-pjax="#body">User Menu</a>
 '; }
@@ -341,13 +341,13 @@ print '  <p class="title">
   
   ';
 if($page == false) {
-$relationship_exists = !empty($_SESSION['pid']) && $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'" LIMIT 1')->num_rows != 0;
+$relationship_exists = !empty($_SESSION["pid"]) && $mysql->query('SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.target = "'.$user['pid'].'" LIMIT 1')->num_rows != 0;
 
 if($user_page_my) {
 print '<a href="/settings/profile" data-pjax="#body" class="button edit-button">Profile Settings</a>'; }
 else {
 print '<div class="toggle-button">
-    <a class="follow-button button add-button'.($relationship_exists ? ' none' : '').' relationship-button'.(!empty($_SESSION['pid']) ? '' : ' disabled').'" href="#" data-action="/users/'.htmlspecialchars($user['user_id']).'.follow.json" data-sound="SE_WAVE_FRIEND_ADD" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="follow" data-track-category="follow">Follow</a>
+    <a class="follow-button button add-button'.($relationship_exists ? ' none' : '').' relationship-button'.(!empty($_SESSION["pid"]) ? '' : ' disabled').'" href="#" data-action="/users/'.htmlspecialchars($user['user_id']).'.follow.json" data-sound="SE_WAVE_FRIEND_ADD" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="follow" data-track-category="follow">Follow</a>
     <a href="#" class="unfollow-button button remove-button'.($relationship_exists ? '' : ' none').' relationship-button" data-modal-open="#unfollow-confirm-page" data-user-id="'.htmlspecialchars($user['user_id']).'" data-screen-name="'.htmlspecialchars($user['screen_name']).'" data-mii-face-url="'.$mii['output'].'" data-action="/users/'.htmlspecialchars($user['user_id']).'.unfollow.json"'.($mii['official'] ? ' data-is-identified="1"' : '').'" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="openUnfollowModal" data-track-category="follow">Follow</a>
 </div>';	
 }
@@ -356,14 +356,14 @@ if(!$user_page_my) {
 // Put this into its own function soon
 print '<div class="button-with-option dropdown">
 ';
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 print '            <a class="main-button friend-request-button disabled">Friend Request</a>
         <div class="dropdown-menu">
         </div>';
 } else {
-$friend_req_search_me = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION['pid'].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"');
-$friend_req_search_other = 	$mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$user['pid'].'" AND friend_requests.recipient = "'.$_SESSION['pid'].'" AND friend_requests.finished = "0"');
-$friend_relation_search = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION['pid'].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION['pid'].'"');
+$friend_req_search_me = $mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$_SESSION["pid"].'" AND friend_requests.recipient = "'.$user['pid'].'" AND friend_requests.finished = "0"');
+$friend_req_search_other = 	$mysql->query('SELECT * FROM friend_requests WHERE friend_requests.sender = "'.$user['pid'].'" AND friend_requests.recipient = "'.$_SESSION["pid"].'" AND friend_requests.finished = "0"');
+$friend_relation_search = $mysql->query('SELECT * FROM friend_relationships WHERE friend_relationships.source = "'.$_SESSION["pid"].'" AND friend_relationships.target = "'.$user['pid'].'" OR friend_relationships.source = "'.$user['pid'].'" AND friend_relationships.target = "'.$_SESSION["pid"].'"');
 if($friend_req_search_me->num_rows != 0) { $friend_case = 1; }
 elseif($friend_req_search_other->num_rows != 0) { $friend_case = 2; }
 elseif($friend_relation_search->num_rows != 0) { $friend_case = 3; }
@@ -428,7 +428,7 @@ $num_friends = $mysql->query('SELECT COUNT(relationship_id) FROM friend_relation
 $num_following = $mysql->query('SELECT COUNT(relationship_id) FROM relationships WHERE relationships.source = "'.$user['pid'].'" AND relationships.is_me2me != "1"')->fetch_assoc()['COUNT(relationship_id)'];
 $num_followers = $mysql->query('SELECT COUNT(relationship_id) FROM relationships WHERE relationships.target = "'.$user['pid'].'" AND relationships.is_me2me != "1"')->fetch_assoc()['COUNT(relationship_id)'];
 global $profile;
-$can_view = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $user['pid']) || !empty($_SESSION['pid']) && profileRelationshipVisible($_SESSION['pid'], $user['pid'], $profile['relationship_visibility']);
+$can_view = (!empty($_SESSION["pid"]) && $_SESSION["pid"] == $user['pid']) || !empty($_SESSION["pid"]) && profileRelationshipVisible($_SESSION["pid"], $user['pid'], $profile['relationship_visibility']);
 
 print '
 <menu class="user-menu tab-header">

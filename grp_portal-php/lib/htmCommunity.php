@@ -6,7 +6,7 @@ return htmlspecialchars($row['icon']); }
 }
 
 function favButton() {
-print '<a id="header-favorites-button" href="/communities/favorites" data-pjax="#body">'.loc('community', 'grp.portal.favorites_my').'</a>';
+print '<a id="header-favorites-button" href="/communities/favorites" data-pjax="#body">'.loc('grp.portal.favorites_my').'</a>';
 }
 
 function printTitle($row) {
@@ -25,11 +25,11 @@ global $mysql;
 		
 		';
 if(!empty($row['platform_type'])) {
-if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = loc('community', 'grp.wiiu_games'); }
-elseif($row['platform_type'] == '1' && $row['platform_id'] != '1') { $platformIDtext = loc('community', 'grp.3ds_games'); } 
-elseif($row['platform_type'] == '2') { $platformIDtext = loc('community', 'grp.3ds_games'); } 
-elseif($row['platform_type'] == '3') { $platformIDtext = loc('community', 'grp.virtualconsole'); } 
-else { $platformIDtext = loc('community', 'grp.other'); } }
+if($row['platform_type'] == '1' && $row['platform_id'] == '1') { $platformIDtext = loc('grp.wiiu_games'); }
+elseif($row['platform_type'] == '1' && $row['platform_id'] != '1') { $platformIDtext = loc('grp.3ds_games'); } 
+elseif($row['platform_type'] == '2') { $platformIDtext = loc('grp.3ds_games'); } 
+elseif($row['platform_type'] == '3') { $platformIDtext = loc('grp.virtualconsole'); } 
+else { $platformIDtext = loc('grp.other'); } }
 	
 	if(!empty($row['platform_id'])) {
 print '<span class="platform-tag platform-tag-'.($row['platform_id'] == 1 ? 'wiiu' : '3ds').'"></span>
@@ -108,11 +108,21 @@ return '<li class="favorite-community">
 
 function printPost($row, $is_user, $is_activity, $is_official) {
 global $mysql;
+if(!empty($row["topic_tag"])){
+  $topic_tag = '<a class="post-tag">'.$row["topic_tag"].'</a>';
+} else {
+  $opic_tag = '';
+}
+if($row["is_ingame"] == 1){
+  $played = '&nbsp;<span class="played">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+} else {
+  $played = '';
+}
 if(empty($row['id'])) { return null; } elseif($row['is_hidden'] == 1 && $row['hidden_resp'] == '1') { return null; } else {
 if(strlen($row['_post_type']) > 10) { $reply = true; } else { $reply = false; }
 
 require_once '../grplib-php/user-helper.php';
-if(!empty($_SESSION['pid']) && canUserView($_SESSION['pid'], $row['pid'])) {
+if(!empty($_SESSION["pid"]) && canUserView($_SESSION["pid"], $row['pid'])) {
 return null; }
 
 global $pref_id;
@@ -130,7 +140,7 @@ $title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$c
 $usermii = getMii($user, $row['feeling_id']);
 
 $admin_del = $row['is_hidden'] == '1' && $row['hidden_resp'] == 0;
-$my_post = !empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid'];
+$my_post = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $row['pid'];
 
 if($reply == false) {
 if(!empty($row['url']) && strpos($row['url'], 'www.youtube.com/watch?v=') !== false) {
@@ -139,13 +149,13 @@ $videopost = substr($row['url'], (substr($row['url'], 0, 5) == "https" ? 32 : 31
 } } }	
 
 if(!isset($pref_id)) {
-	if(!empty($_SESSION['pid'])) { 
-	$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+	if(!empty($_SESSION["pid"])) { 
+	$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION["pid"].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
 	$pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
 	} else {
 $pref_id = 0; 
 } }
-$show_spoiler = (!empty($_SESSION['pid']) && $_SESSION['pid'] == $row['pid']) || $pref_id == 1;
+$show_spoiler = (!empty($_SESSION["pid"]) && $_SESSION["pid"] == $row['pid']) || $pref_id == 1;
 
 print '<div id="post-'.$row['id'].'" class="post scroll post-subtype-default'.($row['is_spoiler'] == 1 ? ($show_spoiler ? null : ' hidden') : null).(!empty($videopost) ? ' with-video-image' : null).(!empty($row['screenshot']) ? ' with-image' : null).'" data-post-permalink-url="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'">
   <a href="/users/'.htmlspecialchars($user['user_id']).'" class="user-icon-container scroll-focus'.($usermii['official'] ? ' official-user' : null).'" data-pjax="#body"><img src="'.$usermii['output'].'" class="user-icon"></a>
@@ -193,7 +203,7 @@ print '<a href="#" role="button" class="title-capture-container capture-containe
   } }
 print '
       <div class="post-content">
-
+        '.(!empty($topic_tag) ? $topic_tag : null).'
 ';
 if($admin_del && !$my_post) {
 require_once '../grplib-php/olv-url-enc.php';
@@ -236,25 +246,27 @@ print '<div class="post-meta">
               <a href="/posts/'.$row['id'].'" class="to-permalink-button" data-pjax="#body">
                 <span class="feeling">'.$empathies.'</span>
                 <span class="reply">'.$replies.'</span>
+                '.$played.'
               </a>
             </div>
 			';
 } else {
-if(!empty($_SESSION['pid'])) {
-$canmiitoo = miitooCan($_SESSION['pid'], $row['id'], 'posts'); 
-$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$row['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
+if(!empty($_SESSION["pid"])) {
+$canmiitoo = miitooCan($_SESSION["pid"], $row['id'], 'posts'); 
+$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$row['id'].'" AND empathies.pid = "'.$_SESSION["pid"].'" LIMIT 1')->num_rows == 1;
 }
 print '
 
 
       <div class="post-meta">
-        <button type="button"'.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').' class="submit miitoo-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.$usermii['feeling'].'" data-action="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'/empathies" data-sound="SE_WAVE_MII_'.(isset($my_empathy_added) && $my_empathy_added == true ? 'CANCEL' : 'ADD').'" data-community-id="'.$community['olive_community_id'].'" data-url-id="'.$row['id'].'" data-track-label="default" data-title-id="'.$community['olive_title_id'].'" data-track-action="yeah" data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? $usermii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $usermii['miitoo'] : 'Yeah!')).'</button>
+        <button type="button"'.(empty($_SESSION["pid"]) || !$canmiitoo ? ' disabled' : '').' class="submit miitoo-button'.(isset($my_empathy_added) && $my_empathy_added == true ? ' empathy-added' : '').(empty($_SESSION["pid"]) || !$canmiitoo ? ' disabled' : '').'" data-feeling="'.$usermii['feeling'].'" data-action="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'/empathies" data-sound="SE_WAVE_MII_'.(isset($my_empathy_added) && $my_empathy_added == true ? 'CANCEL' : 'ADD').'" data-community-id="'.$community['olive_community_id'].'" data-url-id="'.$row['id'].'" data-track-label="default" data-title-id="'.$community['olive_title_id'].'" data-track-action="yeah" data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? $usermii['miitoo_delete'] : (!empty($usermii['miitoo']) ? $usermii['miitoo'] : 'Yeah!')).'</button>
         <a href="/'.($reply == true ? 'replies' : 'posts').'/'.$row['id'].'" class="to-permalink-button" data-pjax="#body">
           <span class="feeling">'.$empathies.'</span>
 		  ';
 if($reply == false) {
 	print '<span class="reply">'.$replies.'</span>'; }
 print '        </a>
+        '.$played.'
       </div>';
 }
 	  
@@ -269,10 +281,10 @@ if(!$is_official) {
 </div>'; }
   
 if($is_official) {
-if(!empty($_SESSION['pid'])) {
-$sql_relationship_identified_user_post = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION['pid'].'" AND relationships.target = "'.$user['pid'].'"';
+if(!empty($_SESSION["pid"])) {
+$sql_relationship_identified_user_post = 'SELECT * FROM relationships WHERE relationships.source = "'.$_SESSION["pid"].'" AND relationships.target = "'.$user['pid'].'"';
 $result_relationship_identified_user_post = $mysql->query($sql_relationship_identified_user_post);
-if(mysqli_num_rows($result_relationship_identified_user_post) != 0 || $_SESSION['pid'] == $user['pid']) {
+if(mysqli_num_rows($result_relationship_identified_user_post) != 0 || $_SESSION["pid"] == $user['pid']) {
 print '<div class="toggle-button">
 
 </div>'; }
@@ -347,7 +359,7 @@ function postForm($type, $community, $user) {
 global $act_feed;
 global $pagetitle;
 global $grp_config_allow_allimages;
-$can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' || $user['privilege'] >= 1 || $user['image_perm'] == '1' : true);
+$can_image = (!$grp_config_allow_allimages ? $user['official_user'] == '1' : true);
 print '<div id="add-'.($type == 'replies' ? 'reply' : 'post').'-page" class="add-post-page'.($can_image ? ' official-user-post' : '').' none" data-modal-types="add-entry add-'.($type == 'replies' ? 'reply' : 'post').' require-body preview-body" data-is-template="1">
   <header class="add-post-page-header">
     <h1 class="page-title">'.($type == 'replies' ? 'Comment on '.$pagetitle : 'Post to '.htmlspecialchars($community['name'])).'</h1>
@@ -364,8 +376,45 @@ print '
 ';
 	print '<div class="feeling-selector expression">
   <img src="'.getMii($user, 0)['output'].'" class="icon">
-  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="'.getMii($user, 0)['output'].'" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="'.getMii($user, 1)['output'].'" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="'.getMii($user, 2)['output'].'" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="'.getMii($user, 3)['output'].'" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="'.getMii($user, 4)['output'].'" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="'.getMii($user, 5)['output'].'" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>
+  <ul class="buttons"><li class="checked"><input type="radio" name="feeling_id" value="0" class="feeling-button-normal" data-mii-face-url="'.getMii($user, 0)['output'].'" checked="" data-sound="SE_WAVE_MII_FACE_00"></li><li><input type="radio" name="feeling_id" value="1" class="feeling-button-happy" data-mii-face-url="'.getMii($user, 1)['output'].'" data-sound="SE_WAVE_MII_FACE_01"></li><li><input type="radio" name="feeling_id" value="2" class="feeling-button-like" data-mii-face-url="'.getMii($user, 2)['output'].'" data-sound="SE_WAVE_MII_FACE_02"></li><li><input type="radio" name="feeling_id" value="3" class="feeling-button-surprised" data-mii-face-url="'.getMii($user, 3)['output'].'" data-sound="SE_WAVE_MII_FACE_03"></li><li><input type="radio" name="feeling_id" value="4" class="feeling-button-frustrated" data-mii-face-url="'.getMii($user, 4)['output'].'" data-sound="SE_WAVE_MII_FACE_04"></li><li><input type="radio" name="feeling_id" value="5" class="feeling-button-puzzled" data-mii-face-url="'.getMii($user, 5)['output'].'" data-sound="SE_WAVE_MII_FACE_05"></li>  </ul>';
+  $parampack = explode("\\", base64_decode($_SERVER["HTTP_X_NINTENDO_PARAMPACK"]));
+  global $mysql;
+  $titel = $mysql->query('SELECT * FROM titles WHERE titles.olive_community_id = "'.$mysql->real_escape_string($community["community_id"]).'"');
+  if($titel->num_rows == 0){
+    die("a");
+  }
+  $titel = $titel->fetch_assoc();
+  if($community["type"] == 5 || $titel["can_screenshot"] == 1 && $parampack[2] == $titel["olive_title_id_usa"] || $parampack[2] == $titel["olive_title_id_eur"] || $parampack[2] == $titel["olive_title_id_jpn"] || $_SESSION["pid"] == "1738262487"){
+    print '<div class="image-selector dropdown">
+    <a href="#" data-toggle="dropdown" class="dropdown-toggle" data-sound="SE_WAVE_BALLOON_OPEN"><img class="preview-image" src="/img/add-post-no-image.png"></a>
+    <div class="image-selector-window dropdown-menu">
+        <div class="image-selector-section-wrapper">
+            <div class="image-selector-section-capture js-image-selector-section-capture">
+                <label class="capture-button tv">
+                    <img src="" class="capture-image">
+                    <input type="radio" name="screenshot_type" value="tv" data-sound="SE_WAVE_OK_SUB" data-value="">
+                </label>
+                <label class="capture-button drc">
+                    <img src="" class="capture-image">
+                    <input type="radio" name="screenshot_type" value="drc" data-sound="SE_WAVE_OK_SUB" data-value="">
+                </label>
+            </div>
+            <div class="image-selector-section-options">
+                <div class="image-selector-section-options-content">
+                    <label class="no-select-button checked">
+                        No Screenshot
+                        <input type="radio" name="screenshot_type" value="null" checked="checked" data-value="" data-src="/img/add-post-no-image.png" data-sound="SE_WAVE_CANCEL">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="screenshot" value="" disabled="disabled">
+</div>
 </div>';
+  } else {
+    print '</div>';
+  }
 
 print '
 
@@ -386,9 +435,11 @@ print '
 	  ';
 	 if($can_image) {
     if($type == 'posts') {
-	 print '<input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">';	
+      if($user['official_user'] == '1'){
+        print '<input type="text" class="textarea-line url-form" name="url" placeholder="URL" maxlength="255">';	
+      }
 	}
-	 print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
+	 //print '<input type="text" class="textarea-line url-form" name="screenshot" placeholder="Screenshot URL" maxlength="255">';
 	/*print '
 	  <input type="hidden" name="screenshot" id="screenshot">
 <input type="file" onchange=\'var file = document.querySelectorAll("input[type=file]")[1].files[1]; var reader = new FileReader(); reader.addEventListener("load", function () { document.querySelectorAll("input[id=screenshot]")[1].value = reader.result.split(",")[1]; }, false); if(file) { reader.readAsDataURL(file); }\'>

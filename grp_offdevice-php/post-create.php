@@ -3,7 +3,7 @@ require_once '../grplib-php/init.php';
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 
-$search_community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$mysql->real_escape_string($_POST['community_id']).'" AND (communities.hidden != 1 OR communities.hidden IS NULL) LIMIT 1');
+$search_community = $mysql->query('SELECT * FROM communities WHERE communities.community_id = "'.$mysql->real_escape_string($_POST['community_id']).'" AND communities.type = 5 OR (communities.hidden != 1 OR communities.hidden IS NULL) LIMIT 1');
 
 if($search_community->num_rows == 0) { http_response_code(404); header('Content-Type: application/json');
 print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
@@ -55,6 +55,7 @@ http_response_code(400); header('Content-Type: application/json'); print json_en
 }
 
 if(!empty($_POST['screenshot'])) {
+    //exit("unfortunately, no screenshots until i start storing them on the server.");
 $ch_imgu = curl_init();
 curl_setopt($ch_imgu, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
 curl_setopt($ch_imgu, CURLOPT_POST, TRUE);
@@ -80,7 +81,16 @@ $gen_olive_url = genURL();
 
 if(empty($_POST['feeling_id']) || strval($_POST['feeling_id']) >= 6) { $_POST['feeling_id'] = 0; } 
 
-$createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler, created_from) VALUES (
+if(!empty($_POST["_body_type"]) && $_POST["_post_type"] !== "body"){
+    die("YO THIS LOOKS LIKE A JOB FOR ME, Y'KNOW EVERYBODY, JUST FOLLOW ME...");
+}
+$can = 0;
+if(strlen($_POST["body"]) > 100){
+    $can = 0;
+} else {
+    $can = 1;
+}
+$createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, platform_id, body, url, screenshot, community_id, is_spoiler, created_from, can_show_ingame) VALUES (
 "'.$gen_olive_url.'", 
 "'.$_SESSION['pid'].'",
 "'.(!empty($_POST['_post_type']) ? $mysql->real_escape_string($_POST['_post_type']) : 'body').'",
@@ -91,7 +101,8 @@ $createpost = $mysql->query('INSERT INTO posts(id, pid, _post_type, feeling_id, 
 "'.(!empty($_POST['screenshot']) ? $result_imgu : null).'",
 "'.$mysql->real_escape_string($_POST['community_id']).'",
 "'.(!empty($_POST['is_spoiler']) ? $mysql->real_escape_string($_POST['is_spoiler']) : 0).'",
-"'.$mysql->real_escape_string($_SERVER['REMOTE_ADDR']).'"
+"'.$mysql->real_escape_string($_SERVER['REMOTE_ADDR']).'",
+"'.$can.'"
 )');
 
 if(!$createpost) {

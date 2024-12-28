@@ -1,8 +1,10 @@
 <?php
 require_once '../grplib-php/init.php';
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 notLoggedIn();  exit(); }
+
+$me = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION["pid"].'"')->fetch_assoc();
 
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 require_once 'lib/htm.php';
@@ -195,7 +197,7 @@ if(isset($_POST['country'])) { $updates[] = 'country = "'.$mysql->real_escape_st
 if(isset($_POST['gender'])) { $updates[] = 'gender = "'.$mysql->real_escape_string($_POST['gender']).'"'; }
 if(isset($_POST['relationship_visibility'])) { $updates[] = 'relationship_visibility = "'.$mysql->real_escape_string($_POST['relationship_visibility']).'"'; }
 	
-	$sql_update = 'UPDATE profiles SET '.(implode(', ', $updates)).' WHERE profiles.pid = "'.$_SESSION['pid'].'"';
+	$sql_update = 'UPDATE profiles SET '.(implode(', ', $updates)).' WHERE profiles.pid = "'.$_SESSION["pid"].'"';
 $update_profile = $mysql->query($sql_update);
 if(!$update_profile) {
 http_response_code(500);

@@ -45,7 +45,7 @@ $nnas_userid = '';
 }
 printHeader();
 print '<div class="page-header">
-        <h3>'.sprintf(loc('grp.act.account_edit'), htmlspecialchars($get_my_user['user_id'])).'</h3>
+        <h3>'.sprintf(loc('grp.act.account_edit'), htmlspecialchars($get_my_user['user_id'])).'</h3><br>
     </div>
     <form id="act-create" method="POST" action="/act/edit" class="form-horizontal">
 <fieldset>
@@ -56,33 +56,6 @@ print '<div class="page-header">
   <div class="col-md-4">
   <input id="textinput" name="user_id" type="text" value="'.htmlspecialchars($get_my_user['user_id']).'" placeholder="'.loc('grp.act.login.id').'" class="form-control input-md" disabled>
   <span class="help-block">'.loc('grp.act.userid_help').'</span>  
-  </div>
-</div>
-
-
-<div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.login.passwd').'</label>  
-  <div class="col-md-4">
-  <input id="textinput" name="password" type="password" placeholder="'.loc('grp.act.login.passwd').'" class="form-control input-md">
-    
-  </div>
-</div>
-
-
-<div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.login.passwd_confirm').'</label>  
-  <div class="col-md-4">
-  <input id="textinput" name="password2" type="password" placeholder="'.loc('grp.act.login.passwd').'" class="form-control input-md">
-    
-  </div>
-</div>
-
-
-<div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">'.loc('grp.act.email_addr').'</label>  
-  <div class="col-md-4">
-  <input id="textinput" name="email" type="email" value="'.htmlspecialchars($get_my_user['email']).'" placeholder="'.loc('grp.act.email').'" class="form-control input-md">
-  <span class="help-block">'.loc('grp.act.email_help').'</span>  
   </div>
 </div>
 

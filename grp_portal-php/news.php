@@ -2,7 +2,7 @@
 require_once '../grplib-php/init.php';
 
 # If user isn't logged in, then 403 them.
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 require 'lib/htm.php';
 notLoggedIn();  exit();
 }
@@ -25,7 +25,7 @@ print '<header id="header">
 print '<div class="body-content tab2-content" id="news-page">
 ';
 
-$find_user_newstutorial = $mysql->query('SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION['pid'].'" AND settings_tutorial.my_news = "1"');
+$find_user_newstutorial = $mysql->query('SELECT * FROM settings_tutorial WHERE settings_tutorial.pid = "'.$_SESSION["pid"].'" AND settings_tutorial.my_news = "1"');
 
 if($find_user_newstutorial->num_rows == 0) {
 print '<div class="tutorial-window">
@@ -39,7 +39,7 @@ print '<div class="tutorial-window">
 </menu>
 ';
 }
-$find_user_news = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$_SESSION['pid'].'" AND news.merged IS NULL ORDER BY news.created_at DESC LIMIT 65');
+$find_user_news = $mysql->query('SELECT * FROM news WHERE news.to_pid = "'.$_SESSION["pid"].'" AND news.merged IS NULL ORDER BY news.created_at DESC LIMIT 65');
 
 print '
     <div class="tab-body">';
@@ -53,11 +53,11 @@ else {
 print '<ul class="list-content-with-icon-and-text arrow-list" id="news-list-content">';
 require_once 'lib/htmUser.php';
 function span_u($name) { return '<span class="nick-name">'.htmlspecialchars($name).'</span>'; }
+$update = $mysql->query('UPDATE news SET news.has_read = "1" WHERE news.to_pid = "'.$_SESSION["pid"].'"');
 while($news = $find_user_news->fetch_assoc()) {
 printNews($news);
 
 // Mark all as read
-$update = $mysql->query('UPDATE news SET news.has_read = "1" WHERE news.news_id = "'.$news['news_id'].'"');
 }
 
 }

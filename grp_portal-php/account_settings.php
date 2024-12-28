@@ -1,7 +1,7 @@
 <?php
 require_once '../grplib-php/init.php';
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 notLoggedIn();  exit(); }
 
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -11,7 +11,7 @@ require_once 'lib/htm.php';
 // 'Miiverse Settings'
 $pagetitle = 'Account Settings';
 printHeader(false); printMenu();
-$me_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+$me_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION["pid"].'" LIMIT 1')->fetch_assoc();
 require_once '../grplib-php/user-helper.php';
 $profile = getProfile($me_user);
 
@@ -75,7 +75,7 @@ print '
 if($dev_server) {
 print '
       <li class="scroll">
-        <p class="settings-label">grape version '.$version.' (portal)
+        <p class="settings-label">rverse version '.$version.' (portal)
 </p>
       </li>
       <li class="scroll">
@@ -155,7 +155,7 @@ http_response_code(400); header('Content-Type: application/json'); print json_en
 if(isset($_POST['notify_empathy_notice_opt_out'])) { $updates[] = 'empathy_optout = "'.$mysql->real_escape_string($_POST['notify_empathy_notice_opt_out']).'"'; }
 if(isset($_POST['allow_request'])) { $updates[] = 'allow_request = "'.$mysql->real_escape_string($_POST['allow_request']).'"'; }
 	
-	$sql_update = 'UPDATE profiles SET '.(implode(', ', $updates)).' WHERE profiles.pid = "'.$_SESSION['pid'].'"';
+	$sql_update = 'UPDATE profiles SET '.(implode(', ', $updates)).' WHERE profiles.pid = "'.$_SESSION["pid"].'"';
 $update_profile = $mysql->query($sql_update);
 if(!$update_profile) {
 http_response_code(500);

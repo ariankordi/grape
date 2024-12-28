@@ -37,7 +37,7 @@ print '<form id="profile-settings-form" class="setting-form" method="post" actio
 if($dev_server) {
 print '
       <li class="scroll">
-        <p class="settings-label">grape version '.$version.' (offdevice)
+        <p class="settings-label">rverse version '.$version.' (offdevice)
 </p>
       </li>
       <li class="scroll">

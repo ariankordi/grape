@@ -2,13 +2,13 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 plainErr(403, '403 Forbidden');  exit();
 }
 
 $pagetitle = 'Blocked Users';
 
-$search_blacklists = prepared('SELECT target, type FROM blacklist WHERE blacklist.source = ?', [$_SESSION['pid'] ]);
+$search_blacklists = prepared('SELECT target, type FROM blacklist WHERE blacklist.source = ?', [$_SESSION["pid"] ]);
 printHeader(false); printMenu();
 require_once 'lib/htmTemplates.php';
 print $GLOBALS['div_body_head'];

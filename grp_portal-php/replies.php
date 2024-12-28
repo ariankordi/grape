@@ -28,11 +28,11 @@ if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Method is POST.
 
-		if(empty($_SESSION['pid'])) { $error_code[] = 403; }
-if(!empty($_SESSION['pid'])) {
+		if(empty($_SESSION["pid"])) { $error_code[] = 403; }
+if(!empty($_SESSION["pid"])) {
 if($search_post->num_rows == 0) { $error_code[] = 404;	} else {
 $post = $search_post->fetch_assoc();
-if($post['pid'] == $_SESSION['pid']) { $error_code[] = 400; }
+if($post['pid'] == $_SESSION["pid"]) { $error_code[] = 400; }
 } }
 	    if(!empty($error_code) || !empty($error_message) ) {
 		// JSON response.
@@ -40,12 +40,12 @@ if($post['pid'] == $_SESSION['pid']) { $error_code[] = 400; }
             header('Content-Type: application/json');
 			json_encode(array('success' => 0, 'errors' => [], 'code' => $error_code[0])); }
     else {
-$result_get_spamreports = $mysql->query('SELECT * FROM reports WHERE reports.source = "'.$_SESSION['pid'].'" AND reports.created_at > NOW() - 5');
+$result_get_spamreports = $mysql->query('SELECT * FROM reports WHERE reports.source = "'.$_SESSION["pid"].'" AND reports.created_at > NOW() - 5');
 if($result_get_spamreports->num_rows != 0) {
 header('Content-Type: application/json'); print json_encode(array('success' => 1));
 exit();
 }
-$reportcreate = $mysql->query('INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION['pid'].'", "'.$post['id'].'", "1", "'.$mysql->real_escape_string($_POST['type']).'", "'.$mysql->real_escape_string($_POST['body']).'")');
+$reportcreate = $mysql->query('INSERT INTO reports (source, subject, type, reason, message) VALUES ("'.$_SESSION["pid"].'", "'.$post['id'].'", "1", "'.$mysql->real_escape_string($_POST['type']).'", "'.$mysql->real_escape_string($_POST['body']).'")');
         if(!$reportcreate) {
 http_response_code(500);
 header('Content-Type: application/json'); print 
@@ -58,7 +58,7 @@ if(isset($_GET['mode']) && $_GET['mode'] == 'set_spoiler') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update post spoiler here.	
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
@@ -69,7 +69,7 @@ $post = $search_post->fetch_assoc();
 
 if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
-if($post['pid'] != $_SESSION['pid']) {
+if($post['pid'] != $_SESSION["pid"]) {
 http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
 
@@ -94,7 +94,7 @@ if(isset($_GET['mode']) && $_GET['mode'] == 'delete') {
 if($_SERVER['REQUEST_METHOD'] != 'POST') {
 include_once '404.php'; }
 # Put checks + update post spoiler here.	
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); }
 
 if($search_post->num_rows == 0) {
@@ -105,7 +105,7 @@ $post = $search_post->fetch_assoc();
 
 if($post['is_hidden'] == 1) { http_response_code(404); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 404));  exit(); }
 
-if($post['pid'] != $_SESSION['pid']) {
+if($post['pid'] != $_SESSION["pid"]) {
 http_response_code(403); header('Content-Type: application/json'); print json_encode(array('success' => 0, 'errors' => [], 'code' => 403));  exit(); 
 }
 
@@ -148,11 +148,11 @@ $user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$reply['pid'].
 
 $ogpost = $mysql->query('SELECT * FROM posts WHERE posts.id = "'.$reply['reply_to_id'].'" LIMIT 1')->fetch_assoc();
 $ogpost_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$ogpost['pid'].'" LIMIT 1')->fetch_assoc();
-$pagetitle = !empty($_SESSION['pid']) && $_SESSION['pid'] == $reply['pid'] ? 'Your Comment' : htmlspecialchars($user['screen_name']).'\'s Comment';
+$pagetitle = !empty($_SESSION["pid"]) && $_SESSION["pid"] == $reply['pid'] ? 'Your Comment' : htmlspecialchars($user['screen_name']).'\'s Comment';
 $admin_del = $reply['is_hidden'] == '1' && $reply['hidden_resp'] == 0;
 require_once '../grplib-php/olv-url-enc.php';
 if($reply['is_hidden'] == '1') {
-if($reply['hidden_resp'] == 0 && (empty($_SESSION['pid']) || $_SESSION['pid'] != $reply['pid'])) {
+if($reply['hidden_resp'] == 0 && (empty($_SESSION["pid"]) || $_SESSION["pid"] != $reply['pid'])) {
 generalError(404, 'Deleted by adminsistrator.</p>
 <p>Comment ID: '.getPostID($reply['id']));  
  exit();
@@ -214,9 +214,9 @@ print '
 	 }
 
         // Has the user given this post an empathy?
-if(!empty($_SESSION['pid'])) {
-$canmiitoo = miitooCan($_SESSION['pid'], $reply['id'], 'replies'); 
-$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'" AND empathies.pid = "'.$_SESSION['pid'].'" LIMIT 1')->num_rows == 1;
+if(!empty($_SESSION["pid"])) {
+$canmiitoo = miitooCan($_SESSION["pid"], $reply['id'], 'replies'); 
+$my_empathy_added = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'" AND empathies.pid = "'.$_SESSION["pid"].'" LIMIT 1')->num_rows == 1;
 }
 $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"');
 
@@ -225,8 +225,8 @@ $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$rep
 
         <div class="expression">
 		';
-        print '<button type="button" '.(empty($_SESSION['pid']) || !$canmiitoo ? ' disabled' : null).' 
-		class="submit miitoo-button'.(!empty($_SESSION['pid']) && $my_empathy_added == true ? ' empathy-added' : null).'" 
+        print '<button type="button" '.(empty($_SESSION["pid"]) || !$canmiitoo ? ' disabled' : null).' 
+		class="submit miitoo-button'.(!empty($_SESSION["pid"]) && $my_empathy_added == true ? ' empathy-added' : null).'" 
 		data-feeling="'.$mii['feeling'].'" 
 		data-action="/replies/'.$reply['id'].'/empathies" 
 		data-other-empathy-count="'.(isset($my_empathy_added) && $my_empathy_added == true ? $empathies->num_rows - 1 : $empathies->num_rows).'" 
@@ -237,8 +237,8 @@ $empathies = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$rep
 		data-track-category="empathy">'.(isset($my_empathy_added) && $my_empathy_added == true ? $mii['miitoo_delete'] : (!empty($mii['miitoo']) ? $mii['miitoo'] : 'Yeah!')).'</button>
         </div>';
 
-if(!empty($_SESSION['pid'])) {
-if($_SESSION['pid'] == $reply['pid']) {
+if(!empty($_SESSION["pid"])) {
+if($_SESSION["pid"] == $reply['pid']) {
 print '<a href="#" role="button" class="edit-button edit-reply-button" data-modal-open="#edit-post-page">Edit</a>';	}
 else {
 $is_report_disabled = $mii['official'] != true;
@@ -255,8 +255,8 @@ print '	  <div class="post-permalink-feeling">
       <p class="post-permalink-feeling-text"></p>
 	  <div class="post-permalink-feeling-icon-container">
 	  ';
-$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION['pid']) ? ' AND empathies.pid != "'.$_SESSION['pid'].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 36');
-	  if(!empty($_SESSION['pid'])) {
+$empathies_display = $mysql->query('SELECT * FROM empathies WHERE empathies.id = "'.$reply['id'].'"'.(!empty($_SESSION["pid"]) ? ' AND empathies.pid != "'.$_SESSION["pid"].'"' : '').' ORDER BY empathies.created_at DESC LIMIT 36');
+	  if(!empty($_SESSION["pid"])) {
 print displayempathy($reply, $reply, true, false);
 	  }
 $i = 1;

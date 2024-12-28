@@ -14,7 +14,7 @@ else
 	if($_SERVER['REQUEST_METHOD'] != 'POST')
 	{
 		#Display form.
-$pagetitle = "Grape::Admin";
+$pagetitle = "rverse::Admin";
 $act_template_subheader = 'Create Title';
 $has_header_js = 'no';
 $act_back_location = '/communities';
@@ -36,6 +36,8 @@ Description (2200 characters): <textarea type="text" name="community.description
 		$pidgen = mysqli_num_rows($mysql->query('SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432;
 		$pidgen2 = mysqli_num_rows($mysql->query('SELECT * FROM communities JOIN titles on titles.created_at')).'' + 586437432 + 1;
 		//the form has been posted, so save it
+		//$stmt = $mysql->prepare("SELECT app_data FROM ");
+		//if()
 		$sql_title = 'INSERT INTO titles(olive_title_id, olive_community_id, icon, name, platform_id, platform_type)
 		   VALUES('."83955116433$pidgen".',
 		          '."83955116433$pidgen2".',

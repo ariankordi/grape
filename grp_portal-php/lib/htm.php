@@ -1,14 +1,79 @@
 <?php
+if (!function_exists('str_contains')) {
+  function str_contains($haystack, $needle) {
+      return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+  }
+}
    bindtextdomain('miitoo', '../l10n/');
    bindtextdomain('community', '../l10n/');
-
+   $sunshine = "olive";
+if(isset($_SERVER["HTTP_X_NINTENDO_SERVICETOKEN"])){
+  global $mysql;
+  global $sunshine;
+  global $_COOKIE;
+  $serviceToken = bin2hex(base64_decode($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']));
+  $sessionId = substr($serviceToken, 0, 64);
+  $stmt = $mysql->prepare("SELECT * FROM `console_auth` WHERE `long_id` = ?");
+  $stmt->bind_param("s", $sessionId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  if($res->num_rows == 0){
+    if($_SERVER['REQUEST_URI'] != "/act/login" AND $_SERVER['REQUEST_URI'] != "/act/create"){
+      //exit("<script>wiiuErrorViewer.openByCodeAndMessage(1270010, 'You are not whitelisted. Sorry.');wiiuBrowser.closeApplication();</script>");
+      header("Location: /act/login");
+      exit("You need to login.<br><a href='/act/login'>Click here if you're not redirected.</a>");
+    }
+  } else {
+    $row = $res->fetch_assoc();
+    $_SESSION["signed_in"] = true;
+    $_SESSION["user_id"] = $row["user_id"];
+    $_SESSION["pid"] = $row["pid"];
+    $pid = $row["pid"];
+    $_COOKIE["grp_theme"] = $row["theme"];
+    $pids = array("1741588700", "1738295343", "1738406070");
+    //exit("<script>wiiuBrowser.closeApplication();</script>Youre Mom");
+    if(!in_array($_SESSION["pid"], $pids)){
+    if($_SERVER["HTTP_ACCEPT"] == "*/*" && $_SERVER["HTTP_X_REQUESTED_WITH"] !== "XMLHttpRequest"){
+      exit("<script>setTimeout(function(){wiiuBrowser.closeApplication();},1000);</script>Youre Mom");
+    }
+    }
+    if(rand(1,1000) == 500){
+      //exit("<script>wiiuErrorViewer.openByCodeAndMessage(4201337, 'Out of sheer luck (bad luck), you have encountered this error message. I will now disrupt your Miiverse browsing experience.\\n\\nMuahahahahaha!');wiiuBrowser.closeApplication();</script>");
+    }
+    if(isset($_SERVER["HTTP_ACCEPT"]) && strpos($_SERVER["HTTP_ACCEPT"], "webp") !== false && $_SERVER["HTTP_HOST"] == "rvqcportal.rverse.club" && !in_array($_SESSION["pid"], $pids)){
+      //exit("<script>wiiuBrowser.endStartUp();</script>gggggghfgdhsjlgrsggggggggggggggggggggggg youre mom");
+      if($_SERVER["REQUEST_URI"] !== "/warning/readonly"){
+        if(pleasebanme($_SESSION["pid"], "accessing portal when not supposed to LOLZERS!")){
+          header("Location: /warning/readonly");
+          exit();
+        } else {
+          header("Location: /warning/readonly");
+          exit();
+        }
+      }
+      }
+  }
+} else {
+  if(!isset($_SESSION["num"])){
+    $_SESSION["num"] = 1;
+  } else {
+    $_SESSION["num"] = $_SESSION["num"] + 1;
+  }
+  if($_SESSION["num"] > 3){
+    if($_SESSION["num"] == 3){
+      sendHook2('Type: '.$_SERVER["HTTP_HOST"]);
+    }
+    exit("I think you're making a grave mistake.");
+  }
+  exit("Please don't mess with this site, activity is logged.");
+} 
 function printHeader($is_act) {
 global $pagetitle;
 global $has_header_js;
-if(!empty($_SESSION['pid'])) {
+if(!empty($_SESSION["pid"])) {
 global $mysql;
-$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc(); }
-if($is_act == true && $is_act === true) { $pagetitle = 'Grape::Account'; } elseif($is_act == 'err' && empty($pagetitle)) { $pagetitle = loc('grp.portal.error'); }
+$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION["pid"].'" LIMIT 1')->fetch_assoc(); }
+if($is_act == true && $is_act === true) { $pagetitle = 'rverse::Account'; } elseif($is_act == 'err' && empty($pagetitle)) { $pagetitle = loc('grp.portal.error'); }
 if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
 	print '<title>'.(isset($pagetitle) ? $pagetitle : 'grp.portal.page_title').'</title>
 	';
@@ -20,21 +85,57 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
 	';
 	print '<!DOCTYPE html>
 
-
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <script>
+    setTimeout(function(){wiiuBrowser.lockUserOperation(false);wiiuBrowser.showLoadingIcon(false);},3000);
+    </script>
+    <script>
+  if(typeof wiiuBrowser == undefined){
+    window.location.href = "https://rv3api.rverse.club";
+  }
+  </script>
 	<title>'.(isset($pagetitle) ? $pagetitle : 'grp.portal.page_title').'</title>
 	';
-
-if(strpos($_SERVER['HTTP_USER_AGENT'], 'miiverse') !== false) { $theme_css_file = '/css/portal-grp.css'; } else {
-if(!empty($_COOKIE['grp_theme'])) {
-if($_COOKIE['grp_theme'] == 'grape' || $_COOKIE['grp_theme'] == 'blueberry' ||  $_COOKIE['grp_theme'] == 'cherry' ||  $_COOKIE['grp_theme'] == 'orange') {
-$theme_css_file = '/css/portal-grp_offdevice_'.htmlspecialchars($_COOKIE['grp_theme']).'.css'; } 
-else { $theme_css_file = '/css/portal-grp_offdevice.css'; } } else { $theme_css_file = '/css/portal-grp_offdevice.css'; } }
-
+  if($_SERVER["REQUEST_URI"] != "/welcome/"){
+    print '
+    <script>if (typeof wiiuBrowser !== "undefined" && typeof wiiuBrowser.endStartUp !== "undefined") {
+      wiiuBrowser.endStartUp();
+      wiiuSound.playSoundByName("BGM_OLV_MAIN", 3);
+      setTimeout(function() {
+          wiiuSound.playSoundByName("BGM_OLV_MAIN_LOOP_NOWAIT", 3);
+      },90000);
+    }</script>';
+  }
+  $serviceToken = bin2hex(base64_decode($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']));
+  $sessionId = substr($serviceToken, 0, 64);
+  $stmt = $mysql->prepare("SELECT * FROM `console_auth` WHERE `long_id` = ?");
+  $stmt->bind_param("s", $sessionId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  if($res->num_rows == 0){
+    if($_SERVER['REQUEST_URI'] != "/act/login" AND $_SERVER['REQUEST_URI'] != "/act/create"){
+      //exit("<script>wiiuErrorViewer.openByCodeAndMessage(1270010, 'You are not whitelisted. Sorry.');wiiuBrowser.closeApplication();</script>");
+      header("Location: /act/login");
+      exit("You need to login.<br><a href='/act/login'>Click here if you're not redirected.</a>");
+    }
+  }
+  $row = $res->fetch_assoc();
+$sunshine = $row["theme"];
+//$sunshine = "orange"; //I wonder what this is for!!!!
+//exit($sunshine.' <script>setTimeout(function(){ location.reload(); },2000);</script><p>The site is currently being worked on! This page will automatically refresh.</p>');
+$theme_css_file = '/css/portal-grp.css';
+if(!empty($sunshine)) {
+if($sunshine == 'grape' || $sunshine == 'blueberry' ||  $sunshine == 'cherry' ||  $sunshine == 'orange') {
+$theme_css_file = '/css/portal-grp_offdevice_'.htmlspecialchars($sunshine).'.css'; 
+} else if($sunshine == 'olive') {
+  $theme_css_file = '/css/portal-grp.css'; 
+}
+}
     if(strpos($_SERVER['HTTP_USER_AGENT'], 'miiverse') !== false) {
 	$theme_js_file = '/js/portal/complete.js'; } elseif($is_act && $is_act === true) { $theme_js_file = null; } else { $theme_js_file = '/js/portal/complete-emu.js'; }
+  $theme_js_file = '/js/portal/complete.js';
 	print '
 	<link rel="stylesheet" type="text/css" href="'.$theme_css_file.'">';
 	if(empty($has_theme_js)) { print '
@@ -43,8 +144,8 @@ print '</head>
 <body'.($is_act == true && $is_act === true ? ' id="help"' : null).'
 ';
 if($is_act == false) {
-if(!empty($_SESSION['pid'])) {
-       print 'data-hashed-pid="'.sha1($_SESSION['pid']).'"
+if(!empty($_SESSION["pid"])) {
+       print 'data-hashed-pid="'.sha1($_SESSION["pid"]).'"
 	   ';
        print 'data-user-id="'.htmlspecialchars($lookup_user['user_id']).'"
 	   ';
@@ -57,9 +158,8 @@ if(!empty($_SESSION['pid'])) {
 	   data-user-id="" 
 	   data-is-first-post="1"';
 } }
-
+// I wonder what this is for!!!! print '><video src="/lel.mp4" width="1" height="1" style="display: none;" autoplay loop></video>
 print '>
-
 
 ';    
 	
@@ -135,9 +235,9 @@ return (mb_strlen($text) >= $chars + 1 ? $truncate_post_bodyp1.'...' : $truncate
 function printMenu() {
 if(empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 
-	if(!empty($_SESSION['pid'])) {
+	if(!empty($_SESSION["pid"])) {
 global $mysql;
-$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION['pid'].'" LIMIT 1')->fetch_assoc();
+$lookup_user = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION["pid"].'" LIMIT 1')->fetch_assoc();
 	print '<menu id="global-menu">
       <li id="global-menu-mymenu"><a href="/users/'.htmlspecialchars($lookup_user['user_id']).'" data-pjax="#body" data-sound="SE_WAVE_MENU"><span class="mii-icon"><img src="'.getMii($lookup_user, false)['output'].'" alt="'.loc('grp.portal.my_page').'"></span><span>'.loc('grp.portal.my_page').'</span></a></li>
       <li id="global-menu-feed"><a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">'.loc('grp.portal.activity').'</a></li>
@@ -167,7 +267,7 @@ printHeader(true);
 print '	<div id="body">
 <header id="header">
   
-  <h1 id="page-title">Grape::Account</h1>
+  <h1 id="page-title">rverse::Account</h1>
 
 </header>
 

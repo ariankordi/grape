@@ -4,14 +4,14 @@ setTextDomain('accounts');
 function printHeader() { global $bodyStyle; ?>
 <html lang="<?=substr(LOCALE,0,2)?>"><head>
     <meta charset="utf-8">
-    <title>Grape::Account</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <title>rverse Account</title>
+    <link href="/act/bootstrap.min.css" rel="stylesheet">
     <style>
       body { padding-top: 60px; }
       .highlight { background-color: yellow }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/act/jquery.min.js"></script>
+    <script src="/act/bootstrap.min.js"></script>
   <style type="text/css">* {}</style>   
   <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></head>
@@ -20,7 +20,7 @@ function printHeader() { global $bodyStyle; ?>
       <div class="navbar-inner">
         <div class="container-fluid">
           
-          <a class="navbar-brand" href="/act/">Grape::Account</a>
+          <a class="navbar-brand" href="/act/">rverse Account</a>
 		  
 			<div class="navbar-collapse">
 
@@ -32,6 +32,10 @@ function printHeader() { global $bodyStyle; ?>
 						<ul class="dropdown-menu" role="menu">
                             
                             <li><a href="?locale.lang=en-US" class="language" rel="en-US">English
+</a></li>
+<li><a href="?locale.lang=es-419" class="language" rel="ja-JP">Español (Latin American)
+</a></li>
+<li><a href="?locale.lang=es-ES" class="language" rel="ja-JP">Español (Castilian)
 </a></li>
 <li><a href="?locale.lang=de-DE" class="language" rel="de-DE">Deutsch
 </a></li>
@@ -58,7 +62,7 @@ function printFooter() { global $dev_server; global $version; ?>
     <footer class="footer">
       <div class="container" style="text-align:center;">
       <hr>
-        grape<?=($dev_server == true ? '/'.$version : '')?>
+        rverse<?=($dev_server == true ? '/'.$version : '')?>
       </div>
     </footer>
   
@@ -80,6 +84,6 @@ function defaultRedir($has_post, $need_login) {
 if($has_post)
 { $location = $_POST['location'] ?? null; } elseif($need_login) 
 { $location = '/act/login?location='.htmlspecialchars(urlencode($_SERVER['REQUEST_URI'])); } else 
-{ $location = $_GET['location'] ?? null; }
-header('Location: '.LOCATION.(!empty($location) ? htmlspecialchars($location) : '/'), true, 302);
+{ $location = $_GET['location'] ?? "/titles/show"; }
+header('Location: '.(!empty($location) ? htmlspecialchars($location) : '/'), true, 302);
 }

@@ -8,7 +8,7 @@ echo "500 Internal Server Error\n";
 <html><head><meta http-equiv="Content-Type" content="text/html"><title>500 Internal Server Error</title></head>
 <body>
 <h1>500 Internal Server Error</h1>
-<p>Sorry, something went wrong.<br><br>A team of highly trained monkeys has been dispatched to deal with this situation.</p>
+<p>Sorry, something went wrong.<br><br>A team of highly trained monkeys has been dispatched to deal with this situation. (Not really)</p>
 If you see them, give them this error as text:<br>
 <pre>    <?=json_encode(array($errno, $errstr, $errfile, $errline))?></pre>
 

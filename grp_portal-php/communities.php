@@ -2,7 +2,6 @@
 //Communities screen
 	require_once '../grplib-php/init.php';
 $pagetitle = loc('grp.portal.community').($dev_server ? ' ('.CONFIG_SRV_ENV.')' : '');
-    
     require_once 'lib/htm.php';
 printHeader(false);
 	printMenu();
@@ -28,16 +27,23 @@ print '<header id="header">
         <a href="/theme-set?theme=cherry" class="button checkbox-button'.(isset($_COOKIE['grp_theme']) && $_COOKIE['grp_theme'] == 'cherry' ? ' selected' : '').'" data-sound="SE_WAVE_TOGGLE_CHECK">cherry</a>
       </li>
       <li>
-        <a href="/theme-set?theme=orange" class="button checkbox-button'.(isset($_COOKIE['grp_theme']) && $_COOKIE['grp_theme'] == 'orange' ? ' selected' : '').'" data-sound="SE_WAVE_TOGGLE_CHECK">orange</a>
+      <a href="/theme-set?theme=orange" class="button checkbox-button'.(isset($_COOKIE['grp_theme']) && $_COOKIE['grp_theme'] == 'orange' ? ' selected' : '').'" data-sound="SE_WAVE_TOGGLE_CHECK">orange</a>
       </li>
-      
+      ';
+      if(rand(1, 1000) == 5){
+        print '
+      <li>
+      <a href="/special/redesign_announcement" class="button checkbox-button" data-sound="SE_WAVE_TOGGLE_CHECK">wtf redesign?</a>
+      </li>';
+      }
+      print '
     </ul>
   </div>
 
 ';
 require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmCommunity.php';
-if(!empty($_SESSION['pid'])) {
+if(!empty($_SESSION["pid"])) {
 favButton(); }
 print '
 </header>
@@ -51,7 +57,20 @@ nocontentWindow('No communities have been created');
 (isset($_SERVER['HTTP_X_PJAX'])? '' : http_response_code(404));
 printFooter();  exit(); }
 
+?>
+<div class="close-announce-content test-close-announce">
+    <a href="/posts/AYYGAABB4-cxFHFfgxc12Q" data-pjax="#body">
+      <span class="title">End of Miiverse Service Announcement</span>
+    </a>
+</div>
+<?php
+
 $get_platformtitles = $mysql->query('SELECT * FROM titles WHERE titles.platform_id IS NOT NULL AND titles.hidden != 1 ORDER BY titles.created_at DESC LIMIT 20');
+$acomm = $mysql->query("SELECT * FROM communities WHERE type = 2 LIMIT 1");
+if($acomm->num_rows != 0){
+  $acomm = $acomm->fetch_assoc();
+  $post = $mysql->query("SELECT * FROM posts WHERE community_id = '".$acomm["olive_community_id"]."' ORDER BY tid DESC LIMIT 1")->fetch_assoc();
+}
 print '<div class="community-list">
 ';
 # Official user banner
@@ -61,6 +80,14 @@ print '<div class="banner-container">
         <span class="text">'.loc('grp.portal.identified_user_banner-text').'</span>
       </a>
     </div>';
+    if($post){?><div id="header-news" class="news-label info-content info-ticker"
+  data-olive-title-id="23"
+  data-last-posted="<?=strtotime($post["created_at"])?>"
+  data-last-seen="1489171124"
+  data-is-of-miiverse="1">
+<a href="#" class="close-button"></a>
+<a href="/titles/<?=$acomm["olive_title_id"]?>/<?=$acomm["olive_community_id"]?>" data-pjax="#body" class="header-news-button"><?=loc("grp.portal.new_announcement")?></a>
+</div><br><?php } 
 	
 	print '
 		<div class="headline headline-wiiu">

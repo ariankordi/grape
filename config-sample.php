@@ -5,10 +5,11 @@
 */
 
 // Hosts. These are very important and will determine what mode you are even in.
+// also these aren't that important anymore but they're still here
 const HOSTS = array(
-'PORTAL_HOST'=>'portal-d1.grp.ariankordi.net',
-'OFFDEVICE_HOST'=>'grape-d1.ariankordi.net',
-'N3DS_HOST'=>null,
+'PORTAL_HOST'=>'im going to explode',
+'OFFDEVICE_HOST'=>'your mom',
+'N3DS_HOST'=>'your mom',
 'ADMIN_HOST'=>null,
 );
 
@@ -16,15 +17,17 @@ const HOSTS = array(
 * "nsslog" can be true or false to indicate NSS being enabled.
 * Server type can be 'dev' or 'prod'. Environment can be one letter and then one number, like 'J2' or 'T1'.
 */
-const CONFIG_SRV_NAME = 'Grape test server';
+const CONFIG_SRV_NAME = 'rverse3';
 // NSS is almost never necessary, don't enable it.
 const CONFIG_SRV_NSS = false;
-const CONFIG_SRV_TYPE = 1;
+const CONFIG_SRV_TYPE = 2;
 // 0 - dev, 1 - prod
-const CONFIG_SRV_ENV = 'N1';
+const CONFIG_SRV_ENV = 1;
+
+$dev_server = true;
 
 // put nnidlt here or whatever
-$grp_config_mii_endpoint_prefix = 'https://pf2m.com/hash/';
+$grp_config_mii_endpoint_prefix = 'https://nnidlt.murilo.eu.org/api.php?output=hash_only&env=production&user_id=';
 
 // If NSS is enabled, then these can be the allowed keys.
 $grp_config_nss_keys = array(
@@ -34,9 +37,9 @@ $grp_config_allow_signup = true;
 
 // Database connection info for a MySQL database.
 const CONFIG_DB_SERVER = 'localhost:3306';
-const CONFIG_DB_USER = 'root';
-const CONFIG_DB_PASS = '[password]';
-const CONFIG_DB_NAME = 'grape';
+const CONFIG_DB_USER = 'your mom';
+const CONFIG_DB_PASS = 'your mom';
+const CONFIG_DB_NAME = 'your mom';
 
 // Default protocol for redirects.
 $grp_config_recommend_ssl = false;

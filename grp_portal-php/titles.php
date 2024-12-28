@@ -2,6 +2,29 @@
 require_once '../grplib-php/init.php';
 require_once 'lib/htm.php';
 
+if(isset($_SERVER["HTTP_X_NINTENDO_SERVICETOKEN"])){
+	global $mysql;
+	global $pid;
+	$serviceToken = bin2hex(base64_decode($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']));
+	$sessionId = substr($serviceToken, 0, 64);
+	$stmt = $mysql->prepare("SELECT * FROM `console_auth` WHERE `long_id` = ?");
+	$stmt->bind_param("s", $sessionId);
+	$stmt->execute();
+	$res = $stmt->get_result();
+	if($res->num_rows == 0){
+	  if($_SERVER['REQUEST_URI'] != "/act/login" AND $_SERVER['REQUEST_URI'] != "/act/create"){
+		header("Location: /act/login");
+		exit("You need to login.<br><a href='/act/login'>Click here if you're not redirected.</a>");
+	  }
+	} else {
+	  $row = $res->fetch_assoc();
+	  $_SESSION["signed_in"] = true;
+	  $pid = $row["pid"];
+	  $_SESSION["pid"] = $row["pid"];
+	  $_SESSION["user_id"] = $row["user_id"];
+	}
+  }
+
 $search_title = $mysql->query('SELECT * FROM titles WHERE titles.olive_title_id = "'.$mysql->real_escape_string($_GET['title_id'] ?? 'a').'" AND titles.hidden != 1 LIMIT 1');
 
 if(!$search_title) {
@@ -48,12 +71,22 @@ if($not_offset) {
 $pagetitle = htmlspecialchars($title['name']);
 printHeader(false); printMenu();
 
-$user_permission = empty($_SESSION['pid']) || !postPermission($user, $community);
+//exit("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==========pid-".$_SESSION["pid"]."-pid");
+if(!isset($pid)){
+  $pid = $_SESSION["pid"];
+}
+$me = $mysql->query('SELECT * FROM people WHERE people.pid = "'.$_SESSION["pid"].'"')->fetch_assoc();
+$user_permission = empty($pid);
+if($user_permission == false){
+	if($me["privilege"] < $community["min_perm"]){
+		$user_permission = true;
+	}
+}
 
     print $GLOBALS['div_body_head'];
 	print '
 <header id="header">
-<a id="header-post-button"'.($user_permission ? ' disabled' : null).' class="header-button'.($user_permission ? ' disabled' : null).' none"'.($user_permission ? '' : ' href="#"').' data-modal-open="#add-post-page">Post</a>';
+'.($user_permission ? null : '<a id="header-post-button" class="header-button none" href="#" data-modal-open="#add-post-page">Post</a>');
 $communities_search_others = $mysql->query('SELECT * FROM communities WHERE communities.olive_title_id = "'.$title['olive_title_id'].'" AND communities.type != 5');
 if($communities_search_others->num_rows >= 2) {
 print '<a id="header-communities-button" href="/titles/'.$title['olive_title_id'].'" data-pjax="#body">Related Communities</a>'; }
@@ -71,14 +104,14 @@ print '<div class="community-info info-content'.(!empty($community['banner']) ? 
 ';
 
 if(!empty($title['platform_id'])) {
-print '<span class="platform-tag platform-tag-'.($title['platform_id'] == 1 ? 'wiiu' : '3ds').'"></span>';
+print '<span class="platform-tag platform-tag-'.($title['platform_id'] == 1 ? 'wiiu' : '3ds').'"></span><a href="#" class="button eshop-button test-eshop-button" data-dst-title-id="0005000010101d00" data-src-title-id="'.dechex($title['olive_title_id_usa']).'" data-sound="SE_WAVE_OK_SUB" data-community-id="14866558073038702637" data-url-id="" data-track-label="community" data-title-id="'.$title['olive_title_id_usa'].'" data-track-action="openShopJumpModal" data-track-category="shopJump">More Info</a>';
 }
 
-if(!empty($_SESSION['pid'])) {
+if(!empty($_SESSION["pid"])) {
 print '
   <a href="#" data-modal-open="#title-settings-page" class="button setting-button" data-sound="SE_WAVE_OK_SUB"></a>
 ';
-$community_favorite_rows = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION['pid'].'" AND favorites.community_id = "'.$community['community_id'].'"')->num_rows;
+$community_favorite_rows = $mysql->query('SELECT * FROM favorites WHERE favorites.pid = "'.$_SESSION["pid"].'" AND favorites.community_id = "'.$community['community_id'].'"')->num_rows;
 print '  <a href="#" class="favorite-button favorite-button-mini button'.($community_favorite_rows != 0 ? ' checked' : '').'" data-action-favorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/favorite.json" data-action-unfavorite="/titles/'.$community['olive_title_id'].'/'.$community['olive_community_id'].'/unfavorite.json" data-sound="SE_WAVE_CHECKBOX_'.($community_favorite_rows != 0 ? 'UN' : '').'CHECK" data-community-id="'.$community['olive_community_id'].'" data-url-id="" data-track-label="community" data-title-id="'.$community['olive_title_id'].'" data-track-action="cancelFavorite" data-track-category="favorite"></a>';
 }
   if($community['type'] >= 1) {
@@ -107,8 +140,8 @@ print '<menu class="tab-header">
   </menu>';
 // Title settings
 
-if(!empty($_SESSION['pid'])) {
-$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION['pid'].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
+if(!empty($_SESSION["pid"])) {
+$search_settings = $mysql->query('SELECT * FROM settings_title WHERE settings_title.pid = "'.$_SESSION["pid"].'" AND settings_title.olive_title_id = "'.$title['olive_title_id'].'" LIMIT 1');
 require_once 'lib/htmTemplates.php';
 $pref_id = $search_settings->num_rows != 0 ? $search_settings->fetch_assoc()['value'] : 0;
 titleSettingsPages($title, $pref_id);
@@ -180,8 +213,8 @@ print '</div>
 }
 if($not_offset) {
 # Post form
-if(!empty($_SESSION['pid']) && (empty($_GET['mode']) || $_GET['mode'] != 'hot')) {
-postForm('posts', $community, $user); }
+if(!empty($_SESSION["pid"]) && (empty($_GET['mode']) || $_GET['mode'] != 'hot')) {
+postForm('posts', $community, $me); }
 print '
 
 </div>

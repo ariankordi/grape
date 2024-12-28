@@ -13,19 +13,21 @@ return true;
 }*/
 
 function postValid($user, $screenshot_type) {
+if(!empty($_POST["painting"])){ goto skippostvalidation; }
 if(empty($_POST['body']) || mb_strlen($_POST['body']) <= 0) { return 'blank'; }
 #if(preg_match('/[^\x20-\xdf]/',(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['body'])))) { return 'blank'; }
 if(empty(preg_replace('/[\x00-\x1F\x7F]/','',$_POST['body']))) { return 'blank'; }
+skippostvalidation:
 if(strval($user['privilege']) <= 3 && mb_strlen($_POST['body']) > 1000) { return 'max'; }
 if(!empty($_POST['url'])) {
 if(mb_strlen($_POST['url']) > 255) { return 'max'; } elseif(mb_substr($_POST['url'], 0, 4) != "http" && strlen($_POST['url']) >= 3) { return 'nohttp'; } elseif(mb_strlen($_POST['url']) < 11 && mb_strlen($_POST['url']) >= 3) { return 'min'; } elseif(filter_var($_POST['url'], FILTER_VALIDATE_URL) === FALSE) { return 'invalid'; } }
 if(!empty($_POST['screenshot'])) {
 if($screenshot_type == 'url') {
-if(mb_strlen($_POST['screenshot']) > 255) { return 'max'; } 
-elseif(mb_substr($_POST['screenshot'], 0, 4) != "http") { return 'nohttp'; } 
-elseif(mb_strlen($_POST['screenshot']) < 11 && mb_strlen($_POST['screenshot']) >= 3) { return 'min'; } elseif(filter_var($_POST['screenshot'], FILTER_VALIDATE_URL) === FALSE) { return 'invalid'; } elseif(substr($_POST['screenshot'], 0, 5) != "https") { return 'nossl'; }
+if(mb_strlen($_POST['screenshot']) > 255 && $_SERVER["HTTP_HOST"] !== "rvqcportal.rverse.club") { return 'max'; } 
+elseif(mb_substr($_POST['screenshot'], 0, 4) != "http"  && $_SERVER["HTTP_HOST"] !== "rvqcportal.rverse.club") { return 'nohttp'; } 
+elseif(mb_strlen($_POST['screenshot']) < 11 && mb_strlen($_POST['screenshot']) >= 3 && $_SERVER["HTTP_HOST"] !== "rvqcportal.rverse.club") { return 'min'; } elseif(filter_var($_POST['screenshot'], FILTER_VALIDATE_URL) === FALSE && $_SERVER["HTTP_HOST"] !== "rvqcportal.rverse.club") { return 'invalid'; } elseif(substr($_POST['screenshot'], 0, 5) != "https" && $_SERVER["HTTP_HOST"] !== "rvqcportal.rverse.club") { return 'nossl'; }
 $ch1 = curl_init(); curl_setopt_array($ch1, [CURLOPT_RETURNTRANSFER=>1,CURLOPT_URL=>urldecode($_POST['screenshot']),CURLOPT_CONNECTTIMEOUT=>05,CURLOPT_FOLLOWLOCATION=>true,  CURLOPT_HEADER=>true,  /*CURLOPT_CUSTOMREQUEST=>'HEAD',CURLOPT_NOBODY=>true*/]); $resp = curl_exec($ch1); $body = substr($resp, curl_getinfo($ch1, CURLINFO_HEADER_SIZE));
-if(!imageCheck($body)) { return 'invalid'; } 
+if(!imageCheck($body) && $_SERVER["HTTP_HOST"] !== "rvqcportal.rverse.club") { return 'invalid'; } 
 }
 elseif(!imageCheck(base64_decode($_POST['screenshot']))) {
 return 'invalid_screenshot'; }

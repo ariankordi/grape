@@ -1,7 +1,7 @@
 <?php
 require_once '../grplib-php/init.php';
 
-if(empty($_SESSION['pid'])) {
+if(empty($_SESSION["pid"])) {
 header('Location: '.LOCATION.'/guest_menu', true, 302);
 }
 else {

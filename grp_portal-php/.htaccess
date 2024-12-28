@@ -1,5 +1,6 @@
 # stolen from french https://github.com/Rix565
 Options +FollowSymLinks -Indexes
+php_flag display_errors on
 RewriteEngine on
 ErrorDocument 503 error/503.html
 ErrorDocument 502 error/502.html
@@ -9,14 +10,16 @@ RewriteRule ^$ /root.php [L,NC,QSA]
 RewriteRule ^communities$ /communities.php [L,NC,QSA]
 RewriteRule ^communities\/favorites$ /communities-showfavorites.php [L,NC,QSA]
 RewriteRule ^communities\/categories$ /communities_categories.php [L,NC,QSA]
+RewriteRule ^communities\/categories\/wiiu_all$ /communities-showall.php?type=1 [L,NC,QSA]
 RewriteRule ^my_menu$ /my_menu.php [L,NC,QSA]
 RewriteRule ^news\/my_news$ /news.php [L,NC,QSA]
 RewriteRule ^news\/friend_requests$ /friendrequests.php [L,NC,QSA]
 RewriteRule ^posts$ /post-create.php [L,NC,QSA]
 RewriteRule ^posts\/([^\/]+)$ /posts.php?id=$1 [L,NC,QSA]
 RewriteRule ^posts\/([^\/]+)\/empathies.delete$ /posts.php?id=$1&mode=empathies_delete [L,NC,QSA]
-RewriteRule ^posts\/([^\/]+)\/([^\/]+)$ /posts.php?id=$1&mode=$2 [L,NC,QSA]
-RewriteRule ^posts\/([^\/]+).([^\/]+)$ /posts.php?id=$1&mode=$2 [L,NC,QSA]
+RewriteRule ^posts\/([A-Za-z0-9-_]+)\/([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 [L,NC,QSA]
+RewriteRule ^posts\/([A-Za-z0-9-_]+)\.([A-Za-z0-9-_]+)$ /posts.php?id=$1&mode=$2 [L,NC,QSA]
+RewriteRule ^posts\/([A-Za-z0-9-_]+)\/screenshot.set_profile_post$ /posts.php?id=$1&mode=screenshot.set_profile_post [L,NC,QSA]
 RewriteRule ^replies\/([^\/]+)$ /replies.php?id=$1 [L,NC,QSA]
 RewriteRule ^replies\/([^\/]+)\/empathies.delete$ /replies.php?id=$1&mode=empathies_delete [L,NC,QSA]
 RewriteRule ^replies\/([^\/]+)\/([^\/]+)$ /replies.php?id=$1&mode=$2 [L,NC,QSA]
@@ -29,6 +32,7 @@ RewriteRule ^my\/latest_following_related_profile_posts$ /my/follow-rel-posts.ph
 RewriteRule ^my_blacklist$ /my_blacklist.php [L,NC,QSA]
 RewriteRule ^settings\/played_title_ids$ /my/played.php [L,NC,QSA]
 RewriteRule ^settings\/tutorial_post$ /tutorial_post.php [L,NC,QSA]
+RewriteRule ^settings\/profile_post.unset.json$ /profile-post-unset.php [L,NC,QSA]
 RewriteRule ^friend_messages\/([^\/]+)$ /messages.php?user_id=$1 [L,NC,QSA]
 RewriteRule ^friend_messages$ /messages.php [L,NC,QSA]
 RewriteRule ^identified_user_posts$ /identified_user_posts.php [L,NC,QSA]
@@ -41,6 +45,7 @@ RewriteRule ^warning\/readonly$ /content/warnings/readonly.php [L,NC,QSA]
 RewriteRule ^check_update.json$ /check_update.php [L,NC,QSA]
 RewriteRule ^users$ /user-search.php [L,NC,QSA]
 RewriteRule ^users\/@me$ /profile-me.php [L,NC,QSA]
+RewriteRule ^p01\/policylist\/1\/1\/([^\/]+)$ /api-policylist.php
 RewriteRule ^users\/([^\/]+).unfollow.json /users.php?user_id=$1&mode=unfollow [L,NC,QSA]
 RewriteRule ^users\/([^\/]+).follow.json /users.php?user_id=$1&mode=follow [L,NC,QSA]
 RewriteRule ^users\/([^\/]+)$ /users.php?user_id=$1 [L,NC,QSA]
@@ -53,6 +58,7 @@ RewriteRule ^theme-set$ /theme-set.php [L,NC,QSA]
 RewriteRule ^guest_menu$ /guest_menu.php [L,NC,QSA]
 RewriteRule ^act\/([^\/]+)$ /act.php?pg=$1 [L,NC,QSA]
 RewriteRule ^act\/ /act.php?pg=index [L,NC,QSA]
+RewriteRule ^titles\/show$ /isrestrict.php [L,NC,QSA]
 RewriteRule ^titles\/([0-9]+)$ /titles.php?title_id=$1 [L,NC,QSA]
 RewriteRule ^titles\/([0-9]+)\/([0-9]+)$ /titles.php?title_id=$1&community_id=$2 [L,NC,QSA]
 RewriteRule ^titles\/([0-9]+)\/([0-9]+)$ /titles.php?title_id=$1&community_id=$2 [L,NC,QSA]
@@ -61,5 +67,17 @@ RewriteRule ^titles\/([0-9]+)\/([0-9]+)\/hot$ /titles.php?title_id=$1&community_
 RewriteRule ^titles\/([0-9]+)\/([0-9]+)\/favorite.json$ /communities-createfavorite.php?olive_community_id=$2 [L,NC,QSA]
 RewriteRule ^titles\/([0-9]+)/([0-9]+)\/unfavorite.json$ /communities-createfavorite.php?olive_community_id=$2&delete [L,NC,QSA]
 RewriteRule ^settings\/titles\/([0-9]+)$ /title_settings.php?title_id=$1 [L,NC,QSA]
-RewriteRule ^titles\/show$ /redirect.php [L,NC,QSA]
+# api shizz
+RewriteRule ^v1\/posts$ /api-post.php [L,NC,QSA]
+RewriteRule ^v1\/communities\/([0-9]+)\/posts$ /api-fetch-posts.php [L,NC,QSA]
+RewriteRule ^v1\/people$ /api-fetch-people.php [L,NC,QSA]
+RewriteRule ^v1\/posts\/([^\/]+)\/empathies$ /api-yeah-ingame.php?id=$1 [L,NC,QSA]
+RewriteRule ^v1\/communities$ /api-idklol.php [L,NC,QSA]
+RewriteRule ^v1\/friend_messages$ /api-friend-message.php [L,NC,QSA]
+RewriteRule ^v1\/topics$ /api-wwp.php [L,NC,QSA]
+RewriteRule ^v1\/wwp\/1stNUP.xml$ /api-wwp.php [L,NC,QSA]
+RewriteRule ^v1\/users\/([0-9]+)\/notifications$ /api-notify.php?pid=$1
+# special
 RewriteRule ^special\/redesign_announcement$ /content/special/redesign.php [L,NC,QSA]
+# welcome
+RewriteRule ^welcome\/activate$ /welcome/activate.php

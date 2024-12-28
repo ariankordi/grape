@@ -1,8 +1,13 @@
+<script>wiiuBrowser.endStartUp();wiiuSound.playSoundByName('BGM_OLV_SETTING', 3);</script>
 <?php
+header("Location: /act/create");
 $grpmode = 1; require_once '../grplib-php/init.php';
 require_once '../grp_act-php/lib/htm.php'; $bodyClass = 'min-height:400px';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if (!empty($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']) && strlen($_SERVER['HTTP_X_NINTENDO_SERVICETOKEN']) < 55){
+		printErr(1211000, 'You cannot use a PNID to access rv3. Please switch to Nintendo Network.', '/act/login'.(!empty($_POST['location']) ? '?location='.htmlspecialchars(urlencode($_POST['location'])) : '')); exit(); 
+	}
 require_once '../grplib-php/account-helper.php';
 	    if(empty($_POST['user_id'])) {
 printErr(1022543, 'You must enter a login ID.', '/act/login'.(!empty($_POST['location']) ? '?location='.htmlspecialchars(urlencode($_POST['location'])) : '')); exit(); 
@@ -20,6 +25,7 @@ exit();
 } else {
 require_once '../grp_act-php/lib/htm.php';
 
+/*
 if(!$dev_server && CONFIG_SRV_NSS == 2) {
 $find_email_confirm = findPendingEmailConfirm($check_login);
 if(is_array($find_email_confirm)) {
@@ -27,12 +33,16 @@ header('Location: '.LOCATION.'/act/confirm?key='.$find_email_confirm['id'], true
 exit();
 	}
 }
+*/
 
 setLoginVars($check_login, true);
 require_once '../grplib-php/crypto.php';
 setcookie('grp_identity', base64_encode(encrypt_identity($grp_config_pubkey, gen_identity(CONFIG_SRV_ENV, $check_login['pid'], $check_login['user_id'], $check_login['password']))), (time() + 604800), '/');
-
-defaultRedir(true, false);
+if($_SERVER["HTTP_HOST"] == "rv3api.rverse.club"){
+	header("Location: /communities");
+} else {
+	printErr(1022812, "Account attached. Please relaunch Miiverse.", '/act/login'.(!empty($_POST['location']) ? '?location='.htmlspecialchars(urlencode($_POST['location'])) : '')); exit(); 
+}
        }
 exit();
 }
@@ -41,13 +51,13 @@ print '<div class="page-header">
         <h3>'.loc('grp.act.authenticate').'</h3>
     </div>
     <div class="col-sm-6">';
-	printf("<p>\n".loc('grp.act.login_account_signup')."<p>\n", '<a href="/act/create">', '</a>');
+	printf("<p>\n".loc('grp.act.login_account_signup')."<p><a href=\"/act/create\">if the text refuses to appear to signup click here</a>\n", '<a href="/act/create">', '</a>');
 	print '
     <form action="/act/login" method="post" class="form-horizontal" id="login-form">       
 		    
 			  <br>
 			         <div class="row">
-			  <input type="text" class="form-control" name="user_id" placeholder="'.loc('grp.act.login.id').'" required autofocus>
+			  <input type="text" class="form-control" name="user_id" placeholder="'.loc('grp.act.nnid').'" required autofocus>
                      </div><div class="row">
 			  <input type="password" class="form-control" name="password" placeholder="'.loc('grp.act.login.passwd').'" required>  
                      </div><div class="row">   		  

@@ -10,7 +10,7 @@ print '
 ';
 require_once '../grplib-php/community-helper.php';
 require_once 'lib/htmCommunity.php';
-if(!empty($_SESSION['pid'])) {
+if(!empty($_SESSION["pid"])) {
 favButton();
 }
 $pg_no = (!empty($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0);
@@ -26,14 +26,14 @@ print '
 <div class="body-content" id="community-top">
   <div class="community-list category-list">
     <div class="headline headline-wiiu">
-      <h2>'.sprintf(loc('community', 'grp.portal.titles_headline'), $num_titles).'</h2>
+      <h2>'.sprintf(loc('grp.portal.titles_headline'), $num_titles).'</h2>
       
     </div>
     
     <ul class="list-content-with-icon-column" id="community-top-content" data-next-page-url="">
         ';
 	if($search_communities->num_rows == 0) {
-	noContentWindow(loc('community', 'grp.portal.no_community'));
+	noContentWindow(loc('grp.portal.no_community'));
 	} else {
 while($communities = $search_communities->fetch_assoc()) {
 printTitle($communities);
