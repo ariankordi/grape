@@ -1,6 +1,24 @@
 config.php
-Static/img/drawings/*
-grp_portal-php/img/drawings/*
-grp_portal-php/img/ugc/*
 grp_portal-php/result-scanner.html
 grp_portal-php/scanner.php
+
+# note that most of these are empty files
+Static/img/aicon/*
+Static/img/banner/*
+Static/img/drawings/*
+Static/img/ugc/*
+
+grp_portal-php/img/aicon/*
+grp_portal-php/img/banner/*
+grp_portal-php/img/drawings/*
+grp_portal-php/img/ugc/*
+
+grp_offdevice-php/img/aicon/*
+grp_offdevice-php/img/banner/*
+grp_offdevice-php/img/drawings/*
+grp_offdevice-php/img/ugc/*
+
+grp_n3ds-php/img/aicon/*
+grp_n3ds-php/img/banners/*
+grp_n3ds-php/img/drawings/*
+grp_n3ds-php/img/ugc/*
